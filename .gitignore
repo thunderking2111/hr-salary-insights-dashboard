@@ -1,0 +1,47 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Database
+*.sqlite3
+db.sqlite3
+
+# Virtual Environment
+venv/
+.venv/
+
+# Environment Variables
+.env
+.env.local
+
+# VS Code
+.vscode/
+
+# Cursor
+.cursor/
+
+# Logs
+logs/
+*.log
+
+# Ruff
+.ruff_cache/
+
+# Testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Django
+staticfiles/
+media/
+
+# Frontend (when added)
+node_modules/
+dist/
+build/
+.next/
+
+# OS
+.DS_Store
