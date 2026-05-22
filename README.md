@@ -78,7 +78,9 @@ Build a minimal yet usable salary management tool for an organization with **10,
 |------|---------|
 | Lint / format | `ruff check .` and `ruff format .` |
 | Run hooks manually | `pre-commit run --all-files` |
-| Run tests | `pytest` (after the Django project and tests are added) |
+| Run migrations | `cd backend && python manage.py migrate` |
+| Run API server | `cd backend && python manage.py runserver` |
+| Run tests | `pytest` (from repo root) |
 
 ## Documentation
 

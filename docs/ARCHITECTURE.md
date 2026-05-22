@@ -34,9 +34,9 @@ The HR Manager uses a browser-based UI for CRUD and dashboards. The API owns val
 hr-salary-insights-dashboard/
 ├── backend/                 # Django project root
 │   ├── config/              # settings, urls, wsgi
+│   ├── health/              # API health check
 │   ├── employees/           # models, serializers, views, services
 │   ├── insights/            # aggregation endpoints (or nested under employees)
-│   ├── tests/
 │   └── manage.py
 ├── frontend/                # React app
 │   └── src/
