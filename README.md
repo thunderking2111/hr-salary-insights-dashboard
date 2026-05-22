@@ -84,3 +84,4 @@ Build a minimal yet usable salary management tool for an organization with **10,
 
 - [Architecture](docs/ARCHITECTURE.md) — system design, stack, and API overview
 - [Technical decisions](docs/DECISIONS.md) — trade-offs, seeding, testing, and AI workflow
+- [Agent instructions](AGENTS.md) — Cursor / AI workflow for this repo
