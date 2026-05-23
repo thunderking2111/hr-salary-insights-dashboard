@@ -38,3 +38,16 @@ Names split into `first_name` / `last_name` so the **seed script** can combine l
 | **TDD** with pytest + pytest-django | Assessment expects meaningful unit tests; red-green-refactor shows in commit history |
 | Ruff + pre-commit | Consistent style; catches issues before review |
 | Incremental commits | Chore → docs → data files → Django → tests/features → UI → deploy/demo |
+
+### TDD: 404 tests deferred to GREEN (new endpoints)
+
+For a **new URL**, a test that only asserts `response.status_code == 404` can **pass at RED** before the route exists (Django returns 404 for “URL not found”), which is a false green.
+
+**Compromise used on** `GET /api/v1/insights/by-country/{country}/`:
+
+- **RED:** happy path only (expects 200; fails with 404 until the route exists).
+- **GREEN:** implementation plus the “no employees for this country → 404” test.
+
+**Alternative for strict RED:** assert JSON body shape, or that a sibling URL returns 200, so the 404 test fails until the view is wired.
+
+We may use the stricter pattern on later endpoints; this note is for reviewers reading commit history.
