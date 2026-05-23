@@ -15,5 +15,8 @@ class Employee(models.Model):
         validators=[MinValueValidator(Decimal("0.01"))],
     )
 
+    class Meta:
+        ordering = ["first_name", "last_name", "pk"]
+
     def __str__(self) -> str:
         return f"{self.first_name} {self.last_name}"
