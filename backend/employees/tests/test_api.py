@@ -1,6 +1,8 @@
+import warnings
 from decimal import Decimal
 
 import pytest
+from django.core.paginator import UnorderedObjectListWarning
 from rest_framework.test import APIClient
 
 from employees.models import Employee
@@ -57,6 +59,40 @@ def test_list_employees_returns_paginated_results(api_client, employee):
     assert "results" in data
     assert len(data["results"]) >= 1
     assert data["results"][0]["id"] == employee.id
+
+
+@pytest.mark.django_db
+def test_list_employees_returns_ordered_results_without_warning(api_client):
+    zoe = Employee.objects.create(
+        first_name="Zoe",
+        last_name="Zebra",
+        job_title="Engineer",
+        country="US",
+        salary=Decimal("70000.00"),
+    )
+    amy = Employee.objects.create(
+        first_name="Amy",
+        last_name="Adams",
+        job_title="Engineer",
+        country="US",
+        salary=Decimal("80000.00"),
+    )
+    aaron = Employee.objects.create(
+        first_name="Aaron",
+        last_name="Zebra",
+        job_title="Engineer",
+        country="US",
+        salary=Decimal("75000.00"),
+    )
+
+    with warnings.catch_warnings(record=True) as caught:
+        warnings.simplefilter("always", UnorderedObjectListWarning)
+        response = api_client.get(API_BASE)
+
+    assert response.status_code == 200
+    assert not any(issubclass(warning.category, UnorderedObjectListWarning) for warning in caught)
+    result_ids = [row["id"] for row in response.json()["results"]]
+    assert result_ids == [aaron.id, amy.id, zoe.id]
 
 
 @pytest.mark.django_db
