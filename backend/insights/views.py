@@ -10,6 +10,24 @@ def _format_money(amount: Decimal) -> str:
     return f"{amount:.2f}"
 
 
+def _country_stats(country: str) -> dict | None:
+    row = Employee.objects.filter(country=country).aggregate(
+        min=Min("salary"),
+        max=Max("salary"),
+        avg=Avg("salary"),
+        count=Count("pk"),
+    )
+    if row["count"] == 0:
+        return None
+    return {
+        "country": country,
+        "min": _format_money(row["min"]),
+        "max": _format_money(row["max"]),
+        "avg": _format_money(row["avg"]),
+        "count": row["count"],
+    }
+
+
 @api_view(["GET"])
 def by_country(request):
     rows = (
@@ -33,3 +51,11 @@ def by_country(request):
         for row in rows
     ]
     return Response(data)
+
+
+@api_view(["GET"])
+def by_country_detail(request, country: str):
+    stats = _country_stats(country)
+    if stats is None:
+        return Response(status=404)
+    return Response(stats)

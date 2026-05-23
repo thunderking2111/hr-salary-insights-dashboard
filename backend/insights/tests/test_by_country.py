@@ -92,3 +92,18 @@ def test_by_country_detail_returns_stats_for_one_country(api_client):
         "avg": "70000.00",
         "count": 2,
     }
+
+
+@pytest.mark.django_db
+def test_by_country_detail_returns_404_when_country_has_no_employees(api_client):
+    Employee.objects.create(
+        first_name="Ann",
+        last_name="US",
+        job_title="Engineer",
+        country="US",
+        salary=Decimal("50000.00"),
+    )
+
+    response = api_client.get(BY_COUNTRY_DETAIL_URL.format(country="FR"))
+
+    assert response.status_code == 404
