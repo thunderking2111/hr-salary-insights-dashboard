@@ -59,3 +59,26 @@ def by_country_detail(request, country: str):
     if stats is None:
         return Response(status=404)
     return Response(stats)
+
+
+@api_view(["GET"])
+def by_title(request):
+    country = request.query_params.get("country", "")
+    rows = (
+        Employee.objects.filter(country=country)
+        .values("job_title")
+        .annotate(
+            avg=Avg("salary"),
+            count=Count("pk"),
+        )
+        .order_by("job_title")
+    )
+    data = [
+        {
+            "job_title": row["job_title"],
+            "avg": _format_money(row["avg"]),
+            "count": row["count"],
+        }
+        for row in rows
+    ]
+    return Response(data)

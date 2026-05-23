@@ -9,4 +9,5 @@ urlpatterns = [
         views.by_country_detail,
         name="insights-by-country-detail",
     ),
+    path("insights/by-title/", views.by_title, name="insights-by-title"),
 ]
