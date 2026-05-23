@@ -29,6 +29,7 @@ INSTALLED_APPS = [
     "corsheaders",
     "rest_framework",
     "health",
+    "employees",
 ]
 
 MIDDLEWARE = [
