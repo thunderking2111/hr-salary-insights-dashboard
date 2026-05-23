@@ -7,3 +7,6 @@ class Employee(models.Model):
     job_title = models.CharField(max_length=150)
     country = models.CharField(max_length=100)
     salary = models.DecimalField(max_digits=12, decimal_places=2)
+
+    def __str__(self) -> str:
+        return f"{self.first_name} {self.last_name}"
