@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 import pytest
+from django.core.exceptions import ValidationError
 
 from employees.models import Employee
 
@@ -32,3 +33,23 @@ def test_employee_str_returns_full_name():
         salary=Decimal("85000.00"),
     )
     assert str(employee) == "Jane Doe"
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "invalid_salary",
+    [
+        Decimal("-1"),
+        Decimal("0.00"),
+    ],
+)
+def test_salary_must_be_at_least_one_cent(invalid_salary):
+    employee = Employee(
+        first_name="Jane",
+        last_name="Doe",
+        job_title="Software Engineer",
+        country="US",
+        salary=invalid_salary,
+    )
+    with pytest.raises(ValidationError):
+        employee.full_clean()
