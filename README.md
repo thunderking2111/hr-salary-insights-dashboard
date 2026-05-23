@@ -82,6 +82,16 @@ Build a minimal yet usable salary management tool for an organization with **10,
 | Run API server | `cd backend && python manage.py runserver` |
 | Run tests | `pytest` (from repo root) |
 
+## Continuous integration
+
+On every push and pull request to `master`, [GitHub Actions](.github/workflows/ci.yml) runs:
+
+- Ruff (lint + format check)
+- `python manage.py migrate` and `check`
+- `pytest`
+
+No deployment step is configured in CI.
+
 ## Documentation
 
 - [Architecture](docs/ARCHITECTURE.md) — system design, stack, and API overview
