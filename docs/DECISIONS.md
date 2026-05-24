@@ -51,3 +51,13 @@ For a **new URL**, a test that only asserts `response.status_code == 404` can **
 **Alternative for strict RED:** assert JSON body shape, or that a sibling URL returns 200, so the 404 test fails until the view is wired.
 
 We may use the stricter pattern on later endpoints; this note is for reviewers reading commit history.
+
+### TDD: batch RED tests for one feature slice
+
+For a **single cohesive capability** (one command, one viewset, one service), multiple small tests in **one RED commit** are acceptable when they share the same fixture setup and one GREEN implementation satisfies all of them.
+
+**Used for:** Employee CRUD API (five tests), `seed_employees` (four tests in `employees/tests/test_seed.py`).
+
+**Still prefer one test per RED** for isolated model rules (e.g. `__str__`, salary validator) where each commit maps to one behavior.
+
+This keeps commit history readable without requiring a RED commit per assertion on every feature.
