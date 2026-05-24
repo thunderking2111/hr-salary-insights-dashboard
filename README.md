@@ -79,6 +79,7 @@ Build a minimal yet usable salary management tool for an organization with **10,
 | Lint / format | `ruff check .` and `ruff format .` |
 | Run hooks manually | `pre-commit run --all-files` |
 | Run migrations | `cd backend && python manage.py migrate` |
+| Seed employees | `cd backend && python manage.py seed_employees` (10,000 rows; use `--count` for smaller runs) |
 | Run API server | `cd backend && python manage.py runserver` |
 | Run tests | `pytest` (from repo root) |
 
