@@ -67,7 +67,8 @@ See [ADR 0002](adr/0002-views-then-viewset-refactor.md).
 
 ## 7. Data model (intent, not schema)
 
-A single `Employee` aggregate captures: identity (full name, email), role
+A single `Employee` aggregate captures: identity (`first_name` + `last_name`
+stored, `full_name` exposed as a derived property; plus `email`), role
 (job title, department, employment type), location (country), compensation
 (salary, currency — default `INR`), tenure (date of joining), and audit
 timestamps. Country and job title are filter / group-by dimensions and will
