@@ -55,5 +55,52 @@ code that introduces them.
 
 ## Getting started
 
-The local toolchain and run instructions will be added with the corresponding
-slices (Python tooling, Django scaffold, seeder, etc.).
+### Prerequisites
+
+- Python 3.10+
+- `git`
+
+### Backend setup
+
+```bash
+# 1. Create and activate a virtual environment.
+python3 -m venv .venv
+source .venv/bin/activate
+
+# 2. Install backend dependencies (runtime + dev).
+pip install -r backend/requirements-dev.txt
+
+# 3. Install pre-commit git hooks.
+pre-commit install
+
+# 4. Configure backend environment.
+cp backend/.env.example backend/.env
+# Edit backend/.env and set DJANGO_SECRET_KEY (required).
+# Generate a key with:
+#   python -c "from django.core.management.utils import get_random_secret_key; print(get_random_secret_key())"
+```
+
+### Backend commands
+
+All backend commands run from the `backend/` directory.
+
+```bash
+cd backend
+export $(grep -v '^#' .env | xargs)   # load env vars from .env
+
+python manage.py check        # project sanity check
+python manage.py migrate      # apply DB migrations
+python manage.py runserver    # local dev server
+
+pytest -v                     # run the test suite
+```
+
+### Quality gates
+
+Run from the repo root.
+
+```bash
+ruff check .
+ruff format --check .
+pre-commit run --all-files
+```
