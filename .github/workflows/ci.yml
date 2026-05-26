@@ -38,5 +38,4 @@ jobs:
 
       - name: Backend tests
         working-directory: backend
-        # Exit code 5 = no tests collected; fine for early bootstrap commits.
-        run: pytest -v || [ $? -eq 5 ]
+        run: pytest -v
