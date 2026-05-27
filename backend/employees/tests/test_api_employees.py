@@ -101,3 +101,14 @@ def test_partial_update_employee_returns_200_updating_only_provided_fields():
     employee.refresh_from_db()
     assert employee.job_title == "Principal Engineer"
     assert employee.email == original_email
+
+
+@pytest.mark.django_db
+def test_delete_employee_returns_204_and_removes_employee():
+    employee = Employee.objects.create(**employee_create_kwargs())
+    client = APIClient()
+
+    response = client.delete(f"{EMPLOYEES_URL}{employee.pk}/")
+
+    assert response.status_code == status.HTTP_204_NO_CONTENT
+    assert not Employee.objects.filter(pk=employee.pk).exists()
