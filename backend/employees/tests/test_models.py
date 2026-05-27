@@ -52,3 +52,19 @@ def test_employee_stores_hr_profile_fields():
     assert employee.date_of_joining == date(2020, 1, 15)
     assert employee.created_at is not None
     assert employee.updated_at is not None
+
+
+@pytest.mark.django_db
+def test_employee_defaults_country_and_currency_for_indian_org():
+    employee = Employee.objects.create(
+        first_name="Grace",
+        last_name="Hopper",
+        email="grace.hopper@example.com",
+        job_title="Director",
+        department="Engineering",
+        employment_type="full_time",
+        salary=Decimal("2000000.00"),
+        date_of_joining=date(2018, 6, 1),
+    )
+    assert employee.country == "India"
+    assert employee.currency == "INR"
