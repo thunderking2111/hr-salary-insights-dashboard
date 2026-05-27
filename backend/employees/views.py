@@ -28,10 +28,18 @@ class EmployeePutUpdateView(EmployeeUpdateView):
     http_method_names = ("put", "head", "options")
 
 
-class EmployeeRetrieveUpdateView(EmployeeRetrieveView, EmployeePutUpdateView):
+class EmployeePatchUpdateView(EmployeeUpdateView):
+    http_method_names = ("patch", "head", "options")
+
+
+class EmployeeRetrieveUpdateView(
+    EmployeeRetrieveView,
+    EmployeePutUpdateView,
+    EmployeePatchUpdateView,
+):
     """Binds retrieve + update on /api/employees/{id}/ until ModelViewSet refactor."""
 
-    http_method_names = ("get", "put", "head", "options")
+    http_method_names = ("get", "put", "patch", "head", "options")
 
 
 class EmployeeListCreateView(EmployeeListView, EmployeeCreateView):
