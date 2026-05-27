@@ -5,21 +5,12 @@ import pytest
 
 from employees.models import Employee
 
+from .conftest import employee_create_kwargs
+
 
 @pytest.mark.django_db
 def test_employee_full_name_is_derived_from_first_and_last_name():
-    employee = Employee.objects.create(
-        first_name="Ada",
-        last_name="Lovelace",
-        email="ada.lovelace@example.com",
-        job_title="Software Engineer",
-        department="Engineering",
-        employment_type="full_time",
-        country="India",
-        salary=Decimal("1500000.00"),
-        currency="INR",
-        date_of_joining=date(2020, 1, 15),
-    )
+    employee = Employee.objects.create(**employee_create_kwargs())
     assert employee.full_name == "Ada Lovelace"
 
 
@@ -56,15 +47,9 @@ def test_employee_stores_hr_profile_fields():
 
 @pytest.mark.django_db
 def test_employee_defaults_country_and_currency_for_indian_org():
-    employee = Employee.objects.create(
-        first_name="Grace",
-        last_name="Hopper",
-        email="grace.hopper@example.com",
-        job_title="Director",
-        department="Engineering",
-        employment_type="full_time",
-        salary=Decimal("2000000.00"),
-        date_of_joining=date(2018, 6, 1),
-    )
+    kwargs = employee_create_kwargs()
+    del kwargs["country"]
+    del kwargs["currency"]
+    employee = Employee.objects.create(**kwargs)
     assert employee.country == "India"
     assert employee.currency == "INR"
