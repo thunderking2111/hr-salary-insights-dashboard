@@ -32,14 +32,21 @@ class EmployeePatchUpdateView(EmployeeUpdateView):
     http_method_names = ("patch", "head", "options")
 
 
+class EmployeeDestroyView(generics.DestroyAPIView):
+    queryset = Employee.objects.order_by("id")
+    serializer_class = EmployeeSerializer
+    http_method_names = ("delete", "head", "options")
+
+
 class EmployeeRetrieveUpdateView(
     EmployeeRetrieveView,
     EmployeePutUpdateView,
     EmployeePatchUpdateView,
+    EmployeeDestroyView,
 ):
     """Binds retrieve + update on /api/employees/{id}/ until ModelViewSet refactor."""
 
-    http_method_names = ("get", "put", "patch", "head", "options")
+    http_method_names = ("get", "put", "patch", "delete", "head", "options")
 
 
 class EmployeeListCreateView(EmployeeListView, EmployeeCreateView):
