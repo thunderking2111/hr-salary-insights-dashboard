@@ -1,4 +1,5 @@
 from datetime import date
+from decimal import Decimal
 
 import pytest
 from rest_framework import status
@@ -57,3 +58,25 @@ def test_retrieve_employee_returns_200_with_profile():
     assert data["id"] == employee.pk
     assert data["full_name"] == "Ada Lovelace"
     assert data["email"] == "ada.lovelace@example.com"
+
+
+@pytest.mark.django_db
+def test_update_employee_returns_200_with_updated_profile():
+    employee = Employee.objects.create(**employee_create_kwargs())
+    client = APIClient()
+    payload = employee_create_kwargs(
+        email="ada.updated@example.com",
+        job_title="Principal Engineer",
+        salary=Decimal("1800000.00"),
+    )
+
+    response = client.put(f"{EMPLOYEES_URL}{employee.pk}/", payload, format="json")
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["email"] == "ada.updated@example.com"
+    assert data["job_title"] == "Principal Engineer"
+    assert data["salary"] == "1800000.00"
+    employee.refresh_from_db()
+    assert employee.email == "ada.updated@example.com"
+    assert employee.job_title == "Principal Engineer"
