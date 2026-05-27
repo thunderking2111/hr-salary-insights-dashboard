@@ -14,5 +14,10 @@ class EmployeeCreateView(generics.CreateAPIView):
     serializer_class = EmployeeSerializer
 
 
+class EmployeeRetrieveView(generics.RetrieveAPIView):
+    queryset = Employee.objects.order_by("id")
+    serializer_class = EmployeeSerializer
+
+
 class EmployeeListCreateView(EmployeeListView, EmployeeCreateView):
     """Binds list + create on /api/employees/ until ModelViewSet refactor."""
