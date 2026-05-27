@@ -1,7 +1,7 @@
-"""Routes for the employees app.
+from django.urls import path
 
-Routes are added by the slice that introduces each endpoint, behind a
-failing test (see AGENTS.md TDD discipline and ADR 0002).
-"""
+from employees.views import EmployeeCreateView
 
-urlpatterns: list = []
+urlpatterns = [
+    path("employees/", EmployeeCreateView.as_view(), name="employee-create"),
+]
