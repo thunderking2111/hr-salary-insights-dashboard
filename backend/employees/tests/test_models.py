@@ -8,7 +8,18 @@ from employees.models import Employee
 
 @pytest.mark.django_db
 def test_employee_full_name_is_derived_from_first_and_last_name():
-    employee = Employee.objects.create(first_name="Ada", last_name="Lovelace")
+    employee = Employee.objects.create(
+        first_name="Ada",
+        last_name="Lovelace",
+        email="ada.lovelace@example.com",
+        job_title="Software Engineer",
+        department="Engineering",
+        employment_type="full_time",
+        country="India",
+        salary=Decimal("1500000.00"),
+        currency="INR",
+        date_of_joining=date(2020, 1, 15),
+    )
     assert employee.full_name == "Ada Lovelace"
 
 
