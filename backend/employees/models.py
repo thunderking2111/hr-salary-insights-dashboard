@@ -1,9 +1,12 @@
 from django.db import models
 
 
-class Employee(models.Model):  # noqa: DJ008 — __str__ added in a later slice under its own test
+class Employee(models.Model):
     first_name = models.CharField(max_length=80)
     last_name = models.CharField(max_length=80)
+
+    def __str__(self) -> str:
+        return self.full_name
 
     @property
     def full_name(self) -> str:
