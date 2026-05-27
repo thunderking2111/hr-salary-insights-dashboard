@@ -1,12 +1,11 @@
-from django.urls import path
+from django.urls import include, path
+from rest_framework.routers import DefaultRouter
 
-from employees.views import EmployeeListCreateView, EmployeeRetrieveUpdateView
+from employees.views import EmployeeViewSet
+
+router = DefaultRouter()
+router.register("employees", EmployeeViewSet, basename="employee")
 
 urlpatterns = [
-    path("employees/", EmployeeListCreateView.as_view(), name="employee-list-create"),
-    path(
-        "employees/<int:pk>/",
-        EmployeeRetrieveUpdateView.as_view(),
-        name="employee-retrieve-update",
-    ),
+    path("", include(router.urls)),
 ]

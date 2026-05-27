@@ -45,4 +45,11 @@ See [ADR 0002](adr/0002-views-then-viewset-refactor.md) for the full
 rationale and the refactor checklist. Summary: an interim cost of slightly
 more code buys a clean TDD history and an honest refactor commit at the end.
 
-<!-- Refactor commits append a short note here. -->
+### Employee CRUD collapsed into `EmployeeViewSet` (2026-05-28)
+
+- **What changed**: Separate list/create/retrieve/update/destroy view classes
+  and manual URL entries were replaced by one `ModelViewSet` and a
+  `DefaultRouter` registration.
+- **Why safe**: All API tests are transport-level (URL, status, JSON) and were
+  left unchanged; the full suite stayed green before and after. Paths remain
+  `/api/employees/` and `/api/employees/{id}/`.

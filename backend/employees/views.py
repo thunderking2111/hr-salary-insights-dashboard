@@ -1,53 +1,9 @@
-from rest_framework import generics
+from rest_framework import viewsets
 
 from employees.models import Employee
 from employees.serializers import EmployeeSerializer
 
 
-class EmployeeListView(generics.ListAPIView):
+class EmployeeViewSet(viewsets.ModelViewSet):
     queryset = Employee.objects.order_by("id")
     serializer_class = EmployeeSerializer
-
-
-class EmployeeCreateView(generics.CreateAPIView):
-    queryset = Employee.objects.order_by("id")
-    serializer_class = EmployeeSerializer
-
-
-class EmployeeRetrieveView(generics.RetrieveAPIView):
-    queryset = Employee.objects.order_by("id")
-    serializer_class = EmployeeSerializer
-
-
-class EmployeeUpdateView(generics.UpdateAPIView):
-    queryset = Employee.objects.order_by("id")
-    serializer_class = EmployeeSerializer
-
-
-class EmployeePutUpdateView(EmployeeUpdateView):
-    http_method_names = ("put", "head", "options")
-
-
-class EmployeePatchUpdateView(EmployeeUpdateView):
-    http_method_names = ("patch", "head", "options")
-
-
-class EmployeeDestroyView(generics.DestroyAPIView):
-    queryset = Employee.objects.order_by("id")
-    serializer_class = EmployeeSerializer
-    http_method_names = ("delete", "head", "options")
-
-
-class EmployeeRetrieveUpdateView(
-    EmployeeRetrieveView,
-    EmployeePutUpdateView,
-    EmployeePatchUpdateView,
-    EmployeeDestroyView,
-):
-    """Binds retrieve + update on /api/employees/{id}/ until ModelViewSet refactor."""
-
-    http_method_names = ("get", "put", "patch", "delete", "head", "options")
-
-
-class EmployeeListCreateView(EmployeeListView, EmployeeCreateView):
-    """Binds list + create on /api/employees/ until ModelViewSet refactor."""
