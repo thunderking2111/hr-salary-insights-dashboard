@@ -24,8 +24,14 @@ class EmployeeUpdateView(generics.UpdateAPIView):
     serializer_class = EmployeeSerializer
 
 
-class EmployeeRetrieveUpdateView(EmployeeRetrieveView, EmployeeUpdateView):
+class EmployeePutUpdateView(EmployeeUpdateView):
+    http_method_names = ("put", "head", "options")
+
+
+class EmployeeRetrieveUpdateView(EmployeeRetrieveView, EmployeePutUpdateView):
     """Binds retrieve + update on /api/employees/{id}/ until ModelViewSet refactor."""
+
+    http_method_names = ("get", "put", "head", "options")
 
 
 class EmployeeListCreateView(EmployeeListView, EmployeeCreateView):
