@@ -43,3 +43,17 @@ def test_list_employees_returns_200_with_paginated_results():
     assert len(data["results"]) == 1
     assert data["results"][0]["email"] == "ada.lovelace@example.com"
     assert data["results"][0]["full_name"] == "Ada Lovelace"
+
+
+@pytest.mark.django_db
+def test_retrieve_employee_returns_200_with_profile():
+    employee = Employee.objects.create(**employee_create_kwargs())
+    client = APIClient()
+
+    response = client.get(f"{EMPLOYEES_URL}{employee.pk}/")
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["id"] == employee.pk
+    assert data["full_name"] == "Ada Lovelace"
+    assert data["email"] == "ada.lovelace@example.com"
