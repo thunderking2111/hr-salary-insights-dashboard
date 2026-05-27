@@ -80,3 +80,24 @@ def test_update_employee_returns_200_with_updated_profile():
     employee.refresh_from_db()
     assert employee.email == "ada.updated@example.com"
     assert employee.job_title == "Principal Engineer"
+
+
+@pytest.mark.django_db
+def test_partial_update_employee_returns_200_updating_only_provided_fields():
+    employee = Employee.objects.create(**employee_create_kwargs())
+    original_email = employee.email
+    client = APIClient()
+
+    response = client.patch(
+        f"{EMPLOYEES_URL}{employee.pk}/",
+        {"job_title": "Principal Engineer"},
+        format="json",
+    )
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["job_title"] == "Principal Engineer"
+    assert data["email"] == original_email
+    employee.refresh_from_db()
+    assert employee.job_title == "Principal Engineer"
+    assert employee.email == original_email
