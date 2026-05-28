@@ -53,3 +53,10 @@ more code buys a clean TDD history and an honest refactor commit at the end.
 - **Why safe**: All API tests are transport-level (URL, status, JSON) and were
   left unchanged; the full suite stayed green before and after. Paths remain
   `/api/employees/` and `/api/employees/{id}/`.
+
+### Salary insights moved into `employees/services/insights.py` (2026-05-28)
+
+- **What changed**: ORM aggregation left the insight views and now lives in
+  pure service functions returning small dataclasses.
+- **Why safe**: Insight API tests were not edited; URLs and JSON shapes are
+  unchanged and the full suite stayed green. Views only serialize and respond.
