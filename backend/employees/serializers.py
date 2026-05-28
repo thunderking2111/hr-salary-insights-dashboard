@@ -25,3 +25,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
             "updated_at",
         )
         read_only_fields = ("id", "full_name", "created_at", "updated_at")
+
+
+class CountrySalaryInsightSerializer(serializers.Serializer):
+    country = serializers.CharField()
+    min_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
+    max_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
+    avg_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
