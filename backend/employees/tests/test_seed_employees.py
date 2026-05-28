@@ -1,3 +1,5 @@
+import time
+
 import pytest
 from django.core.management import call_command
 
@@ -38,3 +40,13 @@ def test_seed_employees_is_deterministic_for_same_seed():
     )
 
     assert first_run == second_run
+
+
+@pytest.mark.django_db
+def test_seed_employees_10k_within_performance_budget():
+    start = time.monotonic()
+    call_command("seed_employees", count=10000, seed=42, clear=True)
+    elapsed = time.monotonic() - start
+
+    assert Employee.objects.count() == 10000
+    assert elapsed < 5.0
