@@ -90,6 +90,8 @@ export $(grep -v '^#' .env | xargs)   # load env vars from .env
 
 python manage.py check        # project sanity check
 python manage.py migrate      # apply DB migrations
+python manage.py seed_employees --count=10000 --seed=42 --clear
+                              # bulk-load demo data (default count is 10000)
 python manage.py runserver    # local dev server
 
 pytest -v                     # run the test suite
