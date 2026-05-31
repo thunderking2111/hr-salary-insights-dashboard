@@ -1,9 +1,14 @@
+import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
+import App from "./App";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
   throw new Error("Root element not found");
 }
 
-// Scaffold entry only — first UI arrives with the first TDD green commit.
-createRoot(rootElement).render(null);
+createRoot(rootElement).render(
+  <StrictMode>
+    <App />
+  </StrictMode>,
+);
