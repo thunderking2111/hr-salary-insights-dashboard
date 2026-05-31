@@ -40,11 +40,12 @@ media/
 .env.*
 !.env.example
 
-# --- Node / frontend (added later) ---
+# --- Node / frontend ---
 node_modules/
 dist/
 build/
 .vite/
+coverage/
 *.log
 
 # --- Editor / OS ---

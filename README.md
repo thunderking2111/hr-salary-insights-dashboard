@@ -97,6 +97,25 @@ python manage.py runserver    # local dev server
 pytest -v                     # run the test suite
 ```
 
+### Frontend setup
+
+Requires Node.js 20+. The **chore scaffold** is tooling only (Vite, TypeScript,
+ESLint, Vitest wiring) — no app UI and no `*.test.tsx` files yet. Features follow
+strict TDD from the first red commit onward.
+
+```bash
+cd frontend
+npm ci                        # install dependencies (use npm install if no lockfile yet)
+npm run lint                  # ESLint
+npm run lint:fix              # ESLint with auto-fix
+npm run build                 # typecheck + production bundle
+npm run dev                   # Vite dev server (blank page until first feature)
+npm test                      # Vitest (after the first test file is added)
+```
+
+The Vite dev server proxies `/api` to `http://127.0.0.1:8000` when you run the
+Django backend separately.
+
 ### Quality gates
 
 Run from the repo root.
