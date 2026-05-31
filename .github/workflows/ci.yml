@@ -110,21 +110,8 @@ jobs:
         working-directory: frontend
         run: npm run lint
 
-      - name: Check for frontend test files
-        if: steps.frontend_project.outputs.present == 'true'
-        id: frontend_tests
-        run: |
-          if find frontend/src -name '*.test.ts' -o -name '*.test.tsx' | grep -q .; then
-            echo "present=true" >> "$GITHUB_OUTPUT"
-          else
-            echo "present=false" >> "$GITHUB_OUTPUT"
-            echo "Skipping npm test: no test files under frontend/src yet (strict TDD)."
-          fi
-
       - name: Frontend tests
-        if: |
-          steps.frontend_project.outputs.present == 'true' &&
-          steps.frontend_tests.outputs.present == 'true'
+        if: steps.frontend_project.outputs.present == 'true'
         working-directory: frontend
         run: npm test
 
