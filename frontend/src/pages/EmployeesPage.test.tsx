@@ -133,4 +133,37 @@ describe("EmployeesPage", () => {
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
     expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
   });
+
+  it("loads the previous page of employees when Previous page is clicked", async () => {
+    server.use(
+      http.get("/api/employees/", ({ request }) => {
+        const page = new URL(request.url).searchParams.get("page") ?? "1";
+        if (page === "2") {
+          return HttpResponse.json({
+            count: 2,
+            next: null,
+            previous: "/api/employees/?page=1",
+            results: [pageTwoEmployee],
+          });
+        }
+        return HttpResponse.json({
+          count: 2,
+          next: "/api/employees/?page=2",
+          previous: null,
+          results: [sampleEmployee],
+        });
+      }),
+    );
+
+    render(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /next page/i }));
+    await screen.findByText("Grace Hopper");
+
+    fireEvent.click(screen.getByRole("button", { name: /previous page/i }));
+
+    expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.queryByText("Grace Hopper")).not.toBeInTheDocument();
+  });
 });
