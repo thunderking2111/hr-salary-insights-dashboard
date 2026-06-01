@@ -26,6 +26,7 @@ export function EmployeesPage() {
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
   const [page, setPage] = useState(1);
   const [hasNextPage, setHasNextPage] = useState(false);
+  const [hasPreviousPage, setHasPreviousPage] = useState(false);
 
   const loadEmployees = useCallback((pageToLoad: number) => {
     void fetchEmployees(pageToLoad)
@@ -33,6 +34,7 @@ export function EmployeesPage() {
         setEmployees(data.results);
         setPage(pageToLoad);
         setHasNextPage(data.next !== null);
+        setHasPreviousPage(data.previous !== null);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load employees");
@@ -270,6 +272,11 @@ export function EmployeesPage() {
           ))}
         </tbody>
       </table>
+      {hasPreviousPage && (
+        <button type="button" onClick={() => loadEmployees(page - 1)}>
+          Previous page
+        </button>
+      )}
       {hasNextPage && (
         <button type="button" onClick={() => loadEmployees(page + 1)}>
           Next page
