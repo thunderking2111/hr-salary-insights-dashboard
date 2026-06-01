@@ -24,17 +24,23 @@ export function EmployeesPage() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
+  const [page, setPage] = useState(1);
+  const [hasNextPage, setHasNextPage] = useState(false);
 
-  const loadEmployees = useCallback(() => {
-    void fetchEmployees(1)
-      .then((data) => setEmployees(data.results))
+  const loadEmployees = useCallback((pageToLoad: number) => {
+    void fetchEmployees(pageToLoad)
+      .then((data) => {
+        setEmployees(data.results);
+        setPage(pageToLoad);
+        setHasNextPage(data.next !== null);
+      })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load employees");
       });
   }, []);
 
   useEffect(() => {
-    loadEmployees();
+    loadEmployees(1);
   }, [loadEmployees]);
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -43,7 +49,7 @@ export function EmployeesPage() {
     void createEmployee(payload)
       .then(() => {
         setAddDialogOpen(false);
-        loadEmployees();
+        loadEmployees(page);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to add employee");
@@ -58,7 +64,7 @@ export function EmployeesPage() {
     void deleteEmployee(employeeId)
       .then(() => {
         setDeletingEmployee(null);
-        loadEmployees();
+        loadEmployees(page);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to delete employee");
@@ -75,7 +81,7 @@ export function EmployeesPage() {
     void updateEmployee(employeeId, payload)
       .then(() => {
         setEditingEmployee(null);
-        loadEmployees();
+        loadEmployees(page);
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to update employee");
@@ -264,6 +270,11 @@ export function EmployeesPage() {
           ))}
         </tbody>
       </table>
+      {hasNextPage && (
+        <button type="button" onClick={() => loadEmployees(page + 1)}>
+          Next page
+        </button>
+      )}
     </div>
   );
 }
