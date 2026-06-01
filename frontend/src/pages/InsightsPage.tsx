@@ -38,7 +38,18 @@ export function InsightsPage() {
     <div>
       <h1>Salary Insights</h1>
       {error && <p role="alert">{error}</p>}
-      <table>
+      <figure aria-label="Average salary by country">
+        <ul role="list">
+          {insights.map((row) => (
+            <li
+              key={row.country}
+              role="listitem"
+              aria-label={`${row.country}, average salary ${row.avg_salary}`}
+            />
+          ))}
+        </ul>
+      </figure>
+      <table aria-label="Salary by country">
         <thead>
           <tr>
             <th scope="col">Country</th>
