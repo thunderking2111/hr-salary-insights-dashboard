@@ -8,4 +8,14 @@ describe("EmployeesPage", () => {
 
     expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
   });
+
+  it("renders employee profile columns from the API", async () => {
+    render(<EmployeesPage />);
+
+    expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
+    expect(screen.getByText("India")).toBeInTheDocument();
+    expect(screen.getByText("Engineering")).toBeInTheDocument();
+    expect(screen.getByText("1500000.00")).toBeInTheDocument();
+  });
 });
