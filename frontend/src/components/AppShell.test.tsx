@@ -9,4 +9,10 @@ describe("AppShell", () => {
 
     expect(screen.getByRole("link", { name: /employees/i })).toBeInTheDocument();
   });
+
+  it("renders Salary Insights navigation link", () => {
+    renderWithProviders(<AppShell />, { route: "/insights" });
+
+    expect(screen.getByRole("link", { name: /salary insights/i })).toBeInTheDocument();
+  });
 });
