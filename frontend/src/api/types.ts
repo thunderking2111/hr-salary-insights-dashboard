@@ -22,6 +22,13 @@ export interface PaginatedEmployees {
   results: Employee[];
 }
 
+export interface CountrySalaryInsight {
+  country: string;
+  min_salary: string;
+  max_salary: string;
+  avg_salary: string;
+}
+
 export interface CreateEmployeePayload {
   first_name: string;
   last_name: string;

@@ -1,6 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { CreateEmployeePayload, Employee } from "../api/types";
-import { paginatedEmployees, sampleEmployee } from "./fixtures";
+import { countrySalaryInsights, paginatedEmployees, sampleEmployee } from "./fixtures";
 
 let employees: Employee[] = [...paginatedEmployees.results];
 
@@ -9,6 +9,7 @@ export function resetEmployeeHandlers(): void {
 }
 
 export const handlers = [
+  http.get("/api/insights/salary-by-country/", () => HttpResponse.json(countrySalaryInsights)),
   http.get("/api/employees/", () =>
     HttpResponse.json({
       count: employees.length,

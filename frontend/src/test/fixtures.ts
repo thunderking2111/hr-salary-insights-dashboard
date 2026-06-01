@@ -1,4 +1,4 @@
-import type { Employee, PaginatedEmployees } from "../api/types";
+import type { CountrySalaryInsight, Employee, PaginatedEmployees } from "../api/types";
 
 export const sampleEmployee: Employee = {
   id: 1,
@@ -23,3 +23,12 @@ export const paginatedEmployees: PaginatedEmployees = {
   previous: null,
   results: [sampleEmployee],
 };
+
+export const countrySalaryInsights: CountrySalaryInsight[] = [
+  {
+    country: "India",
+    min_salary: "1000000.00",
+    max_salary: "3000000.00",
+    avg_salary: "2000000.00",
+  },
+];

@@ -1,4 +1,9 @@
-import type { CreateEmployeePayload, Employee, PaginatedEmployees } from "./types";
+import type {
+  CountrySalaryInsight,
+  CreateEmployeePayload,
+  Employee,
+  PaginatedEmployees,
+} from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
@@ -32,6 +37,10 @@ export async function fetchEmployees(page = 1): Promise<PaginatedEmployees> {
   return request<PaginatedEmployees>(`/api/employees/?page=${page}`);
 }
 
+export async function fetchSalaryByCountry(): Promise<CountrySalaryInsight[]> {
+  return request<CountrySalaryInsight[]>("/api/insights/salary-by-country/");
+}
+
 export async function createEmployee(payload: CreateEmployeePayload): Promise<Employee> {
   return request<Employee>("/api/employees/", {
     method: "POST",
@@ -53,4 +62,4 @@ export async function deleteEmployee(id: number): Promise<void> {
   return requestNoContent(`/api/employees/${id}/`, { method: "DELETE" });
 }
 
-export type { CreateEmployeePayload, Employee, PaginatedEmployees };
+export type { CountrySalaryInsight, CreateEmployeePayload, Employee, PaginatedEmployees };
