@@ -19,7 +19,7 @@ describe("InsightsPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /view job titles for india/i }));
 
     const dialog = await screen.findByRole("dialog", { name: /job titles in india/i });
-    expect(within(dialog).getByText("Software Engineer")).toBeInTheDocument();
+    expect(await within(dialog).findByText("Software Engineer")).toBeInTheDocument();
     expect(within(dialog).getByText("2000000.00")).toBeInTheDocument();
   });
 
