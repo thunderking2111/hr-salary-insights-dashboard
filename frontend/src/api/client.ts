@@ -40,4 +40,15 @@ export async function updateEmployee(
   });
 }
 
+export async function deleteEmployee(id: number): Promise<void> {
+  const response = await fetch(`${API_BASE}/api/employees/${id}/`, {
+    method: "DELETE",
+  });
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Request failed: ${response.status}`);
+  }
+}
+
 export type { CreateEmployeePayload, Employee, PaginatedEmployees };

@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { createEmployee, fetchEmployees, updateEmployee } from "../api/client";
+import { createEmployee, deleteEmployee, fetchEmployees, updateEmployee } from "../api/client";
 import type { CreateEmployeePayload, Employee } from "../api/types";
 
 function payloadFromForm(form: HTMLFormElement): CreateEmployeePayload {
@@ -23,6 +23,7 @@ export function EmployeesPage() {
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
 
   const loadEmployees = useCallback(() => {
     void fetchEmployees(1)
@@ -46,6 +47,21 @@ export function EmployeesPage() {
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to add employee");
+      });
+  };
+
+  const handleConfirmDelete = () => {
+    if (!deletingEmployee) {
+      return;
+    }
+    const employeeId = deletingEmployee.id;
+    void deleteEmployee(employeeId)
+      .then(() => {
+        setDeletingEmployee(null);
+        loadEmployees();
+      })
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to delete employee");
       });
   };
 
@@ -203,6 +219,20 @@ export function EmployeesPage() {
           </form>
         </div>
       )}
+      {deletingEmployee && (
+        <div role="dialog" aria-labelledby="delete-employee-title">
+          <h2 id="delete-employee-title">Delete Employee</h2>
+          <p>
+            Delete {deletingEmployee.full_name}? This cannot be undone.
+          </p>
+          <button type="button" onClick={() => setDeletingEmployee(null)}>
+            Cancel
+          </button>
+          <button type="button" onClick={handleConfirmDelete}>
+            Confirm delete
+          </button>
+        </div>
+      )}
       <table>
         <thead>
           <tr>
@@ -225,6 +255,9 @@ export function EmployeesPage() {
               <td>
                 <button type="button" onClick={() => setEditingEmployee(employee)}>
                   Edit {employee.full_name}
+                </button>{" "}
+                <button type="button" onClick={() => setDeletingEmployee(employee)}>
+                  Delete {employee.full_name}
                 </button>
               </td>
             </tr>

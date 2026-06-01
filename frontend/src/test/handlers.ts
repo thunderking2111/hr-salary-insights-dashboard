@@ -45,4 +45,9 @@ export const handlers = [
     employees[index] = updated;
     return HttpResponse.json(updated);
   }),
+  http.delete("/api/employees/:id/", ({ params }) => {
+    const id = Number(params.id);
+    employees = employees.filter((employee) => employee.id !== id);
+    return new HttpResponse(null, { status: 204 });
+  }),
 ];
