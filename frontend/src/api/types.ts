@@ -21,3 +21,16 @@ export interface PaginatedEmployees {
   previous: string | null;
   results: Employee[];
 }
+
+export interface CreateEmployeePayload {
+  first_name: string;
+  last_name: string;
+  email: string;
+  job_title: string;
+  department: string;
+  employment_type: string;
+  country: string;
+  salary: string;
+  currency: string;
+  date_of_joining: string;
+}

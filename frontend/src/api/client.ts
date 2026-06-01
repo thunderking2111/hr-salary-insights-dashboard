@@ -1,4 +1,4 @@
-import type { Employee, PaginatedEmployees } from "./types";
+import type { CreateEmployeePayload, Employee, PaginatedEmployees } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
 
@@ -23,4 +23,11 @@ export async function fetchEmployees(page = 1): Promise<PaginatedEmployees> {
   return request<PaginatedEmployees>(`/api/employees/?page=${page}`);
 }
 
-export type { Employee, PaginatedEmployees };
+export async function createEmployee(payload: CreateEmployeePayload): Promise<Employee> {
+  return request<Employee>("/api/employees/", {
+    method: "POST",
+    body: JSON.stringify(payload),
+  });
+}
+
+export type { CreateEmployeePayload, Employee, PaginatedEmployees };
