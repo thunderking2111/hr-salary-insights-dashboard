@@ -30,4 +30,14 @@ export async function createEmployee(payload: CreateEmployeePayload): Promise<Em
   });
 }
 
+export async function updateEmployee(
+  id: number,
+  payload: CreateEmployeePayload,
+): Promise<Employee> {
+  return request<Employee>(`/api/employees/${id}/`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
 export type { CreateEmployeePayload, Employee, PaginatedEmployees };

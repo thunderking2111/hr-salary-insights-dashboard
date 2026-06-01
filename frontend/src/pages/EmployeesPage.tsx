@@ -1,5 +1,5 @@
 import { type FormEvent, useCallback, useEffect, useState } from "react";
-import { createEmployee, fetchEmployees } from "../api/client";
+import { createEmployee, fetchEmployees, updateEmployee } from "../api/client";
 import type { CreateEmployeePayload, Employee } from "../api/types";
 
 function payloadFromForm(form: HTMLFormElement): CreateEmployeePayload {
@@ -22,6 +22,7 @@ export function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
 
   const loadEmployees = useCallback(() => {
     void fetchEmployees(1)
@@ -45,6 +46,23 @@ export function EmployeesPage() {
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to add employee");
+      });
+  };
+
+  const handleEditSubmit = (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!editingEmployee) {
+      return;
+    }
+    const employeeId = editingEmployee.id;
+    const payload = payloadFromForm(event.currentTarget);
+    void updateEmployee(employeeId, payload)
+      .then(() => {
+        setEditingEmployee(null);
+        loadEmployees();
+      })
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to update employee");
       });
   };
 
@@ -103,6 +121,88 @@ export function EmployeesPage() {
           </form>
         </div>
       )}
+      {editingEmployee && (
+        <div role="dialog" aria-labelledby="edit-employee-title">
+          <h2 id="edit-employee-title">Edit Employee</h2>
+          <form onSubmit={handleEditSubmit}>
+            <p>
+              <label htmlFor="edit-first-name">First name</label>
+              <input
+                id="edit-first-name"
+                name="first_name"
+                defaultValue={editingEmployee.first_name}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-last-name">Last name</label>
+              <input
+                id="edit-last-name"
+                name="last_name"
+                defaultValue={editingEmployee.last_name}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-email">Email</label>
+              <input
+                id="edit-email"
+                name="email"
+                type="email"
+                defaultValue={editingEmployee.email}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-job-title">Job title</label>
+              <input
+                id="edit-job-title"
+                name="job_title"
+                defaultValue={editingEmployee.job_title}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-department">Department</label>
+              <input
+                id="edit-department"
+                name="department"
+                defaultValue={editingEmployee.department}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-employment-type">Employment type</label>
+              <input
+                id="edit-employment-type"
+                name="employment_type"
+                defaultValue={editingEmployee.employment_type}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-country">Country</label>
+              <input id="edit-country" name="country" defaultValue={editingEmployee.country} />
+            </p>
+            <p>
+              <label htmlFor="edit-salary">Salary</label>
+              <input id="edit-salary" name="salary" defaultValue={editingEmployee.salary} />
+            </p>
+            <p>
+              <label htmlFor="edit-currency">Currency</label>
+              <input
+                id="edit-currency"
+                name="currency"
+                defaultValue={editingEmployee.currency}
+              />
+            </p>
+            <p>
+              <label htmlFor="edit-date-of-joining">Date of joining</label>
+              <input
+                id="edit-date-of-joining"
+                name="date_of_joining"
+                type="date"
+                defaultValue={editingEmployee.date_of_joining}
+              />
+            </p>
+            <button type="submit">Save</button>
+          </form>
+        </div>
+      )}
       <table>
         <thead>
           <tr>
@@ -111,6 +211,7 @@ export function EmployeesPage() {
             <th scope="col">Country</th>
             <th scope="col">Department</th>
             <th scope="col">Salary</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
@@ -121,6 +222,11 @@ export function EmployeesPage() {
               <td>{employee.country}</td>
               <td>{employee.department}</td>
               <td>{employee.salary}</td>
+              <td>
+                <button type="button" onClick={() => setEditingEmployee(employee)}>
+                  Edit {employee.full_name}
+                </button>
+              </td>
             </tr>
           ))}
         </tbody>

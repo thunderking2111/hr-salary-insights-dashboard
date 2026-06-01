@@ -29,4 +29,20 @@ export const handlers = [
     employees.push(employee);
     return HttpResponse.json(employee, { status: 201 });
   }),
+  http.patch("/api/employees/:id/", async ({ params, request }) => {
+    const id = Number(params.id);
+    const body = (await request.json()) as CreateEmployeePayload;
+    const index = employees.findIndex((employee) => employee.id === id);
+    if (index === -1) {
+      return new HttpResponse(null, { status: 404 });
+    }
+    const updated: Employee = {
+      ...employees[index]!,
+      ...body,
+      full_name: `${body.first_name} ${body.last_name}`,
+      updated_at: "2021-06-02T00:00:00Z",
+    };
+    employees[index] = updated;
+    return HttpResponse.json(updated);
+  }),
 ];
