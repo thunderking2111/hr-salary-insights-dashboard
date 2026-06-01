@@ -53,4 +53,19 @@ describe("EmployeesPage", () => {
 
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
   });
+
+  it("updates an employee and refreshes the list", async () => {
+    render(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /edit ada lovelace/i }));
+
+    fireEvent.change(screen.getByLabelText(/first name/i), { target: { value: "Augusta" } });
+    fireEvent.change(screen.getByLabelText(/last name/i), { target: { value: "Ada" } });
+
+    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+
+    expect(await screen.findByText("Augusta Ada")).toBeInTheDocument();
+    expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
+  });
 });
