@@ -19,6 +19,15 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return response.json() as Promise<T>;
 }
 
+async function requestNoContent(path: string, init?: RequestInit): Promise<void> {
+  const response = await fetch(`${API_BASE}${path}`, init);
+
+  if (!response.ok) {
+    const message = await response.text();
+    throw new Error(message || `Request failed: ${response.status}`);
+  }
+}
+
 export async function fetchEmployees(page = 1): Promise<PaginatedEmployees> {
   return request<PaginatedEmployees>(`/api/employees/?page=${page}`);
 }
@@ -41,14 +50,7 @@ export async function updateEmployee(
 }
 
 export async function deleteEmployee(id: number): Promise<void> {
-  const response = await fetch(`${API_BASE}/api/employees/${id}/`, {
-    method: "DELETE",
-  });
-
-  if (!response.ok) {
-    const message = await response.text();
-    throw new Error(message || `Request failed: ${response.status}`);
-  }
+  return requestNoContent(`/api/employees/${id}/`, { method: "DELETE" });
 }
 
 export type { CreateEmployeePayload, Employee, PaginatedEmployees };
