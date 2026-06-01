@@ -22,12 +22,20 @@ export function EmployeesPage() {
         <thead>
           <tr>
             <th scope="col">Name</th>
+            <th scope="col">Job Title</th>
+            <th scope="col">Country</th>
+            <th scope="col">Department</th>
+            <th scope="col">Salary</th>
           </tr>
         </thead>
         <tbody>
           {employees.map((employee) => (
             <tr key={employee.id}>
               <td>{employee.full_name}</td>
+              <td>{employee.job_title}</td>
+              <td>{employee.country}</td>
+              <td>{employee.department}</td>
+              <td>{employee.salary}</td>
             </tr>
           ))}
         </tbody>
