@@ -1,4 +1,9 @@
-import type { CountrySalaryInsight, Employee, PaginatedEmployees } from "../api/types";
+import type {
+  CountrySalaryInsight,
+  Employee,
+  JobTitleSalaryInsight,
+  PaginatedEmployees,
+} from "../api/types";
 
 export const sampleEmployee: Employee = {
   id: 1,
@@ -31,4 +36,8 @@ export const countrySalaryInsights: CountrySalaryInsight[] = [
     max_salary: "3000000.00",
     avg_salary: "2000000.00",
   },
+];
+
+export const indiaJobTitleSalaryInsights: JobTitleSalaryInsight[] = [
+  { job_title: "Software Engineer", avg_salary: "2000000.00" },
 ];

@@ -1,4 +1,4 @@
-import { fireEvent, render, screen } from "@testing-library/react";
+import { fireEvent, render, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { InsightsPage } from "./InsightsPage";
 
@@ -18,8 +18,8 @@ describe("InsightsPage", () => {
     await screen.findByText("India");
     fireEvent.click(screen.getByRole("button", { name: /view job titles for india/i }));
 
-    expect(await screen.findByRole("dialog", { name: /job titles in india/i })).toBeInTheDocument();
-    expect(screen.getByText("Software Engineer")).toBeInTheDocument();
-    expect(screen.getByText("2000000.00")).toBeInTheDocument();
+    const dialog = await screen.findByRole("dialog", { name: /job titles in india/i });
+    expect(within(dialog).getByText("Software Engineer")).toBeInTheDocument();
+    expect(within(dialog).getByText("2000000.00")).toBeInTheDocument();
   });
 });

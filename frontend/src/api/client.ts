@@ -2,6 +2,7 @@ import type {
   CountrySalaryInsight,
   CreateEmployeePayload,
   Employee,
+  JobTitleSalaryInsight,
   PaginatedEmployees,
 } from "./types";
 
@@ -41,6 +42,13 @@ export async function fetchSalaryByCountry(): Promise<CountrySalaryInsight[]> {
   return request<CountrySalaryInsight[]>("/api/insights/salary-by-country/");
 }
 
+export async function fetchSalaryByJobTitle(country: string): Promise<JobTitleSalaryInsight[]> {
+  const params = new URLSearchParams({ country });
+  return request<JobTitleSalaryInsight[]>(
+    `/api/insights/salary-by-job-title/?${params.toString()}`,
+  );
+}
+
 export async function createEmployee(payload: CreateEmployeePayload): Promise<Employee> {
   return request<Employee>("/api/employees/", {
     method: "POST",
@@ -62,4 +70,10 @@ export async function deleteEmployee(id: number): Promise<void> {
   return requestNoContent(`/api/employees/${id}/`, { method: "DELETE" });
 }
 
-export type { CountrySalaryInsight, CreateEmployeePayload, Employee, PaginatedEmployees };
+export type {
+  CountrySalaryInsight,
+  CreateEmployeePayload,
+  Employee,
+  JobTitleSalaryInsight,
+  PaginatedEmployees,
+};

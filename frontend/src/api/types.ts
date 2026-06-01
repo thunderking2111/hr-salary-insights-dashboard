@@ -29,6 +29,11 @@ export interface CountrySalaryInsight {
   avg_salary: string;
 }
 
+export interface JobTitleSalaryInsight {
+  job_title: string;
+  avg_salary: string;
+}
+
 export interface CreateEmployeePayload {
   first_name: string;
   last_name: string;
