@@ -22,4 +22,15 @@ describe("InsightsPage", () => {
     expect(within(dialog).getByText("Software Engineer")).toBeInTheDocument();
     expect(within(dialog).getByText("2000000.00")).toBeInTheDocument();
   });
+
+  it("renders average salary chart by country from the API", async () => {
+    render(<InsightsPage />);
+
+    expect(
+      await screen.findByRole("figure", { name: /average salary by country/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("listitem", { name: /india, average salary 2000000.00/i }),
+    ).toBeInTheDocument();
+  });
 });
