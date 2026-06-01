@@ -1,6 +1,27 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
+import type { Employee } from "../api/types";
+import { sampleEmployee } from "../test/fixtures";
+import { server } from "../test/server";
 import { EmployeesPage } from "./EmployeesPage";
+
+const pageTwoEmployee: Employee = {
+  id: 2,
+  first_name: "Grace",
+  last_name: "Hopper",
+  full_name: "Grace Hopper",
+  email: "grace.hopper@example.com",
+  job_title: "Software Engineer",
+  department: "Engineering",
+  employment_type: "full_time",
+  country: "India",
+  salary: "2000000.00",
+  currency: "INR",
+  date_of_joining: "2021-06-01",
+  created_at: "2021-06-01T00:00:00Z",
+  updated_at: "2021-06-01T00:00:00Z",
+};
 
 describe("EmployeesPage", () => {
   it("renders employee rows from the API", async () => {
@@ -79,5 +100,37 @@ describe("EmployeesPage", () => {
     await waitFor(() => {
       expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
     });
+  });
+
+  it("loads the next page of employees when Next page is clicked", async () => {
+    server.use(
+      http.get("/api/employees/", ({ request }) => {
+        const page = new URL(request.url).searchParams.get("page") ?? "1";
+        if (page === "2") {
+          return HttpResponse.json({
+            count: 2,
+            next: null,
+            previous: "/api/employees/?page=1",
+            results: [pageTwoEmployee],
+          });
+        }
+        return HttpResponse.json({
+          count: 2,
+          next: "/api/employees/?page=2",
+          previous: null,
+          results: [sampleEmployee],
+        });
+      }),
+    );
+
+    render(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    expect(screen.queryByText("Grace Hopper")).not.toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /next page/i }));
+
+    expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
+    expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
   });
 });
