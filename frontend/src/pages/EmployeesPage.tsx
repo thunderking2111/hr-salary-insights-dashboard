@@ -5,6 +5,7 @@ import type { Employee } from "../api/types";
 export function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
 
   useEffect(() => {
     void fetchEmployees(1)
@@ -17,7 +18,15 @@ export function EmployeesPage() {
   return (
     <div>
       <h1>Employees</h1>
+      <button type="button" onClick={() => setAddDialogOpen(true)}>
+        Add Employee
+      </button>
       {error && <p role="alert">{error}</p>}
+      {addDialogOpen && (
+        <div role="dialog" aria-labelledby="add-employee-title">
+          <h2 id="add-employee-title">Add Employee</h2>
+        </div>
+      )}
       <table>
         <thead>
           <tr>
