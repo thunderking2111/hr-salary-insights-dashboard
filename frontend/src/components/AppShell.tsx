@@ -5,6 +5,8 @@ export function AppShell() {
     <div>
       <nav aria-label="Main">
         <NavLink to="/employees">Employees</NavLink>
+        {" | "}
+        <NavLink to="/insights">Salary Insights</NavLink>
       </nav>
       <main>
         <Outlet />
