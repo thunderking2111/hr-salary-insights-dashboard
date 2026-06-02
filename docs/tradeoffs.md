@@ -60,3 +60,25 @@ more code buys a clean TDD history and an honest refactor commit at the end.
   pure service functions returning small dataclasses.
 - **Why safe**: Insight API tests were not edited; URLs and JSON shapes are
   unchanged and the full suite stayed green. Views only serialize and respond.
+
+## Deferred frontend UI
+
+> Items visible in the OrgPulse mockups ([design pack](frontend/visual-spec.md))
+> but **out of MVP scope**. Revisit after chart + country list + MUI shell slices
+> are green.
+
+| Area | Deferred item | Why defer |
+|------|----------------|-----------|
+| Shell | Sidebar groups, extra nav (Departments, Countries, Benchmarks, Reports, Settings) | No backend routes or product goal in README v1 |
+| Employees | Search, filters, column visibility, export | Adds UX and API query complexity without core CRUD value |
+| Employees | Right-hand profile / detail drawer | Not required for create-edit-delete |
+| Insights | KPI / stat cards (totals, deltas, badges) | Needs extra metrics endpoints or client aggregates |
+| Insights | Salary histogram, department charts, YoY table | Separate visualizations; not in README goals |
+| Insights | Benchmark / external comparison panels | No benchmark data model |
+| Insights | Global header search, notifications, avatar menu | Auth and notifications out of scope |
+| Insights | Server-side pagination on `salary-by-country` | API returns full list; client pagination sufficient at ~10k employees scale for country count |
+| Insights | Multi-country job table (compare several countries at once) | UX flows specify **single selected country** only |
+
+Approved MVP scope is documented in
+[`docs/frontend/visual-spec.md`](frontend/visual-spec.md),
+[`wireframes.md`](frontend/wireframes.md), and [`ux-flows.md`](frontend/ux-flows.md).
