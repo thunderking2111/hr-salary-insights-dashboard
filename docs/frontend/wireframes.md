@@ -157,9 +157,9 @@ Behavior:
 
 ## Job titles drill-down (dialog)
 
-Opened from three places: the **View all job titles** button under the chart
-page's salary-by-job table, a **row click** in the salary-by-country list
-view, and the **View job titles** action in the employees-adjacent flows.
+Opened from two places: the **View all job titles** button under the chart
+page's salary-by-job table, and a **row click** in the salary-by-country list
+view.
 `maxWidth="md"` `fullWidth`.
 
 ```
