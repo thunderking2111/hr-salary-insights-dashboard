@@ -1,4 +1,6 @@
 import CloseIcon from "@mui/icons-material/Close";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -12,6 +14,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
 import { payloadFromForm } from "../api/employeePayload";
@@ -233,12 +236,25 @@ export function EmployeesPage() {
                 <TableCell>{employee.department}</TableCell>
                 <TableCell>{employee.salary}</TableCell>
                 <TableCell>
-                  <button type="button" onClick={() => setEditingEmployee(employee)}>
-                    Edit {employee.full_name}
-                  </button>{" "}
-                  <button type="button" onClick={() => setDeletingEmployee(employee)}>
-                    Delete {employee.full_name}
-                  </button>
+                  <Tooltip title={`Edit ${employee.full_name}`}>
+                    <IconButton
+                      aria-label={`Edit ${employee.full_name}`}
+                      onClick={() => setEditingEmployee(employee)}
+                      size="small"
+                    >
+                      <EditIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title={`Delete ${employee.full_name}`}>
+                    <IconButton
+                      aria-label={`Delete ${employee.full_name}`}
+                      onClick={() => setDeletingEmployee(employee)}
+                      size="small"
+                      color="error"
+                    >
+                      <DeleteIcon fontSize="small" />
+                    </IconButton>
+                  </Tooltip>
                 </TableCell>
               </TableRow>
             ))}
