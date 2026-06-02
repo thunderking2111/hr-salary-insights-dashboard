@@ -1,7 +1,10 @@
+import CloseIcon from "@mui/icons-material/Close";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
+import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -57,6 +60,7 @@ export function EmployeesPage() {
     reloadCurrentPage,
   } = useEmployeeList();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
+  const closeAddDialog = () => setAddDialogOpen(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
 
@@ -122,15 +126,48 @@ export function EmployeesPage() {
       {error && <p role="alert">{error}</p>}
       <Dialog
         open={addDialogOpen}
-        onClose={() => setAddDialogOpen(false)}
+        onClose={closeAddDialog}
         maxWidth="sm"
         fullWidth
         aria-labelledby="add-employee-title"
       >
-        <DialogTitle id="add-employee-title">Add Employee</DialogTitle>
+        <DialogTitle
+          id="add-employee-title"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+            pr: 2,
+          }}
+        >
+          Add Employee
+          <IconButton
+            aria-label="Close"
+            onClick={closeAddDialog}
+            sx={{
+              flexShrink: 0,
+              color: "text.secondary",
+              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
-          <EmployeeForm idPrefix="add" onSubmit={handleAddSubmit} />
+          <EmployeeForm
+            idPrefix="add"
+            formId="add-employee-form"
+            hideSubmit
+            onSubmit={handleAddSubmit}
+          />
         </DialogContent>
+        <DialogActions>
+          <Button onClick={closeAddDialog}>Cancel</Button>
+          <Button type="submit" form="add-employee-form" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
       </Dialog>
       {editingEmployee && (
         <div role="dialog" aria-labelledby="edit-employee-title">

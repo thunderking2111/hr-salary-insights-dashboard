@@ -3,13 +3,21 @@ import type { CreateEmployeePayload } from "../api/types";
 
 interface EmployeeFormProps {
   idPrefix: string;
+  formId?: string;
   defaultValues?: CreateEmployeePayload;
+  hideSubmit?: boolean;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
 
-export function EmployeeForm({ idPrefix, defaultValues, onSubmit }: EmployeeFormProps) {
+export function EmployeeForm({
+  idPrefix,
+  formId,
+  defaultValues,
+  hideSubmit = false,
+  onSubmit,
+}: EmployeeFormProps) {
   return (
-    <form onSubmit={onSubmit}>
+    <form id={formId} onSubmit={onSubmit}>
       <p>
         <label htmlFor={`${idPrefix}-first-name`}>First name</label>
         <input
@@ -88,7 +96,7 @@ export function EmployeeForm({ idPrefix, defaultValues, onSubmit }: EmployeeForm
           defaultValue={defaultValues?.date_of_joining}
         />
       </p>
-      <button type="submit">Save</button>
+      {!hideSubmit && <button type="submit">Save</button>}
     </form>
   );
 }
