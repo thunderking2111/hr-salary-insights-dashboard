@@ -19,39 +19,13 @@ import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
+import { employeeToFormValues } from "../api/employeeFormValues";
 import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
 import type { Employee } from "../api/types";
 import { EmployeeForm } from "../components/EmployeeForm";
 import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
-
-function toFormValues(employee: Employee) {
-  return {
-    first_name: employee.first_name,
-    last_name: employee.last_name,
-    email: employee.email,
-    job_title: employee.job_title,
-    department: employee.department,
-    employment_type: employee.employment_type,
-    country: employee.country,
-    salary: employee.salary,
-    currency: employee.currency,
-    date_of_joining: employee.date_of_joining,
-  };
-}
-
-function runMutation(
-  mutation: Promise<unknown>,
-  onSuccess: () => void,
-  setError: (message: string) => void,
-  errorMessage: string,
-): void {
-  void mutation
-    .then(onSuccess)
-    .catch((err: unknown) => {
-      setError(err instanceof Error ? err.message : errorMessage);
-    });
-}
+import { runMutation } from "../utils/runMutation";
 
 export function EmployeesPage() {
   const {
@@ -229,7 +203,7 @@ export function EmployeesPage() {
               idPrefix="edit"
               formId="edit-employee-form"
               hideSubmit
-              defaultValues={toFormValues(editingEmployee)}
+              defaultValues={employeeToFormValues(editingEmployee)}
               onSubmit={handleEditSubmit}
             />
           )}
