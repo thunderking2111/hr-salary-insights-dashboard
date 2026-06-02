@@ -112,6 +112,16 @@ describe("EmployeesPage", () => {
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
   });
 
+  it("opens edit employee dialog as MUI Dialog", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /edit ada lovelace/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /edit employee/i });
+    expect(dialog.className).toMatch(/MuiDialog-paper/);
+  });
+
   it("updates an employee and refreshes the list", async () => {
     render(<EmployeesPage />);
 
