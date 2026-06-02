@@ -1,27 +1,18 @@
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
-import DialogContentText from "@mui/material/DialogContentText";
-import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
-import Table from "@mui/material/Table";
-import TableBody from "@mui/material/TableBody";
-import TableCell from "@mui/material/TableCell";
-import TableContainer from "@mui/material/TableContainer";
-import TableHead from "@mui/material/TableHead";
 import TablePagination from "@mui/material/TablePagination";
-import TableRow from "@mui/material/TableRow";
-import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
 import { employeeToFormValues } from "../api/employeeFormValues";
 import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
 import type { Employee } from "../api/types";
+import { DeleteEmployeeDialog } from "../components/DeleteEmployeeDialog";
 import { DialogTitleBar } from "../components/DialogTitleBar";
+import { EmployeesTable } from "../components/EmployeesTable";
 import { dialogContentSx, dialogPaperSlotProps } from "../components/dialogLayout";
 import { EmployeeForm } from "../components/EmployeeForm";
 import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
@@ -43,6 +34,12 @@ export function EmployeesPage() {
   const closeEditDialog = () => setEditingEmployee(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
   const closeDeleteDialog = () => setDeletingEmployee(null);
+
+  const openDeleteDialog = (employee: Employee) => {
+    setAddDialogOpen(false);
+    setEditingEmployee(null);
+    setDeletingEmployee(employee);
+  };
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -155,68 +152,11 @@ export function EmployeesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      <TableContainer>
-        <Table aria-label="Employees">
-          <TableHead>
-            <TableRow>
-              <TableCell component="th" scope="col">
-                Name
-              </TableCell>
-              <TableCell component="th" scope="col">
-                Job Title
-              </TableCell>
-              <TableCell component="th" scope="col">
-                Country
-              </TableCell>
-              <TableCell component="th" scope="col">
-                Department
-              </TableCell>
-              <TableCell component="th" scope="col">
-                Salary
-              </TableCell>
-              <TableCell component="th" scope="col">
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {employees.map((employee) => (
-              <TableRow key={employee.id}>
-                <TableCell>{employee.full_name}</TableCell>
-                <TableCell>{employee.job_title}</TableCell>
-                <TableCell>{employee.country}</TableCell>
-                <TableCell>{employee.department}</TableCell>
-                <TableCell>{employee.salary}</TableCell>
-                <TableCell>
-                  <Tooltip title={`Edit ${employee.full_name}`}>
-                    <IconButton
-                      aria-label={`Edit ${employee.full_name}`}
-                      onClick={() => setEditingEmployee(employee)}
-                      size="small"
-                    >
-                      <EditIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title={`Delete ${employee.full_name}`}>
-                    <IconButton
-                      aria-label={`Delete ${employee.full_name}`}
-                      onClick={() => {
-                        setAddDialogOpen(false);
-                        setEditingEmployee(null);
-                        setDeletingEmployee(employee);
-                      }}
-                      size="small"
-                      color="error"
-                    >
-                      <DeleteIcon fontSize="small" />
-                    </IconButton>
-                  </Tooltip>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </TableContainer>
+      <EmployeesTable
+        employees={employees}
+        onEdit={setEditingEmployee}
+        onDelete={openDeleteDialog}
+      />
       <TablePagination
         component="div"
         role="navigation"
@@ -227,36 +167,11 @@ export function EmployeesPage() {
         rowsPerPage={EMPLOYEE_LIST_PAGE_SIZE}
         rowsPerPageOptions={[]}
       />
-
-      <Dialog
-        open={deletingEmployee !== null}
+      <DeleteEmployeeDialog
+        employee={deletingEmployee}
         onClose={closeDeleteDialog}
-        maxWidth="sm"
-        fullWidth
-        scroll="paper"
-        aria-labelledby="delete-employee-title"
-        aria-describedby="delete-employee-description"
-        slotProps={dialogPaperSlotProps}
-      >
-        <DialogTitleBar
-          id="delete-employee-title"
-          title="Delete employee?"
-          onClose={closeDeleteDialog}
-        />
-        <DialogContent sx={dialogContentSx}>
-          {deletingEmployee && (
-            <DialogContentText id="delete-employee-description">
-              Remove {deletingEmployee.full_name} from the directory? This cannot be undone.
-            </DialogContentText>
-          )}
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={closeDeleteDialog}>Cancel</Button>
-          <Button color="error" variant="contained" onClick={handleConfirmDelete}>
-            Delete
-          </Button>
-        </DialogActions>
-      </Dialog>
+        onConfirm={handleConfirmDelete}
+      />
     </div>
   );
 }
