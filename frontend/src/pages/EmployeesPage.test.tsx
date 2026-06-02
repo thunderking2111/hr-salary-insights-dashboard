@@ -47,6 +47,25 @@ describe("EmployeesPage", () => {
     expect(screen.getByRole("dialog", { name: /add employee/i })).toBeInTheDocument();
   });
 
+  it("closes add employee dialog via Cancel or Close", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
+    expect(screen.getByRole("dialog", { name: /add employee/i })).toBeInTheDocument();
+
+    fireEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog", { name: /add employee/i })).not.toBeInTheDocument();
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^close$/i }));
+    await waitFor(() => {
+      expect(screen.queryByRole("dialog", { name: /add employee/i })).not.toBeInTheDocument();
+    });
+  });
+
   it("opens add employee dialog as MUI Dialog", async () => {
     renderWithProviders(<EmployeesPage />);
 
