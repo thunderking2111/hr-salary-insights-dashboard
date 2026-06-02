@@ -1,4 +1,7 @@
 import Button from "@mui/material/Button";
+import Dialog from "@mui/material/Dialog";
+import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
@@ -117,12 +120,18 @@ export function EmployeesPage() {
         </Button>
       </Stack>
       {error && <p role="alert">{error}</p>}
-      {addDialogOpen && (
-        <div role="dialog" aria-labelledby="add-employee-title">
-          <h2 id="add-employee-title">Add Employee</h2>
+      <Dialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="add-employee-title"
+      >
+        <DialogTitle id="add-employee-title">Add Employee</DialogTitle>
+        <DialogContent>
           <EmployeeForm idPrefix="add" onSubmit={handleAddSubmit} />
-        </div>
-      )}
+        </DialogContent>
+      </Dialog>
       {editingEmployee && (
         <div role="dialog" aria-labelledby="edit-employee-title">
           <h2 id="edit-employee-title">Edit Employee</h2>
