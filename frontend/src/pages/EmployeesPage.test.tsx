@@ -29,6 +29,16 @@ describe("EmployeesPage", () => {
     expect(table.className).toMatch(/MuiTable-root/);
   });
 
+  it("renders edit and delete row actions as MUI icon buttons", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    const editButton = screen.getByRole("button", { name: /edit ada lovelace/i });
+    const deleteButton = screen.getByRole("button", { name: /delete ada lovelace/i });
+    expect(editButton.className).toMatch(/MuiIconButton-root/);
+    expect(deleteButton.className).toMatch(/MuiIconButton-root/);
+  });
+
   it("renders Add Employee as a contained primary MUI button", async () => {
     renderWithProviders(<EmployeesPage />);
 
