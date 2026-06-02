@@ -160,6 +160,16 @@ describe("EmployeesPage", () => {
     });
   });
 
+  it("renders employee list pagination as MUI TablePagination", async () => {
+    stubTwoPageEmployeesList();
+
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    const pagination = screen.getByRole("navigation", { name: /pagination/i });
+    expect(pagination.className).toMatch(/MuiTablePagination-root/);
+  });
+
   it("loads the next page of employees when Next page is clicked", async () => {
     stubTwoPageEmployeesList();
 
