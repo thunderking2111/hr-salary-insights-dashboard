@@ -20,6 +20,20 @@ export const pageTwoEmployee: Employee = {
   updated_at: "2021-06-01T00:00:00Z",
 };
 
+const PAGINATED_TOTAL = 51;
+
+function buildFullFirstPage(lead: Employee): Employee[] {
+  const fillers = Array.from({ length: 49 }, (_, index) => ({
+    ...lead,
+    id: 100 + index,
+    first_name: "Filler",
+    last_name: `${index + 1}`,
+    full_name: `Filler ${index + 1}`,
+    email: `filler${index + 1}@example.com`,
+  }));
+  return [lead, ...fillers];
+}
+
 export function stubTwoPageEmployeesList(
   pageOne = sampleEmployee,
   pageTwo = pageTwoEmployee,
@@ -29,17 +43,17 @@ export function stubTwoPageEmployeesList(
       const page = new URL(request.url).searchParams.get("page") ?? "1";
       if (page === "2") {
         return HttpResponse.json({
-          count: 2,
+          count: PAGINATED_TOTAL,
           next: null,
           previous: "/api/employees/?page=1",
           results: [pageTwo],
         });
       }
       return HttpResponse.json({
-        count: 2,
+        count: PAGINATED_TOTAL,
         next: "/api/employees/?page=2",
         previous: null,
-        results: [pageOne],
+        results: buildFullFirstPage(pageOne),
       });
     }),
   );

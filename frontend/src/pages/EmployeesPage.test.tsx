@@ -178,7 +178,7 @@ describe("EmployeesPage", () => {
     await screen.findByText("Ada Lovelace");
     expect(screen.queryByText("Grace Hopper")).not.toBeInTheDocument();
 
-    fireEvent.click(screen.getByRole("button", { name: /next page/i }));
+    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
 
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
     expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
@@ -190,10 +190,10 @@ describe("EmployeesPage", () => {
     render(<EmployeesPage />);
 
     await screen.findByText("Ada Lovelace");
-    fireEvent.click(screen.getByRole("button", { name: /next page/i }));
+    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
     await screen.findByText("Grace Hopper");
 
-    fireEvent.click(screen.getByRole("button", { name: /previous page/i }));
+    fireEvent.click(screen.getByRole("button", { name: /go to previous page/i }));
 
     expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
     expect(screen.queryByText("Grace Hopper")).not.toBeInTheDocument();

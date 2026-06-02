@@ -14,6 +14,7 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
+import TablePagination from "@mui/material/TablePagination";
 import TableRow from "@mui/material/TableRow";
 import Tooltip from "@mui/material/Tooltip";
 import Typography from "@mui/material/Typography";
@@ -22,7 +23,7 @@ import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
 import type { Employee } from "../api/types";
 import { EmployeeForm } from "../components/EmployeeForm";
-import { useEmployeeList } from "../hooks/useEmployeeList";
+import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
 
 function toFormValues(employee: Employee) {
   return {
@@ -58,8 +59,7 @@ export function EmployeesPage() {
     error,
     setError,
     page,
-    hasNextPage,
-    hasPreviousPage,
+    totalCount,
     loadEmployees,
     reloadCurrentPage,
   } = useEmployeeList();
@@ -303,16 +303,16 @@ export function EmployeesPage() {
           </TableBody>
         </Table>
       </TableContainer>
-      {hasPreviousPage && (
-        <button type="button" onClick={() => loadEmployees(page - 1)}>
-          Previous page
-        </button>
-      )}
-      {hasNextPage && (
-        <button type="button" onClick={() => loadEmployees(page + 1)}>
-          Next page
-        </button>
-      )}
+      <TablePagination
+        component="div"
+        role="navigation"
+        aria-label="Employees pagination"
+        count={totalCount}
+        page={Math.max(0, page - 1)}
+        onPageChange={(_event, newPage) => loadEmployees(newPage + 1)}
+        rowsPerPage={EMPLOYEE_LIST_PAGE_SIZE}
+        rowsPerPageOptions={[]}
+      />
 
       <Dialog
         open={deletingEmployee !== null}
