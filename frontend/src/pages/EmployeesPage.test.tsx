@@ -21,6 +21,14 @@ describe("EmployeesPage", () => {
     expect(screen.getByText("1500000.00")).toBeInTheDocument();
   });
 
+  it("renders employee directory in a MUI table with accessible name", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    const table = screen.getByRole("table", { name: /employees/i });
+    expect(table.className).toMatch(/MuiTable-root/);
+  });
+
   it("renders Add Employee as a contained primary MUI button", async () => {
     renderWithProviders(<EmployeesPage />);
 
