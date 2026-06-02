@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { fireEvent, render, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EmployeesPage } from "./EmployeesPage";
 import { renderWithProviders } from "../test/render";
@@ -152,7 +152,8 @@ describe("EmployeesPage", () => {
 
     await screen.findByText("Ada Lovelace");
     fireEvent.click(screen.getByRole("button", { name: /delete ada lovelace/i }));
-    fireEvent.click(screen.getByRole("button", { name: /confirm delete/i }));
+    const dialog = screen.getByRole("dialog", { name: /delete employee/i });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^delete$/i }));
 
     await waitFor(() => {
       expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();

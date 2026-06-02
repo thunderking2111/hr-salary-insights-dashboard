@@ -5,6 +5,7 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
@@ -67,6 +68,7 @@ export function EmployeesPage() {
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const closeEditDialog = () => setEditingEmployee(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
+  const closeDeleteDialog = () => setDeletingEmployee(null);
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -239,18 +241,6 @@ export function EmployeesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      {deletingEmployee && (
-        <div role="dialog" aria-labelledby="delete-employee-title">
-          <h2 id="delete-employee-title">Delete Employee</h2>
-          <p>Delete {deletingEmployee.full_name}? This cannot be undone.</p>
-          <button type="button" onClick={() => setDeletingEmployee(null)}>
-            Cancel
-          </button>
-          <button type="button" onClick={handleConfirmDelete}>
-            Confirm delete
-          </button>
-        </div>
-      )}
       <TableContainer>
         <Table aria-label="Employees">
           <TableHead>
@@ -296,7 +286,11 @@ export function EmployeesPage() {
                   <Tooltip title={`Delete ${employee.full_name}`}>
                     <IconButton
                       aria-label={`Delete ${employee.full_name}`}
-                      onClick={() => setDeletingEmployee(employee)}
+                      onClick={() => {
+                        setAddDialogOpen(false);
+                        setEditingEmployee(null);
+                        setDeletingEmployee(employee);
+                      }}
                       size="small"
                       color="error"
                     >
@@ -319,6 +313,62 @@ export function EmployeesPage() {
           Next page
         </button>
       )}
+
+      <Dialog
+        open={deletingEmployee !== null}
+        onClose={closeDeleteDialog}
+        maxWidth="sm"
+        fullWidth
+        scroll="paper"
+        aria-labelledby="delete-employee-title"
+        aria-describedby="delete-employee-description"
+        slotProps={{
+          paper: {
+            sx: { overflowX: "hidden" },
+          },
+        }}
+      >
+        <DialogTitle
+          id="delete-employee-title"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+            boxSizing: "border-box",
+            width: "100%",
+            maxWidth: "100%",
+            overflow: "hidden",
+            pr: 2,
+          }}
+        >
+          Delete employee?
+          <IconButton
+            aria-label="Close"
+            onClick={closeDeleteDialog}
+            sx={{
+              flexShrink: 0,
+              color: "text.secondary",
+              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
+          {deletingEmployee && (
+            <DialogContentText id="delete-employee-description">
+              Remove {deletingEmployee.full_name} from the directory? This cannot be undone.
+            </DialogContentText>
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeDeleteDialog}>Cancel</Button>
+          <Button color="error" variant="contained" onClick={handleConfirmDelete}>
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </div>
   );
 }
