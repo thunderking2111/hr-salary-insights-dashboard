@@ -1,5 +1,11 @@
 import Button from "@mui/material/Button";
 import Stack from "@mui/material/Stack";
+import Table from "@mui/material/Table";
+import TableBody from "@mui/material/TableBody";
+import TableCell from "@mui/material/TableCell";
+import TableContainer from "@mui/material/TableContainer";
+import TableHead from "@mui/material/TableHead";
+import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
 import { payloadFromForm } from "../api/employeePayload";
@@ -139,37 +145,51 @@ export function EmployeesPage() {
           </button>
         </div>
       )}
-      <table>
-        <thead>
-          <tr>
-            <th scope="col">Name</th>
-            <th scope="col">Job Title</th>
-            <th scope="col">Country</th>
-            <th scope="col">Department</th>
-            <th scope="col">Salary</th>
-            <th scope="col">Actions</th>
-          </tr>
-        </thead>
-        <tbody>
-          {employees.map((employee) => (
-            <tr key={employee.id}>
-              <td>{employee.full_name}</td>
-              <td>{employee.job_title}</td>
-              <td>{employee.country}</td>
-              <td>{employee.department}</td>
-              <td>{employee.salary}</td>
-              <td>
-                <button type="button" onClick={() => setEditingEmployee(employee)}>
-                  Edit {employee.full_name}
-                </button>{" "}
-                <button type="button" onClick={() => setDeletingEmployee(employee)}>
-                  Delete {employee.full_name}
-                </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <TableContainer>
+        <Table aria-label="Employees">
+          <TableHead>
+            <TableRow>
+              <TableCell component="th" scope="col">
+                Name
+              </TableCell>
+              <TableCell component="th" scope="col">
+                Job Title
+              </TableCell>
+              <TableCell component="th" scope="col">
+                Country
+              </TableCell>
+              <TableCell component="th" scope="col">
+                Department
+              </TableCell>
+              <TableCell component="th" scope="col">
+                Salary
+              </TableCell>
+              <TableCell component="th" scope="col">
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {employees.map((employee) => (
+              <TableRow key={employee.id}>
+                <TableCell>{employee.full_name}</TableCell>
+                <TableCell>{employee.job_title}</TableCell>
+                <TableCell>{employee.country}</TableCell>
+                <TableCell>{employee.department}</TableCell>
+                <TableCell>{employee.salary}</TableCell>
+                <TableCell>
+                  <button type="button" onClick={() => setEditingEmployee(employee)}>
+                    Edit {employee.full_name}
+                  </button>{" "}
+                  <button type="button" onClick={() => setDeletingEmployee(employee)}>
+                    Delete {employee.full_name}
+                  </button>
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+        </Table>
+      </TableContainer>
       {hasPreviousPage && (
         <button type="button" onClick={() => loadEmployees(page - 1)}>
           Previous page
