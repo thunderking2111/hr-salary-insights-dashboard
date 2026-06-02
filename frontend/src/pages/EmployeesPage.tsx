@@ -1,3 +1,6 @@
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
 import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
@@ -96,10 +99,17 @@ export function EmployeesPage() {
 
   return (
     <div>
-      <h1>Employees</h1>
-      <button type="button" onClick={() => setAddDialogOpen(true)}>
-        Add Employee
-      </button>
+      <Stack
+        direction="row"
+        sx={{ mb: 3, alignItems: "center", justifyContent: "space-between" }}
+      >
+        <Typography component="h1" variant="h4">
+          Employees
+        </Typography>
+        <Button variant="contained" color="primary" onClick={() => setAddDialogOpen(true)}>
+          Add Employee
+        </Button>
+      </Stack>
       {error && <p role="alert">{error}</p>}
       {addDialogOpen && (
         <div role="dialog" aria-labelledby="add-employee-title">
