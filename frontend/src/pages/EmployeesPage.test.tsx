@@ -137,6 +137,16 @@ describe("EmployeesPage", () => {
     expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
   });
 
+  it("opens delete employee confirm as MUI Dialog", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /delete ada lovelace/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /delete employee/i });
+    expect(dialog.className).toMatch(/MuiDialog-paper/);
+  });
+
   it("deletes an employee and refreshes the list", async () => {
     render(<EmployeesPage />);
 
