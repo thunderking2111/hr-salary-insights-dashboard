@@ -1,4 +1,3 @@
-import CloseIcon from "@mui/icons-material/Close";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import Button from "@mui/material/Button";
@@ -6,7 +5,6 @@ import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
-import DialogTitle from "@mui/material/DialogTitle";
 import IconButton from "@mui/material/IconButton";
 import Stack from "@mui/material/Stack";
 import Table from "@mui/material/Table";
@@ -23,6 +21,8 @@ import { employeeToFormValues } from "../api/employeeFormValues";
 import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
 import type { Employee } from "../api/types";
+import { DialogTitleBar } from "../components/DialogTitleBar";
+import { dialogContentSx, dialogPaperSlotProps } from "../components/dialogLayout";
 import { EmployeeForm } from "../components/EmployeeForm";
 import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
 import { runMutation } from "../utils/runMutation";
@@ -110,40 +110,10 @@ export function EmployeesPage() {
         maxWidth="sm"
         fullWidth
         aria-labelledby="add-employee-title"
-        slotProps={{
-          paper: {
-            sx: { overflowX: "hidden" },
-          },
-        }}
+        slotProps={dialogPaperSlotProps}
       >
-        <DialogTitle
-          id="add-employee-title"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 1,
-            boxSizing: "border-box",
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden",
-            pr: 2,
-          }}
-        >
-          Add Employee
-          <IconButton
-            aria-label="Close"
-            onClick={closeAddDialog}
-            sx={{
-              flexShrink: 0,
-              color: "text.secondary",
-              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
-            }}
-          >
-            <CloseIcon sx={{ fontSize: 28 }} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
+        <DialogTitleBar id="add-employee-title" title="Add Employee" onClose={closeAddDialog} />
+        <DialogContent sx={dialogContentSx}>
           <EmployeeForm
             idPrefix="add"
             formId="add-employee-form"
@@ -164,40 +134,10 @@ export function EmployeesPage() {
         maxWidth="sm"
         fullWidth
         aria-labelledby="edit-employee-title"
-        slotProps={{
-          paper: {
-            sx: { overflowX: "hidden" },
-          },
-        }}
+        slotProps={dialogPaperSlotProps}
       >
-        <DialogTitle
-          id="edit-employee-title"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 1,
-            boxSizing: "border-box",
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden",
-            pr: 2,
-          }}
-        >
-          Edit Employee
-          <IconButton
-            aria-label="Close"
-            onClick={closeEditDialog}
-            sx={{
-              flexShrink: 0,
-              color: "text.secondary",
-              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
-            }}
-          >
-            <CloseIcon sx={{ fontSize: 28 }} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
+        <DialogTitleBar id="edit-employee-title" title="Edit Employee" onClose={closeEditDialog} />
+        <DialogContent sx={dialogContentSx}>
           {editingEmployee && (
             <EmployeeForm
               idPrefix="edit"
@@ -296,40 +236,14 @@ export function EmployeesPage() {
         scroll="paper"
         aria-labelledby="delete-employee-title"
         aria-describedby="delete-employee-description"
-        slotProps={{
-          paper: {
-            sx: { overflowX: "hidden" },
-          },
-        }}
+        slotProps={dialogPaperSlotProps}
       >
-        <DialogTitle
+        <DialogTitleBar
           id="delete-employee-title"
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            gap: 1,
-            boxSizing: "border-box",
-            width: "100%",
-            maxWidth: "100%",
-            overflow: "hidden",
-            pr: 2,
-          }}
-        >
-          Delete employee?
-          <IconButton
-            aria-label="Close"
-            onClick={closeDeleteDialog}
-            sx={{
-              flexShrink: 0,
-              color: "text.secondary",
-              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
-            }}
-          >
-            <CloseIcon sx={{ fontSize: 28 }} />
-          </IconButton>
-        </DialogTitle>
-        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
+          title="Delete employee?"
+          onClose={closeDeleteDialog}
+        />
+        <DialogContent sx={dialogContentSx}>
           {deletingEmployee && (
             <DialogContentText id="delete-employee-description">
               Remove {deletingEmployee.full_name} from the directory? This cannot be undone.
