@@ -65,6 +65,7 @@ export function EmployeesPage() {
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const closeAddDialog = () => setAddDialogOpen(false);
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
+  const closeEditDialog = () => setEditingEmployee(null);
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -181,16 +182,63 @@ export function EmployeesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      {editingEmployee && (
-        <div role="dialog" aria-labelledby="edit-employee-title">
-          <h2 id="edit-employee-title">Edit Employee</h2>
-          <EmployeeForm
-            idPrefix="edit"
-            defaultValues={toFormValues(editingEmployee)}
-            onSubmit={handleEditSubmit}
-          />
-        </div>
-      )}
+      <Dialog
+        open={editingEmployee !== null}
+        onClose={closeEditDialog}
+        maxWidth="sm"
+        fullWidth
+        aria-labelledby="edit-employee-title"
+        slotProps={{
+          paper: {
+            sx: { overflowX: "hidden" },
+          },
+        }}
+      >
+        <DialogTitle
+          id="edit-employee-title"
+          sx={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 1,
+            boxSizing: "border-box",
+            width: "100%",
+            maxWidth: "100%",
+            overflow: "hidden",
+            pr: 2,
+          }}
+        >
+          Edit Employee
+          <IconButton
+            aria-label="Close"
+            onClick={closeEditDialog}
+            sx={{
+              flexShrink: 0,
+              color: "text.secondary",
+              "&:hover": { color: "text.primary", bgcolor: "action.hover" },
+            }}
+          >
+            <CloseIcon sx={{ fontSize: 28 }} />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
+          {editingEmployee && (
+            <EmployeeForm
+              idPrefix="edit"
+              formId="edit-employee-form"
+              hideSubmit
+              defaultValues={toFormValues(editingEmployee)}
+              onSubmit={handleEditSubmit}
+            />
+          )}
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeEditDialog}>Cancel</Button>
+          <Button type="submit" form="edit-employee-form" variant="contained">
+            Save
+          </Button>
+        </DialogActions>
+      </Dialog>
       {deletingEmployee && (
         <div role="dialog" aria-labelledby="delete-employee-title">
           <h2 id="delete-employee-title">Delete Employee</h2>
