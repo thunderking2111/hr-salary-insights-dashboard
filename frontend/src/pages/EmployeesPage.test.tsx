@@ -1,6 +1,7 @@
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { EmployeesPage } from "./EmployeesPage";
+import { renderWithProviders } from "../test/render";
 import { stubTwoPageEmployeesList } from "../test/twoPageEmployees";
 
 describe("EmployeesPage", () => {
@@ -18,6 +19,15 @@ describe("EmployeesPage", () => {
     expect(screen.getByText("India")).toBeInTheDocument();
     expect(screen.getByText("Engineering")).toBeInTheDocument();
     expect(screen.getByText("1500000.00")).toBeInTheDocument();
+  });
+
+  it("renders Add Employee as a contained primary MUI button", async () => {
+    renderWithProviders(<EmployeesPage />);
+
+    await screen.findByText("Ada Lovelace");
+    const addButton = screen.getByRole("button", { name: /add employee/i });
+    expect(addButton.className).toMatch(/MuiButton-contained/);
+    expect(addButton.className).toMatch(/MuiButton-colorPrimary/);
   });
 
   it("opens add employee dialog when Add Employee is clicked", async () => {
