@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import type { FormEvent } from "react";
 import type { CreateEmployeePayload } from "../api/types";
 
@@ -17,7 +18,24 @@ export function EmployeeForm({
   onSubmit,
 }: EmployeeFormProps) {
   return (
-    <form id={formId} onSubmit={onSubmit}>
+    <Box
+      component="form"
+      id={formId}
+      onSubmit={onSubmit}
+      sx={{
+        width: "100%",
+        maxWidth: "100%",
+        "& p": { m: 0, mb: 2 },
+        "& label": { display: "block", mb: 0.5 },
+        "& input": {
+          display: "block",
+          width: "100%",
+          maxWidth: "100%",
+          minWidth: 0,
+          boxSizing: "border-box",
+        },
+      }}
+    >
       <p>
         <label htmlFor={`${idPrefix}-first-name`}>First name</label>
         <input
@@ -97,6 +115,6 @@ export function EmployeeForm({
         />
       </p>
       {!hideSubmit && <button type="submit">Save</button>}
-    </form>
+    </Box>
   );
 }

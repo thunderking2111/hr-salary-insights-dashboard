@@ -130,6 +130,11 @@ export function EmployeesPage() {
         maxWidth="sm"
         fullWidth
         aria-labelledby="add-employee-title"
+        slotProps={{
+          paper: {
+            sx: { overflowX: "hidden" },
+          },
+        }}
       >
         <DialogTitle
           id="add-employee-title"
@@ -138,6 +143,10 @@ export function EmployeesPage() {
             alignItems: "center",
             justifyContent: "space-between",
             gap: 1,
+            boxSizing: "border-box",
+            width: "100%",
+            maxWidth: "100%",
+            overflow: "hidden",
             pr: 2,
           }}
         >
@@ -154,7 +163,7 @@ export function EmployeesPage() {
             <CloseIcon sx={{ fontSize: 28 }} />
           </IconButton>
         </DialogTitle>
-        <DialogContent>
+        <DialogContent sx={{ overflowX: "hidden", boxSizing: "border-box" }}>
           <EmployeeForm
             idPrefix="add"
             formId="add-employee-form"

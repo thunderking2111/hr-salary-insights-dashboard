@@ -9,7 +9,7 @@ const drawerWidth = 240;
 
 export function AppShell() {
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", overflowX: "hidden" }}>
       <Box
         component="aside"
         aria-label="Primary navigation"
@@ -37,7 +37,7 @@ export function AppShell() {
           </List>
         </Drawer>
       </Box>
-      <Box component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <Box component="main" sx={{ flexGrow: 1, minWidth: 0, p: 3, overflowX: "auto" }}>
         <Outlet />
       </Box>
     </Box>
