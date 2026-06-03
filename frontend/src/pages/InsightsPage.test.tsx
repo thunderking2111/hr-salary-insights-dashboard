@@ -1,5 +1,10 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import {
+  excludedNinthChartCountry,
+  stubNineCountrySalaryInsights,
+  topEightChartCountries,
+} from "../test/nineCountryInsights";
 import { renderInsightsPage } from "../test/render";
 
 describe("InsightsPage", () => {
@@ -23,14 +28,16 @@ describe("InsightsPage", () => {
     expect(within(dialog).getByText("2000000.00")).toBeInTheDocument();
   });
 
-  it("renders average salary chart by country from the API", async () => {
+  it("renders top-8 grouped bar chart for average salary by country", async () => {
+    stubNineCountrySalaryInsights();
     renderInsightsPage();
 
-    expect(
-      await screen.findByRole("figure", { name: /average salary by country/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("listitem", { name: /india, average salary 2000000.00/i }),
-    ).toBeInTheDocument();
+    const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+    expect(figure.querySelector(".recharts-wrapper")).toBeInTheDocument();
+
+    for (const country of topEightChartCountries) {
+      expect(within(figure).getByText(country)).toBeInTheDocument();
+    }
+    expect(within(figure).queryByText(excludedNinthChartCountry)).not.toBeInTheDocument();
   });
 });
