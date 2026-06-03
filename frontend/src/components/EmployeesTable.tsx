@@ -19,7 +19,19 @@ interface EmployeesTableProps {
 export function EmployeesTable({ employees, onEdit, onDelete }: EmployeesTableProps) {
   return (
     <TableContainer>
-      <Table aria-label="Employees">
+      <Table
+        aria-label="Employees"
+        size="small"
+        sx={{
+          "& .MuiTableHead-root .MuiTableCell-root": {
+            backgroundColor: "background.default",
+            borderBottom: "2px solid",
+            borderColor: "text.secondary",
+            color: "text.primary",
+            fontWeight: 600,
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             <TableCell component="th" scope="col">
