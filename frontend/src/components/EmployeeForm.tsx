@@ -1,6 +1,7 @@
 import Stack from "@mui/material/Stack";
 import TextField from "@mui/material/TextField";
 import type { FormEvent } from "react";
+import { ADD_EMPLOYEE_FORM_DEFAULTS } from "../api/employeeDefaults";
 import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
 import type { CreateEmployeePayload } from "../api/types";
 
@@ -17,19 +18,20 @@ interface FieldConfig {
   name: keyof CreateEmployeePayload;
   label: string;
   type?: string;
+  required?: boolean;
 }
 
 const EMPLOYEE_FIELDS: FieldConfig[] = [
-  { name: "first_name", label: "First name" },
-  { name: "last_name", label: "Last name" },
-  { name: "email", label: "Email", type: "email" },
-  { name: "job_title", label: "Job title" },
-  { name: "department", label: "Department" },
-  { name: "employment_type", label: "Employment type" },
-  { name: "salary", label: "Salary" },
+  { name: "first_name", label: "First name", required: true },
+  { name: "last_name", label: "Last name", required: true },
+  { name: "email", label: "Email", type: "email", required: true },
+  { name: "job_title", label: "Job title", required: true },
+  { name: "department", label: "Department", required: true },
+  { name: "employment_type", label: "Employment type", required: true },
+  { name: "salary", label: "Salary", required: true },
+  { name: "date_of_joining", label: "Date of joining", type: "date", required: true },
   { name: "country", label: "Country" },
   { name: "currency", label: "Currency" },
-  { name: "date_of_joining", label: "Date of joining", type: "date" },
 ];
 
 export function EmployeeForm({
@@ -40,6 +42,8 @@ export function EmployeeForm({
   fieldErrors = {},
   onSubmit,
 }: EmployeeFormProps) {
+  const resolvedDefaults = { ...ADD_EMPLOYEE_FORM_DEFAULTS, ...defaultValues };
+
   return (
     <Stack
       component="form"
@@ -49,7 +53,7 @@ export function EmployeeForm({
       sx={{ width: "100%", pt: 0.5 }}
       noValidate
     >
-      {EMPLOYEE_FIELDS.map(({ name, label, type }) => {
+      {EMPLOYEE_FIELDS.map(({ name, label, type, required: fieldRequired }) => {
         const fieldId = `${idPrefix}-${name.replace(/_/g, "-")}`;
         const helperId = `${fieldId}-helper`;
         const errorMessage = fieldErrors[name];
@@ -61,10 +65,10 @@ export function EmployeeForm({
             name={name}
             label={label}
             type={type ?? "text"}
-            defaultValue={defaultValues?.[name]}
+            defaultValue={resolvedDefaults[name]}
             error={Boolean(errorMessage)}
             helperText={errorMessage}
-            required
+            required={fieldRequired}
             fullWidth
             size="small"
             slotProps={{

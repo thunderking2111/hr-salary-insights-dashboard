@@ -1,8 +1,9 @@
+import { applyEmployeePayloadDefaults } from "./employeeDefaults";
 import type { CreateEmployeePayload } from "./types";
 
 export function payloadFromForm(form: HTMLFormElement): CreateEmployeePayload {
   const data = new FormData(form);
-  return {
+  return applyEmployeePayloadDefaults({
     first_name: String(data.get("first_name")),
     last_name: String(data.get("last_name")),
     email: String(data.get("email")),
@@ -13,5 +14,5 @@ export function payloadFromForm(form: HTMLFormElement): CreateEmployeePayload {
     salary: String(data.get("salary")),
     currency: String(data.get("currency")),
     date_of_joining: String(data.get("date_of_joining")),
-  };
+  });
 }

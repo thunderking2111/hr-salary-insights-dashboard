@@ -10,9 +10,7 @@ const REQUIRED_FIELD_MESSAGES: Partial<Record<keyof CreateEmployeePayload, strin
   job_title: "Job title is required",
   department: "Department is required",
   employment_type: "Employment type is required",
-  country: "Country is required",
   salary: "Salary is required",
-  currency: "Currency is required",
   date_of_joining: "Date of joining is required",
 };
 
