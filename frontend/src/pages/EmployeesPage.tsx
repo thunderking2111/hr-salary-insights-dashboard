@@ -6,6 +6,7 @@ import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
+import { ApiValidationError } from "../api/employeeFieldErrors";
 import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
 import { employeeToFormValues } from "../api/employeeFormValues";
 import { payloadFromForm } from "../api/employeePayload";
@@ -73,15 +74,18 @@ export function EmployeesPage() {
     }
 
     setAddFieldErrors({});
-    runMutation(
-      createEmployee(payloadFromForm(form)),
-      () => {
+    void createEmployee(payloadFromForm(form))
+      .then(() => {
         closeAddDialog();
         reloadCurrentPage();
-      },
-      setError,
-      "Failed to add employee",
-    );
+      })
+      .catch((err: unknown) => {
+        if (err instanceof ApiValidationError) {
+          setAddFieldErrors(err.fieldErrors);
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Failed to add employee");
+      });
   };
 
   const handleConfirmDelete = () => {
@@ -114,15 +118,18 @@ export function EmployeesPage() {
 
     const employeeId = editingEmployee.id;
     setEditFieldErrors({});
-    runMutation(
-      updateEmployee(employeeId, payloadFromForm(form)),
-      () => {
+    void updateEmployee(employeeId, payloadFromForm(form))
+      .then(() => {
         closeEditDialog();
         reloadCurrentPage();
-      },
-      setError,
-      "Failed to update employee",
-    );
+      })
+      .catch((err: unknown) => {
+        if (err instanceof ApiValidationError) {
+          setEditFieldErrors(err.fieldErrors);
+          return;
+        }
+        setError(err instanceof Error ? err.message : "Failed to update employee");
+      });
   };
 
   return (

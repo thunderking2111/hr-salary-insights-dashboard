@@ -51,6 +51,7 @@ export function EmployeeForm({
     >
       {EMPLOYEE_FIELDS.map(({ name, label, type }) => {
         const fieldId = `${idPrefix}-${name.replace(/_/g, "-")}`;
+        const helperId = `${fieldId}-helper`;
         const errorMessage = fieldErrors[name];
 
         return (
@@ -67,6 +68,14 @@ export function EmployeeForm({
             fullWidth
             size="small"
             slotProps={{
+              formHelperText: {
+                id: helperId,
+                role: errorMessage ? "alert" : undefined,
+              },
+              htmlInput: {
+                "aria-errormessage": errorMessage ? helperId : undefined,
+                "aria-invalid": errorMessage ? true : undefined,
+              },
               inputLabel: { shrink: type === "date" ? true : undefined },
             }}
           />
