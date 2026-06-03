@@ -1,6 +1,11 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
+  excludedEleventhJobTitleForCountry01,
+  stubElevenJobTitlesForCountry01,
+  topTenJobTitlesForCountry01,
+} from "../test/elevenJobTitlesForCountry01";
+import {
   excludedNinthChartCountry,
   stubNineCountrySalaryInsights,
   topEightChartCountries,
@@ -26,6 +31,23 @@ describe("InsightsPage", () => {
     const dialog = await screen.findByRole("dialog", { name: /job titles in india/i });
     expect(await within(dialog).findByText("Software Engineer")).toBeInTheDocument();
     expect(within(dialog).getByText("2000000.00")).toBeInTheDocument();
+  });
+
+  it("renders top-10 job titles below chart for first chart country on load", async () => {
+    stubNineCountrySalaryInsights();
+    stubElevenJobTitlesForCountry01();
+    renderInsightsPage();
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+
+    const table = await screen.findByRole("table", {
+      name: /salary by job in country01/i,
+    });
+
+    for (const jobTitle of topTenJobTitlesForCountry01) {
+      expect(within(table).getByRole("cell", { name: jobTitle })).toBeInTheDocument();
+    }
+    expect(within(table).queryByText(excludedEleventhJobTitleForCountry01)).not.toBeInTheDocument();
   });
 
   it("renders top-8 grouped bar chart for average salary by country", async () => {
