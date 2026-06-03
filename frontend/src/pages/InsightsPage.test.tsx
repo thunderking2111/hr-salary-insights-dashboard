@@ -83,6 +83,23 @@ describe("InsightsPage", () => {
     expect(screen.queryByRole("table", { name: /salary by job in country01/i })).not.toBeInTheDocument();
   });
 
+  it("opens MUI dialog with full job title list when View all job titles is clicked", async () => {
+    stubNineCountrySalaryInsights();
+    stubElevenJobTitlesForCountry01();
+    renderInsightsPage();
+
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    fireEvent.click(screen.getByRole("button", { name: /view all job titles/i }));
+
+    const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
+    expect(dialog.className).toMatch(/MuiDialog-root/);
+    expect(within(dialog).getByRole("cell", { name: "Job01" })).toBeInTheDocument();
+    expect(
+      within(dialog).getByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
+    ).toBeInTheDocument();
+  });
+
   it("renders top-8 grouped bar chart for average salary by country", async () => {
     stubNineCountrySalaryInsights();
     renderInsightsPage();
