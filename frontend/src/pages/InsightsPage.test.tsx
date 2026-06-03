@@ -7,6 +7,7 @@ import {
 import {
   excludedEleventhJobTitleForCountry01,
   stubElevenJobTitlesForCountry01,
+  stubTenJobTitlesForCountry01,
   topTenJobTitlesForCountry01,
 } from "../test/elevenJobTitlesForCountry01";
 import {
@@ -81,6 +82,16 @@ describe("InsightsPage", () => {
       }),
     ).toBeInTheDocument();
     expect(screen.queryByRole("table", { name: /salary by job in country01/i })).not.toBeInTheDocument();
+  });
+
+  it("hides View all job titles when chart country has at most ten jobs", async () => {
+    stubNineCountrySalaryInsights();
+    stubTenJobTitlesForCountry01();
+    renderInsightsPage();
+
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    expect(screen.queryByRole("button", { name: /view all job titles/i })).not.toBeInTheDocument();
   });
 
   it("opens MUI dialog with full job title list when View all job titles is clicked", async () => {
