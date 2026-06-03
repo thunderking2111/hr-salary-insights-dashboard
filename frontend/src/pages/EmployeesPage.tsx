@@ -6,10 +6,15 @@ import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
 import { type FormEvent, useState } from "react";
+import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
 import { employeeToFormValues } from "../api/employeeFormValues";
 import { payloadFromForm } from "../api/employeePayload";
 import { createEmployee, deleteEmployee, updateEmployee } from "../api/client";
 import type { Employee } from "../api/types";
+import {
+  hasEmployeeFieldErrors,
+  validateEmployeeForm,
+} from "../api/validateEmployeePayload";
 import { DeleteEmployeeDialog } from "../components/DeleteEmployeeDialog";
 import { DialogTitleBar } from "../components/DialogTitleBar";
 import { EmployeesTable } from "../components/EmployeesTable";
@@ -29,9 +34,26 @@ export function EmployeesPage() {
     reloadCurrentPage,
   } = useEmployeeList();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
-  const closeAddDialog = () => setAddDialogOpen(false);
+  const [addFieldErrors, setAddFieldErrors] = useState<EmployeeFieldErrors>({});
+  const openAddDialog = () => {
+    setAddFieldErrors({});
+    setAddDialogOpen(true);
+  };
+  const closeAddDialog = () => {
+    setAddDialogOpen(false);
+    setAddFieldErrors({});
+  };
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
-  const closeEditDialog = () => setEditingEmployee(null);
+  const [editFieldErrors, setEditFieldErrors] = useState<EmployeeFieldErrors>({});
+  const openEditDialog = (employee: Employee) => {
+    setAddDialogOpen(false);
+    setEditFieldErrors({});
+    setEditingEmployee(employee);
+  };
+  const closeEditDialog = () => {
+    setEditingEmployee(null);
+    setEditFieldErrors({});
+  };
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
   const closeDeleteDialog = () => setDeletingEmployee(null);
 
@@ -43,10 +65,18 @@ export function EmployeesPage() {
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+    const form = event.currentTarget;
+    const clientErrors = validateEmployeeForm(form);
+    if (hasEmployeeFieldErrors(clientErrors)) {
+      setAddFieldErrors(clientErrors);
+      return;
+    }
+
+    setAddFieldErrors({});
     runMutation(
-      createEmployee(payloadFromForm(event.currentTarget)),
+      createEmployee(payloadFromForm(form)),
       () => {
-        setAddDialogOpen(false);
+        closeAddDialog();
         reloadCurrentPage();
       },
       setError,
@@ -75,11 +105,19 @@ export function EmployeesPage() {
     if (!editingEmployee) {
       return;
     }
+    const form = event.currentTarget;
+    const clientErrors = validateEmployeeForm(form);
+    if (hasEmployeeFieldErrors(clientErrors)) {
+      setEditFieldErrors(clientErrors);
+      return;
+    }
+
     const employeeId = editingEmployee.id;
+    setEditFieldErrors({});
     runMutation(
-      updateEmployee(employeeId, payloadFromForm(event.currentTarget)),
+      updateEmployee(employeeId, payloadFromForm(form)),
       () => {
-        setEditingEmployee(null);
+        closeEditDialog();
         reloadCurrentPage();
       },
       setError,
@@ -96,7 +134,7 @@ export function EmployeesPage() {
         <Typography component="h1" variant="h4">
           Employees
         </Typography>
-        <Button variant="contained" color="primary" onClick={() => setAddDialogOpen(true)}>
+        <Button variant="contained" color="primary" onClick={openAddDialog}>
           Add Employee
         </Button>
       </Stack>
@@ -115,6 +153,7 @@ export function EmployeesPage() {
             idPrefix="add"
             formId="add-employee-form"
             hideSubmit
+            fieldErrors={addFieldErrors}
             onSubmit={handleAddSubmit}
           />
         </DialogContent>
@@ -141,6 +180,7 @@ export function EmployeesPage() {
               formId="edit-employee-form"
               hideSubmit
               defaultValues={employeeToFormValues(editingEmployee)}
+              fieldErrors={editFieldErrors}
               onSubmit={handleEditSubmit}
             />
           )}
@@ -154,7 +194,7 @@ export function EmployeesPage() {
       </Dialog>
       <EmployeesTable
         employees={employees}
-        onEdit={setEditingEmployee}
+        onEdit={openEditDialog}
         onDelete={openDeleteDialog}
       />
       <TablePagination

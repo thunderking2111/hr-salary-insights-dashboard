@@ -1,5 +1,7 @@
-import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 import type { FormEvent } from "react";
+import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
 import type { CreateEmployeePayload } from "../api/types";
 
 interface EmployeeFormProps {
@@ -7,114 +9,70 @@ interface EmployeeFormProps {
   formId?: string;
   defaultValues?: CreateEmployeePayload;
   hideSubmit?: boolean;
+  fieldErrors?: EmployeeFieldErrors;
   onSubmit: (event: FormEvent<HTMLFormElement>) => void;
 }
+
+interface FieldConfig {
+  name: keyof CreateEmployeePayload;
+  label: string;
+  type?: string;
+}
+
+const EMPLOYEE_FIELDS: FieldConfig[] = [
+  { name: "first_name", label: "First name" },
+  { name: "last_name", label: "Last name" },
+  { name: "email", label: "Email", type: "email" },
+  { name: "job_title", label: "Job title" },
+  { name: "department", label: "Department" },
+  { name: "employment_type", label: "Employment type" },
+  { name: "salary", label: "Salary" },
+  { name: "country", label: "Country" },
+  { name: "currency", label: "Currency" },
+  { name: "date_of_joining", label: "Date of joining", type: "date" },
+];
 
 export function EmployeeForm({
   idPrefix,
   formId,
   defaultValues,
   hideSubmit = false,
+  fieldErrors = {},
   onSubmit,
 }: EmployeeFormProps) {
   return (
-    <Box
+    <Stack
       component="form"
       id={formId}
       onSubmit={onSubmit}
-      sx={{
-        width: "100%",
-        maxWidth: "100%",
-        "& p": { m: 0, mb: 2 },
-        "& label": { display: "block", mb: 0.5 },
-        "& input": {
-          display: "block",
-          width: "100%",
-          maxWidth: "100%",
-          minWidth: 0,
-          boxSizing: "border-box",
-        },
-      }}
+      spacing={2}
+      sx={{ width: "100%", pt: 0.5 }}
+      noValidate
     >
-      <p>
-        <label htmlFor={`${idPrefix}-first-name`}>First name</label>
-        <input
-          id={`${idPrefix}-first-name`}
-          name="first_name"
-          defaultValue={defaultValues?.first_name}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-last-name`}>Last name</label>
-        <input
-          id={`${idPrefix}-last-name`}
-          name="last_name"
-          defaultValue={defaultValues?.last_name}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-email`}>Email</label>
-        <input
-          id={`${idPrefix}-email`}
-          name="email"
-          type="email"
-          defaultValue={defaultValues?.email}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-job-title`}>Job title</label>
-        <input
-          id={`${idPrefix}-job-title`}
-          name="job_title"
-          defaultValue={defaultValues?.job_title}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-department`}>Department</label>
-        <input
-          id={`${idPrefix}-department`}
-          name="department"
-          defaultValue={defaultValues?.department}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-employment-type`}>Employment type</label>
-        <input
-          id={`${idPrefix}-employment-type`}
-          name="employment_type"
-          defaultValue={defaultValues?.employment_type}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-country`}>Country</label>
-        <input
-          id={`${idPrefix}-country`}
-          name="country"
-          defaultValue={defaultValues?.country}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-salary`}>Salary</label>
-        <input id={`${idPrefix}-salary`} name="salary" defaultValue={defaultValues?.salary} />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-currency`}>Currency</label>
-        <input
-          id={`${idPrefix}-currency`}
-          name="currency"
-          defaultValue={defaultValues?.currency}
-        />
-      </p>
-      <p>
-        <label htmlFor={`${idPrefix}-date-of-joining`}>Date of joining</label>
-        <input
-          id={`${idPrefix}-date-of-joining`}
-          name="date_of_joining"
-          type="date"
-          defaultValue={defaultValues?.date_of_joining}
-        />
-      </p>
+      {EMPLOYEE_FIELDS.map(({ name, label, type }) => {
+        const fieldId = `${idPrefix}-${name.replace(/_/g, "-")}`;
+        const errorMessage = fieldErrors[name];
+
+        return (
+          <TextField
+            key={name}
+            id={fieldId}
+            name={name}
+            label={label}
+            type={type ?? "text"}
+            defaultValue={defaultValues?.[name]}
+            error={Boolean(errorMessage)}
+            helperText={errorMessage}
+            required
+            fullWidth
+            size="small"
+            slotProps={{
+              inputLabel: { shrink: type === "date" ? true : undefined },
+            }}
+          />
+        );
+      })}
       {!hideSubmit && <button type="submit">Save</button>}
-    </Box>
+    </Stack>
   );
 }
