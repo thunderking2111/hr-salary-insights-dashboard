@@ -85,28 +85,54 @@ describe("EmployeesPage", () => {
     expect(dialog.className).toMatch(/MuiDialog-paper/);
   });
 
+
+  it("shows client validation errors on add employee dialog fields", async () => {
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /add employee/i });
+    fireEvent.change(within(dialog).getByLabelText(/first name/i), {
+      target: { value: "Incomplete" },
+    });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
+
+    expect(await within(dialog).findByText("Last name is required")).toBeInTheDocument();
+    expect(within(dialog).getByText("Department is required")).toBeInTheDocument();
+    expect(screen.queryByText(/\{"last_name"/)).not.toBeInTheDocument();
+    expect(screen.getByRole("dialog", { name: /add employee/i })).toBeInTheDocument();
+  });
+
   it("adds an employee and refreshes the list", async () => {
     renderEmployeesPage();
 
     await screen.findByText("Ada Lovelace");
     fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
 
-    fireEvent.change(screen.getByLabelText(/first name/i), { target: { value: "Grace" } });
-    fireEvent.change(screen.getByLabelText(/last name/i), { target: { value: "Hopper" } });
-    fireEvent.change(screen.getByLabelText(/email/i), {
+    const dialog = screen.getByRole("dialog", { name: /add employee/i });
+    fireEvent.change(within(dialog).getByLabelText(/first name/i), { target: { value: "Grace" } });
+    fireEvent.change(within(dialog).getByLabelText(/last name/i), { target: { value: "Hopper" } });
+    fireEvent.change(within(dialog).getByLabelText(/email/i), {
       target: { value: "grace.hopper@example.com" },
     });
-    fireEvent.change(screen.getByLabelText(/job title/i), {
+    fireEvent.change(within(dialog).getByLabelText(/job title/i), {
       target: { value: "Software Engineer" },
     });
-    fireEvent.change(screen.getByLabelText(/department/i), { target: { value: "Engineering" } });
-    fireEvent.change(screen.getByLabelText(/employment type/i), { target: { value: "full_time" } });
-    fireEvent.change(screen.getByLabelText(/country/i), { target: { value: "India" } });
-    fireEvent.change(screen.getByLabelText(/^salary$/i), { target: { value: "2000000.00" } });
-    fireEvent.change(screen.getByLabelText(/currency/i), { target: { value: "INR" } });
-    fireEvent.change(screen.getByLabelText(/date of joining/i), { target: { value: "2021-06-01" } });
+    fireEvent.change(within(dialog).getByLabelText(/department/i), {
+      target: { value: "Engineering" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/employment type/i), {
+      target: { value: "full_time" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/country/i), { target: { value: "India" } });
+    fireEvent.change(within(dialog).getByLabelText(/^salary/i), { target: { value: "2000000.00" } });
+    fireEvent.change(within(dialog).getByLabelText(/currency/i), { target: { value: "INR" } });
+    fireEvent.change(within(dialog).getByLabelText(/date of joining/i), {
+      target: { value: "2021-06-01" },
+    });
 
-    fireEvent.click(screen.getByRole("button", { name: /^save$/i }));
+    fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
 
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
   });
