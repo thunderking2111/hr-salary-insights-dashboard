@@ -2,10 +2,18 @@ import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderEmployeesPage } from "../test/render";
 import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeValidationError";
+import { stubSlowFailingCreateEmployee } from "../test/stubSlowFailingCreateEmployee";
+import { stubSlowFailingDeleteEmployee } from "../test/stubSlowFailingDeleteEmployee";
+import { stubSlowFailingUpdateEmployee } from "../test/stubSlowFailingUpdateEmployee";
 import { stubTwoPageEmployeesList } from "../test/twoPageEmployees";
 
-
 async function expectSuccessToast(message: string) {
+  await waitFor(() => {
+    expect(within(screen.getByTestId("app-toast")).getByRole("alert")).toHaveTextContent(message);
+  });
+}
+
+async function expectErrorToast(message: string) {
   await waitFor(() => {
     expect(within(screen.getByTestId("app-toast")).getByRole("alert")).toHaveTextContent(message);
   });
@@ -240,6 +248,69 @@ describe("EmployeesPage", () => {
       expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
     });
     await expectSuccessToast("Employee deleted");
+  });
+
+  it("shows error toast when add dialog closes before a failed save", async () => {
+    stubSlowFailingCreateEmployee();
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /add employee/i });
+    fireEvent.change(within(dialog).getByLabelText(/first name/i), { target: { value: "Grace" } });
+    fireEvent.change(within(dialog).getByLabelText(/last name/i), { target: { value: "Hopper" } });
+    fireEvent.change(within(dialog).getByLabelText(/email/i), {
+      target: { value: "grace.hopper@example.com" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/job title/i), {
+      target: { value: "Software Engineer" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/department/i), {
+      target: { value: "Engineering" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/employment type/i), {
+      target: { value: "full_time" },
+    });
+    fireEvent.change(within(dialog).getByLabelText(/^salary/i), { target: { value: "2000000.00" } });
+    fireEvent.change(within(dialog).getByLabelText(/date of joining/i), {
+      target: { value: "2021-06-01" },
+    });
+
+    fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
+    fireEvent.click(screen.getByRole("button", { name: /^cancel$/i }));
+
+    await expectErrorToast("Could not add employee");
+    expect(screen.queryByText("Failed to add employee")).not.toBeInTheDocument();
+  });
+
+  it("shows error toast when edit dialog closes before a failed save", async () => {
+    stubSlowFailingUpdateEmployee();
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /edit ada lovelace/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /edit employee/i });
+    fireEvent.change(within(dialog).getByLabelText(/first name/i), { target: { value: "Augusta" } });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
+    fireEvent.click(within(dialog).getByRole("button", { name: /^cancel$/i }));
+
+    await expectErrorToast("Could not update employee");
+  });
+
+  it("shows error toast when delete dialog closes before a failed delete", async () => {
+    stubSlowFailingDeleteEmployee();
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /delete ada lovelace/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /delete employee/i });
+    fireEvent.click(within(dialog).getByRole("button", { name: /^delete$/i }));
+    fireEvent.click(within(dialog).getByRole("button", { name: /^cancel$/i }));
+
+    await expectErrorToast("Could not delete employee");
   });
 
   it("renders employee list pagination as MUI TablePagination", async () => {
