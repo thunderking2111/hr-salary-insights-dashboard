@@ -86,6 +86,16 @@ describe("EmployeesPage", () => {
     expect(dialog.className).toMatch(/MuiDialog-paper/);
   });
 
+  it("prefills India and INR defaults in add employee dialog", async () => {
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+    fireEvent.click(screen.getByRole("button", { name: /add employee/i }));
+
+    const dialog = screen.getByRole("dialog", { name: /add employee/i });
+    expect(within(dialog).getByLabelText(/country/i)).toHaveValue("India");
+    expect(within(dialog).getByLabelText(/currency/i)).toHaveValue("INR");
+  });
 
   it("shows client validation errors on add employee dialog fields", async () => {
     renderEmployeesPage();
@@ -127,9 +137,7 @@ describe("EmployeesPage", () => {
     fireEvent.change(within(dialog).getByLabelText(/employment type/i), {
       target: { value: "full_time" },
     });
-    fireEvent.change(within(dialog).getByLabelText(/country/i), { target: { value: "India" } });
     fireEvent.change(within(dialog).getByLabelText(/^salary/i), { target: { value: "2000000.00" } });
-    fireEvent.change(within(dialog).getByLabelText(/currency/i), { target: { value: "INR" } });
     fireEvent.change(within(dialog).getByLabelText(/date of joining/i), {
       target: { value: "2021-06-01" },
     });
@@ -166,9 +174,7 @@ describe("EmployeesPage", () => {
     fireEvent.change(within(dialog).getByLabelText(/employment type/i), {
       target: { value: "full_time" },
     });
-    fireEvent.change(within(dialog).getByLabelText(/country/i), { target: { value: "India" } });
     fireEvent.change(within(dialog).getByLabelText(/^salary/i), { target: { value: "2000000.00" } });
-    fireEvent.change(within(dialog).getByLabelText(/currency/i), { target: { value: "INR" } });
     fireEvent.change(within(dialog).getByLabelText(/date of joining/i), {
       target: { value: "2021-06-01" },
     });

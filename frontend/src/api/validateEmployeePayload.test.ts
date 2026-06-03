@@ -33,4 +33,16 @@ describe("validateEmployeePayload", () => {
   it("returns no errors for a complete payload", () => {
     expect(hasEmployeeFieldErrors(validateEmployeePayload(validPayload))).toBe(false);
   });
+
+  it("does not require country or currency", () => {
+    const errors = validateEmployeePayload({
+      ...validPayload,
+      country: "",
+      currency: "",
+    });
+
+    expect(errors.country).toBeUndefined();
+    expect(errors.currency).toBeUndefined();
+    expect(hasEmployeeFieldErrors(errors)).toBe(false);
+  });
 });
