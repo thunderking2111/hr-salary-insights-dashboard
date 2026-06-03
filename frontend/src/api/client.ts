@@ -1,3 +1,4 @@
+import { ApiValidationError, parseEmployeeFieldErrors } from "./employeeFieldErrors";
 import type {
   CountrySalaryInsight,
   CreateEmployeePayload,
@@ -19,6 +20,12 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
 
   if (!response.ok) {
     const message = await response.text();
+    if (response.status === 400) {
+      const fieldErrors = parseEmployeeFieldErrors(message);
+      if (fieldErrors) {
+        throw new ApiValidationError(fieldErrors);
+      }
+    }
     throw new Error(message || `Request failed: ${response.status}`);
   }
 
@@ -30,6 +37,12 @@ async function requestNoContent(path: string, init?: RequestInit): Promise<void>
 
   if (!response.ok) {
     const message = await response.text();
+    if (response.status === 400) {
+      const fieldErrors = parseEmployeeFieldErrors(message);
+      if (fieldErrors) {
+        throw new ApiValidationError(fieldErrors);
+      }
+    }
     throw new Error(message || `Request failed: ${response.status}`);
   }
 }
