@@ -1,5 +1,7 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
+import { stubChartCountryJobTitles } from "../test/chartCountryJobTitles";
+import { excludedEleventhJobTitleForCountry01 } from "../test/elevenJobTitlesForCountry01";
 import {
   excludedNinthChartCountry,
   nineCountrySalaryInsights,
@@ -27,5 +29,20 @@ describe("InsightsCountriesPage", () => {
       await within(table).findByRole("cell", { name: excludedNinthChartCountry }),
     ).toBeInTheDocument();
     expect(within(table).queryByRole("cell", { name: nineCountrySalaryInsights[0]!.country })).not.toBeInTheDocument();
+  });
+
+  it("opens MUI dialog with full job titles when a country row is clicked", async () => {
+    stubNineCountrySalaryInsights();
+    stubChartCountryJobTitles();
+    renderInsightsCountriesPage();
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    fireEvent.click(within(table).getByRole("cell", { name: "Country01" }));
+
+    const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
+    expect(dialog.className).toMatch(/MuiDialog-paper/);
+    expect(
+      within(dialog).getByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
+    ).toBeInTheDocument();
   });
 });
