@@ -1,3 +1,4 @@
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
@@ -72,7 +73,12 @@ export function InsightsPage() {
         </Box>
         <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
       </Box>
-      {chartCountry && (
+      {chartCountry && chartJobTitlesError && (
+        <Alert severity="error" role="alert" sx={{ mt: 3 }}>
+          {chartJobTitlesError}
+        </Alert>
+      )}
+      {chartCountry && !chartJobTitlesError && (
         <ChartJobTitlesTable
           country={chartCountry}
           jobTitles={chartJobTitles}
