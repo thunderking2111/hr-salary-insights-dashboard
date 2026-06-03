@@ -21,3 +21,15 @@ export function stubChartCountryJobTitles(): void {
     }),
   );
 }
+
+export function stubFailingJobTitlesForCountry01(): void {
+  server.use(
+    http.get("/api/insights/salary-by-job-title/", ({ request }) => {
+      const country = new URL(request.url).searchParams.get("country");
+      if (country === "Country01") {
+        return new HttpResponse(null, { status: 500 });
+      }
+      return HttpResponse.json([]);
+    }),
+  );
+}

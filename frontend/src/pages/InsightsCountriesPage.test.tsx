@@ -1,6 +1,9 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { stubChartCountryJobTitles } from "../test/chartCountryJobTitles";
+import {
+  stubChartCountryJobTitles,
+  stubFailingJobTitlesForCountry01,
+} from "../test/chartCountryJobTitles";
 import {
   excludedEleventhJobTitleForCountry01,
   stubDelayedElevenJobTitlesForCountry01,
@@ -33,6 +36,22 @@ describe("InsightsCountriesPage", () => {
       await within(table).findByRole("cell", { name: excludedNinthChartCountry }),
     ).toBeInTheDocument();
     expect(within(table).queryByRole("cell", { name: nineCountrySalaryInsights[0]!.country })).not.toBeInTheDocument();
+  });
+
+  it("shows error alert in job titles dialog when job titles fetch fails", async () => {
+    stubNineCountrySalaryInsights();
+    stubFailingJobTitlesForCountry01();
+    renderInsightsCountriesPage();
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    fireEvent.click(within(table).getByRole("cell", { name: "Country01" }));
+
+    const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
+    expect(await within(dialog).findByRole("alert")).toHaveTextContent(/failed to load job titles/i);
+    expect(screen.getAllByRole("alert")).toHaveLength(1);
+
+    fireEvent.click(within(dialog).getByRole("button", { name: /close/i }));
+    expect(screen.queryByRole("dialog", { name: /job titles in country01/i })).not.toBeInTheDocument();
   });
 
   it("shows loading indicator in job titles dialog while job titles are fetching", async () => {
