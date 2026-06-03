@@ -23,4 +23,28 @@ describe("AppShell", () => {
     expect(within(sidebar).getByRole("link", { name: /employees/i })).toBeInTheDocument();
     expect(within(sidebar).getByRole("link", { name: /salary insights/i })).toBeInTheDocument();
   });
+
+  it("renders HR Pulse branding in the sidebar", () => {
+    renderWithProviders(<AppShell />, { route: "/employees" });
+
+    expect(screen.getByText("HR Pulse")).toBeInTheDocument();
+  });
+
+  it("marks the active nav link with aria-current page", () => {
+    renderWithProviders(<AppShell />, { route: "/employees" });
+
+    expect(screen.getByRole("link", { name: /employees/i })).toHaveAttribute("aria-current", "page");
+    expect(screen.getByRole("link", { name: /salary insights/i })).not.toHaveAttribute(
+      "aria-current",
+    );
+  });
+
+  it("keeps Salary Insights active on nested insights routes", () => {
+    renderWithProviders(<AppShell />, { route: "/insights/countries" });
+
+    expect(screen.getByRole("link", { name: /salary insights/i })).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  });
 });
