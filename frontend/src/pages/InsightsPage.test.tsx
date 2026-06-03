@@ -15,7 +15,6 @@ import {
   stubNineCountrySalaryInsights,
   topEightChartCountries,
 } from "../test/nineCountryInsights";
-import { stubTenJobTitlesForCountry01 } from "../test/elevenJobTitlesForCountry01";
 import { renderInsightsApp, renderInsightsPage } from "../test/render";
 
 describe("InsightsPage", () => {

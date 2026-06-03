@@ -1,4 +1,8 @@
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Typography from "@mui/material/Typography";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
 import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
@@ -7,6 +11,7 @@ import { JobTitlesDialog } from "../components/JobTitlesDialog";
 import { firstChartCountry } from "../utils/chartCountries";
 
 export function InsightsPage() {
+  const navigate = useNavigate();
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [chartCountry, setChartCountry] = useState<string | null>(null);
@@ -64,7 +69,24 @@ export function InsightsPage() {
     <div>
       <h1>Salary Insights</h1>
       {error && <p role="alert">{error}</p>}
-      <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
+      <Box component="section">
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            mb: 1,
+          }}
+        >
+          <Typography component="h2" variant="subtitle1">
+            Salary by country (top 8)
+          </Typography>
+          <Button variant="text" onClick={() => navigate("/insights/countries")}>
+            View all
+          </Button>
+        </Box>
+        <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
+      </Box>
       {chartCountry && (
         <ChartJobTitlesTable
           country={chartCountry}
