@@ -1,6 +1,10 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
+  country02JobTitleInsights,
+  stubChartCountryJobTitles,
+} from "../test/chartCountryJobTitles";
+import {
   excludedEleventhJobTitleForCountry01,
   stubElevenJobTitlesForCountry01,
   topTenJobTitlesForCountry01,
@@ -49,6 +53,29 @@ describe("InsightsPage", () => {
       expect(within(table).getByRole("cell", { name: jobTitle })).toBeInTheDocument();
     }
     expect(within(table).queryByText(excludedEleventhJobTitleForCountry01)).not.toBeInTheDocument();
+  });
+
+  it("updates below-chart job table when a chart bar is clicked", async () => {
+    stubNineCountrySalaryInsights();
+    stubChartCountryJobTitles();
+    renderInsightsPage();
+
+    const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    const bars = figure.querySelectorAll(".recharts-bar-rectangle");
+    const country02AvgBarIndex = 4;
+    fireEvent.click(bars.item(country02AvgBarIndex)!);
+
+    const table = await screen.findByRole("table", {
+      name: /salary by job in country02/i,
+    });
+    expect(
+      within(table).getByRole("cell", {
+        name: country02JobTitleInsights[0]!.job_title,
+      }),
+    ).toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: /salary by job in country01/i })).not.toBeInTheDocument();
   });
 
   it("renders top-8 grouped bar chart for average salary by country", async () => {
