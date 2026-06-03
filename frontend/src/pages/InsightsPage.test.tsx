@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import {
   country02JobTitleInsights,
   stubChartCountryJobTitles,
+  stubFailingJobTitlesForCountry01,
 } from "../test/chartCountryJobTitles";
 import {
   excludedEleventhJobTitleForCountry01,
@@ -24,6 +25,19 @@ describe("InsightsPage", () => {
     await screen.findByRole("figure", { name: /average salary by country/i });
 
     expect(screen.queryByRole("button", { name: /view job titles for/i })).not.toBeInTheDocument();
+  });
+
+  it("shows alert below chart when job titles fetch fails", async () => {
+    stubNineCountrySalaryInsights();
+    stubFailingJobTitlesForCountry01();
+    renderInsightsPage();
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(/failed to load job titles/i);
+    expect(
+      screen.queryByRole("table", { name: /salary by job in country01/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("renders top-10 job titles below chart for first chart country on load", async () => {
