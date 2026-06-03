@@ -1,4 +1,5 @@
 import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
 import Table from "@mui/material/Table";
 import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
@@ -15,9 +16,14 @@ const TABLE_MAX_WIDTH = 560;
 interface ChartJobTitlesTableProps {
   country: string;
   jobTitles: JobTitleSalaryInsight[];
+  onViewAllJobTitles: () => void;
 }
 
-export function ChartJobTitlesTable({ country, jobTitles }: ChartJobTitlesTableProps) {
+export function ChartJobTitlesTable({
+  country,
+  jobTitles,
+  onViewAllJobTitles,
+}: ChartJobTitlesTableProps) {
   const topJobTitles = topJobTitlesByAverageSalary(jobTitles);
 
   if (topJobTitles.length === 0) {
@@ -74,6 +80,11 @@ export function ChartJobTitlesTable({ country, jobTitles }: ChartJobTitlesTableP
           </TableBody>
         </Table>
       </TableContainer>
+      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+        <Button variant="text" onClick={onViewAllJobTitles}>
+          View all job titles
+        </Button>
+      </Box>
     </Box>
   );
 }

@@ -6,10 +6,16 @@ function toAverageSalaryValue(salary: string): number {
   return Number(salary);
 }
 
+export function jobTitlesByAverageSalary(
+  insights: JobTitleSalaryInsight[],
+): JobTitleSalaryInsight[] {
+  return [...insights].sort(
+    (a, b) => toAverageSalaryValue(b.avg_salary) - toAverageSalaryValue(a.avg_salary),
+  );
+}
+
 export function topJobTitlesByAverageSalary(
   insights: JobTitleSalaryInsight[],
 ): JobTitleSalaryInsight[] {
-  return [...insights]
-    .sort((a, b) => toAverageSalaryValue(b.avg_salary) - toAverageSalaryValue(a.avg_salary))
-    .slice(0, TOP_JOB_TITLE_COUNT);
+  return jobTitlesByAverageSalary(insights).slice(0, TOP_JOB_TITLE_COUNT);
 }

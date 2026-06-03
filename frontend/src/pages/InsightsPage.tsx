@@ -3,6 +3,7 @@ import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
 import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
 import { CountrySalaryChart } from "../components/CountrySalaryChart";
+import { JobTitlesDialog } from "../components/JobTitlesDialog";
 import { firstChartCountry } from "../utils/chartCountries";
 
 export function InsightsPage() {
@@ -10,6 +11,7 @@ export function InsightsPage() {
   const [error, setError] = useState<string | null>(null);
   const [chartCountry, setChartCountry] = useState<string | null>(null);
   const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
+  const [chartJobTitlesDialogOpen, setChartJobTitlesDialogOpen] = useState(false);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [jobTitleInsights, setJobTitleInsights] = useState<JobTitleSalaryInsight[]>([]);
 
@@ -31,6 +33,7 @@ export function InsightsPage() {
     }
 
     setChartJobTitles([]);
+    setChartJobTitlesDialogOpen(false);
 
     void fetchSalaryByJobTitle(chartCountry)
       .then((data) => setChartJobTitles(data))
@@ -63,8 +66,18 @@ export function InsightsPage() {
       {error && <p role="alert">{error}</p>}
       <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
       {chartCountry && (
-        <ChartJobTitlesTable country={chartCountry} jobTitles={chartJobTitles} />
+        <ChartJobTitlesTable
+          country={chartCountry}
+          jobTitles={chartJobTitles}
+          onViewAllJobTitles={() => setChartJobTitlesDialogOpen(true)}
+        />
       )}
+      <JobTitlesDialog
+        country={chartCountry}
+        jobTitles={chartJobTitles}
+        open={chartJobTitlesDialogOpen}
+        onClose={() => setChartJobTitlesDialogOpen(false)}
+      />
       <table aria-label="Salary by country">
         <thead>
           <tr>

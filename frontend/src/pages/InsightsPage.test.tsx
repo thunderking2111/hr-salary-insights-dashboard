@@ -93,7 +93,7 @@ describe("InsightsPage", () => {
     fireEvent.click(screen.getByRole("button", { name: /view all job titles/i }));
 
     const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
-    expect(dialog.className).toMatch(/MuiDialog-root/);
+    expect(dialog.className).toMatch(/MuiDialog-paper/);
     expect(within(dialog).getByRole("cell", { name: "Job01" })).toBeInTheDocument();
     expect(
       within(dialog).getByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
