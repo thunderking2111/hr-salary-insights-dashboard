@@ -21,6 +21,7 @@ export function InsightsCountriesPage() {
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [jobTitles, setJobTitles] = useState<JobTitleSalaryInsight[]>([]);
   const [jobTitlesLoading, setJobTitlesLoading] = useState(false);
+  const [jobTitlesError, setJobTitlesError] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchSalaryByCountry()
@@ -38,12 +39,11 @@ export function InsightsCountriesPage() {
   const openCountryJobTitles = (country: string) => {
     setSelectedCountry(country);
     setJobTitles([]);
+    setJobTitlesError(null);
     setJobTitlesLoading(true);
     void fetchSalaryByJobTitle(country)
       .then((data) => setJobTitles(data))
-      .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Failed to load job title insights");
-      })
+      .catch(() => setJobTitlesError("Failed to load job titles"))
       .finally(() => setJobTitlesLoading(false));
   };
 
@@ -51,6 +51,7 @@ export function InsightsCountriesPage() {
     setSelectedCountry(null);
     setJobTitles([]);
     setJobTitlesLoading(false);
+    setJobTitlesError(null);
   };
 
   return (
@@ -77,6 +78,7 @@ export function InsightsCountriesPage() {
         jobTitles={jobTitles}
         open={selectedCountry !== null}
         loading={jobTitlesLoading}
+        error={jobTitlesError}
         onClose={closeCountryJobTitles}
       />
       {insights.length > 0 && (

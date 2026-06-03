@@ -1,3 +1,4 @@
+import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
@@ -23,6 +24,7 @@ interface JobTitlesDialogProps {
   jobTitles: JobTitleSalaryInsight[];
   open: boolean;
   loading?: boolean;
+  error?: string | null;
   onClose: () => void;
 }
 
@@ -31,6 +33,7 @@ export function JobTitlesDialog({
   jobTitles,
   open,
   loading = false,
+  error = null,
   onClose,
 }: JobTitlesDialogProps) {
   if (!country) {
@@ -56,6 +59,10 @@ export function JobTitlesDialog({
           <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
             <CircularProgress aria-label="Loading job titles" />
           </Box>
+        ) : error ? (
+          <Alert severity="error" role="alert">
+            {error}
+          </Alert>
         ) : (
           <TableContainer>
             <Table aria-label={`Job titles in ${country}`} size="small">

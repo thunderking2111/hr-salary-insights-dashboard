@@ -18,6 +18,7 @@ export function InsightsPage() {
   const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
   const [chartJobTitlesDialogOpen, setChartJobTitlesDialogOpen] = useState(false);
   const [chartJobTitlesLoading, setChartJobTitlesLoading] = useState(false);
+  const [chartJobTitlesError, setChartJobTitlesError] = useState<string | null>(null);
 
   useEffect(() => {
     void fetchSalaryByCountry()
@@ -34,18 +35,18 @@ export function InsightsPage() {
     if (!chartCountry) {
       setChartJobTitles([]);
       setChartJobTitlesLoading(false);
+      setChartJobTitlesError(null);
       return;
     }
 
     setChartJobTitles([]);
     setChartJobTitlesDialogOpen(false);
     setChartJobTitlesLoading(true);
+    setChartJobTitlesError(null);
 
     void fetchSalaryByJobTitle(chartCountry)
       .then((data) => setChartJobTitles(data))
-      .catch((err: unknown) => {
-        setError(err instanceof Error ? err.message : "Failed to load job title insights");
-      })
+      .catch(() => setChartJobTitlesError("Failed to load job titles"))
       .finally(() => setChartJobTitlesLoading(false));
   }, [chartCountry]);
 
@@ -83,7 +84,11 @@ export function InsightsPage() {
         jobTitles={chartJobTitles}
         open={chartJobTitlesDialogOpen}
         loading={chartJobTitlesLoading}
-        onClose={() => setChartJobTitlesDialogOpen(false)}
+        error={chartJobTitlesError}
+        onClose={() => {
+          setChartJobTitlesDialogOpen(false);
+          setChartJobTitlesError(null);
+        }}
       />
     </div>
   );
