@@ -9,7 +9,7 @@ import TableRow from "@mui/material/TableRow";
 import Typography from "@mui/material/Typography";
 import type { JobTitleSalaryInsight } from "../api/types";
 import { formatSalaryValue } from "../utils/formatSalary";
-import { topJobTitlesByAverageSalary } from "../utils/jobTitleInsights";
+import { TOP_JOB_TITLE_COUNT, topJobTitlesByAverageSalary } from "../utils/jobTitleInsights";
 
 const TABLE_MAX_WIDTH = 560;
 
@@ -25,6 +25,7 @@ export function ChartJobTitlesTable({
   onViewAllJobTitles,
 }: ChartJobTitlesTableProps) {
   const topJobTitles = topJobTitlesByAverageSalary(jobTitles);
+  const hasMoreJobTitlesThanTable = jobTitles.length > TOP_JOB_TITLE_COUNT;
 
   if (topJobTitles.length === 0) {
     return null;
@@ -80,11 +81,13 @@ export function ChartJobTitlesTable({
           </TableBody>
         </Table>
       </TableContainer>
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
-        <Button variant="text" onClick={onViewAllJobTitles}>
-          View all job titles
-        </Button>
-      </Box>
+      {hasMoreJobTitlesThanTable && (
+        <Box sx={{ display: "flex", justifyContent: "center", mt: 2 }}>
+          <Button variant="text" onClick={onViewAllJobTitles}>
+            View all job titles
+          </Button>
+        </Box>
+      )}
     </Box>
   );
 }
