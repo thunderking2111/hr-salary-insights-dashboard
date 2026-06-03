@@ -42,7 +42,7 @@ describe("InsightsCountriesPage", () => {
     const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
     expect(dialog.className).toMatch(/MuiDialog-paper/);
     expect(
-      within(dialog).getByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
+      await within(dialog).findByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
     ).toBeInTheDocument();
   });
 });

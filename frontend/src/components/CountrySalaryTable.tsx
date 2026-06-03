@@ -9,9 +9,10 @@ import { formatSalaryValue } from "../utils/formatSalary";
 
 interface CountrySalaryTableProps {
   countries: CountrySalaryInsight[];
+  onCountrySelect?: (country: string) => void;
 }
 
-export function CountrySalaryTable({ countries }: CountrySalaryTableProps) {
+export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalaryTableProps) {
   if (countries.length === 0) {
     return null;
   }
@@ -37,7 +38,12 @@ export function CountrySalaryTable({ countries }: CountrySalaryTableProps) {
         </TableHead>
         <TableBody>
           {countries.map((row) => (
-            <TableRow key={row.country} hover>
+            <TableRow
+              key={row.country}
+              hover
+              onClick={onCountrySelect ? () => onCountrySelect(row.country) : undefined}
+              sx={onCountrySelect ? { cursor: "pointer" } : undefined}
+            >
               <TableCell>{row.country}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.min_salary))}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.max_salary))}</TableCell>
