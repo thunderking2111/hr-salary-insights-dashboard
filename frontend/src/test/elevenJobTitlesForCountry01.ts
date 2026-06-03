@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import type { JobTitleSalaryInsight } from "../api/types";
 import { server } from "./server";
 
@@ -44,6 +44,19 @@ export function stubElevenJobTitlesForCountry01(): void {
     http.get("/api/insights/salary-by-job-title/", ({ request }) => {
       const country = new URL(request.url).searchParams.get("country");
       if (country === "Country01") {
+        return HttpResponse.json(elevenJobTitlesForCountry01);
+      }
+      return HttpResponse.json([]);
+    }),
+  );
+}
+
+export function stubDelayedElevenJobTitlesForCountry01(delayMs = 200): void {
+  server.use(
+    http.get("/api/insights/salary-by-job-title/", async ({ request }) => {
+      const country = new URL(request.url).searchParams.get("country");
+      if (country === "Country01") {
+        await delay(delayMs);
         return HttpResponse.json(elevenJobTitlesForCountry01);
       }
       return HttpResponse.json([]);

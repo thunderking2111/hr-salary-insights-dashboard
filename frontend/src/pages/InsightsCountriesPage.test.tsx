@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { stubChartCountryJobTitles } from "../test/chartCountryJobTitles";
 import {
   excludedEleventhJobTitleForCountry01,
+  stubDelayedElevenJobTitlesForCountry01,
   stubTenJobTitlesForCountry01,
 } from "../test/elevenJobTitlesForCountry01";
 import {
@@ -32,6 +33,25 @@ describe("InsightsCountriesPage", () => {
       await within(table).findByRole("cell", { name: excludedNinthChartCountry }),
     ).toBeInTheDocument();
     expect(within(table).queryByRole("cell", { name: nineCountrySalaryInsights[0]!.country })).not.toBeInTheDocument();
+  });
+
+  it("shows loading indicator in job titles dialog while job titles are fetching", async () => {
+    stubNineCountrySalaryInsights();
+    stubDelayedElevenJobTitlesForCountry01();
+    renderInsightsCountriesPage();
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    fireEvent.click(within(table).getByRole("cell", { name: "Country01" }));
+
+    const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
+    expect(
+      within(dialog).getByRole("progressbar", { name: /loading job titles/i }),
+    ).toBeInTheDocument();
+
+    expect(await within(dialog).findByRole("cell", { name: "Job01" })).toBeInTheDocument();
+    expect(
+      within(dialog).queryByRole("progressbar", { name: /loading job titles/i }),
+    ).not.toBeInTheDocument();
   });
 
   it("opens MUI dialog with full job titles when a country row is clicked", async () => {
