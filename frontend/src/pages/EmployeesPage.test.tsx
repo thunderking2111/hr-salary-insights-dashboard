@@ -4,6 +4,13 @@ import { renderEmployeesPage } from "../test/render";
 import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeValidationError";
 import { stubTwoPageEmployeesList } from "../test/twoPageEmployees";
 
+
+async function expectSuccessToast(message: string) {
+  await waitFor(() => {
+    expect(within(screen.getByTestId("app-toast")).getByRole("alert")).toHaveTextContent(message);
+  });
+}
+
 describe("EmployeesPage", () => {
   it("renders employee rows from the API", async () => {
     renderEmployeesPage();
@@ -182,6 +189,7 @@ describe("EmployeesPage", () => {
     fireEvent.click(within(dialog).getByRole("button", { name: /^save$/i }));
 
     expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
+    await expectSuccessToast("Employee added");
   });
 
   it("opens edit employee dialog as MUI Dialog", async () => {
@@ -207,6 +215,7 @@ describe("EmployeesPage", () => {
 
     expect(await screen.findByText("Augusta Ada")).toBeInTheDocument();
     expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
+    await expectSuccessToast("Employee updated");
   });
 
   it("opens delete employee confirm as MUI Dialog", async () => {
@@ -230,6 +239,7 @@ describe("EmployeesPage", () => {
     await waitFor(() => {
       expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
     });
+    await expectSuccessToast("Employee deleted");
   });
 
   it("renders employee list pagination as MUI TablePagination", async () => {
