@@ -9,6 +9,7 @@ import TableCell from "@mui/material/TableCell";
 import TableContainer from "@mui/material/TableContainer";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
+import Typography from "@mui/material/Typography";
 import type { JobTitleSalaryInsight } from "../api/types";
 import { formatSalaryValue } from "../utils/formatSalary";
 import { jobTitlesByAverageSalary } from "../utils/jobTitleInsights";
@@ -63,6 +64,8 @@ export function JobTitlesDialog({
           <Alert severity="error" role="alert">
             {error}
           </Alert>
+        ) : sortedJobTitles.length === 0 ? (
+          <Typography>No job titles found for {country}</Typography>
         ) : (
           <TableContainer>
             <Table aria-label={`Job titles in ${country}`} size="small">
