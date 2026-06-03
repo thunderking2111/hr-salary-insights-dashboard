@@ -6,12 +6,7 @@ import {
   stubNineCountrySalaryInsights,
   topEightChartCountries,
 } from "../test/nineCountryInsights";
-import { renderWithProviders } from "../test/render";
-import { InsightsCountriesPage } from "./InsightsCountriesPage";
-
-function renderInsightsCountriesPage() {
-  return renderWithProviders(<InsightsCountriesPage />, { route: "/insights/countries" });
-}
+import { renderInsightsCountriesPage } from "../test/render";
 
 describe("InsightsCountriesPage", () => {
   it("renders client-paginated salary by country table", async () => {

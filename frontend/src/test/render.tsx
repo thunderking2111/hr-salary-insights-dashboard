@@ -2,6 +2,7 @@ import { render, type RenderOptions } from "@testing-library/react";
 import { MemoryRouter } from "react-router-dom";
 import type { ReactElement, ReactNode } from "react";
 import { EmployeesPage } from "../pages/EmployeesPage";
+import { InsightsCountriesPage } from "../pages/InsightsCountriesPage";
 import { InsightsPage } from "../pages/InsightsPage";
 import { AppThemeProvider } from "../theme/AppThemeProvider";
 
@@ -27,4 +28,8 @@ export function renderEmployeesPage(route = "/employees") {
 
 export function renderInsightsPage(route = "/insights") {
   return renderWithProviders(<InsightsPage />, { route });
+}
+
+export function renderInsightsCountriesPage(route = "/insights/countries") {
+  return renderWithProviders(<InsightsCountriesPage />, { route });
 }
