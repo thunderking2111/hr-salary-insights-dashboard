@@ -1,14 +1,17 @@
 import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { stubChartCountryJobTitles } from "../test/chartCountryJobTitles";
-import { excludedEleventhJobTitleForCountry01 } from "../test/elevenJobTitlesForCountry01";
+import {
+  excludedEleventhJobTitleForCountry01,
+  stubTenJobTitlesForCountry01,
+} from "../test/elevenJobTitlesForCountry01";
 import {
   excludedNinthChartCountry,
   nineCountrySalaryInsights,
   stubNineCountrySalaryInsights,
   topEightChartCountries,
 } from "../test/nineCountryInsights";
-import { renderInsightsCountriesPage } from "../test/render";
+import { renderInsightsApp, renderInsightsCountriesPage } from "../test/render";
 
 describe("InsightsCountriesPage", () => {
   it("renders client-paginated salary by country table", async () => {
@@ -44,5 +47,25 @@ describe("InsightsCountriesPage", () => {
     expect(
       await within(dialog).findByRole("cell", { name: excludedEleventhJobTitleForCountry01 }),
     ).toBeInTheDocument();
+  });
+
+  it("navigates to chart view when Back to insights is clicked", async () => {
+    stubNineCountrySalaryInsights();
+    stubTenJobTitlesForCountry01();
+    renderInsightsApp("/insights/countries");
+
+    await screen.findByRole("heading", { name: /^salary by country$/i });
+    await screen.findByRole("navigation", { name: /salary by country pagination/i });
+
+    fireEvent.click(screen.getByRole("button", { name: /back to insights/i }));
+
+    await screen.findByRole("heading", { name: /salary insights/i });
+    await screen.findByRole("figure", { name: /average salary by country/i });
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    expect(
+      screen.queryByRole("navigation", { name: /salary by country pagination/i }),
+    ).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /^salary by country$/i })).not.toBeInTheDocument();
   });
 });
