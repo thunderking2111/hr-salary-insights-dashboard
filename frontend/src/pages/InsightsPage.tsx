@@ -1,21 +1,40 @@
 import { useEffect, useState } from "react";
 import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
+import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
 import { CountrySalaryChart } from "../components/CountrySalaryChart";
+import { firstChartCountry } from "../utils/chartCountries";
 
 export function InsightsPage() {
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [chartCountry, setChartCountry] = useState<string | null>(null);
+  const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
   const [jobTitleInsights, setJobTitleInsights] = useState<JobTitleSalaryInsight[]>([]);
 
   useEffect(() => {
     void fetchSalaryByCountry()
-      .then((data) => setInsights(data))
+      .then((data) => {
+        setInsights(data);
+        setChartCountry(firstChartCountry(data));
+      })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load salary insights");
       });
   }, []);
+
+  useEffect(() => {
+    if (!chartCountry) {
+      return;
+    }
+
+    void fetchSalaryByJobTitle(chartCountry)
+      .then((data) => setChartJobTitles(data))
+      .catch((err: unknown) => {
+        setError(err instanceof Error ? err.message : "Failed to load job title insights");
+      });
+  }, [chartCountry]);
 
   const openJobTitles = (country: string) => {
     setSelectedCountry(country);
@@ -40,6 +59,9 @@ export function InsightsPage() {
       <h1>Salary Insights</h1>
       {error && <p role="alert">{error}</p>}
       <CountrySalaryChart insights={insights} />
+      {chartCountry && (
+        <ChartJobTitlesTable country={chartCountry} jobTitles={chartJobTitles} />
+      )}
       <table aria-label="Salary by country">
         <thead>
           <tr>

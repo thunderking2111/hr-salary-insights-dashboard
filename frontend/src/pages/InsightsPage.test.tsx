@@ -43,6 +43,7 @@ describe("InsightsPage", () => {
     const table = await screen.findByRole("table", {
       name: /salary by job in country01/i,
     });
+    expect(table.className).toMatch(/MuiTable-root/);
 
     for (const jobTitle of topTenJobTitlesForCountry01) {
       expect(within(table).getByRole("cell", { name: jobTitle })).toBeInTheDocument();

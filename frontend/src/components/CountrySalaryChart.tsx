@@ -11,20 +11,14 @@ import {
   YAxis,
 } from "recharts";
 import type { CountrySalaryInsight } from "../api/types";
+import { topCountriesByAverageSalary } from "../utils/chartCountries";
 import { formatSalaryAxisTick, formatSalaryValue } from "../utils/formatSalary";
 
-const TOP_COUNTRY_COUNT = 8;
 const BAR_TOP_RADIUS = 6;
 const CHART_LEFT_MARGIN = 72;
 
 function toChartValue(salary: string): number {
   return Number(salary);
-}
-
-function topCountriesByAverageSalary(insights: CountrySalaryInsight[]): CountrySalaryInsight[] {
-  return [...insights]
-    .sort((a, b) => toChartValue(b.avg_salary) - toChartValue(a.avg_salary))
-    .slice(0, TOP_COUNTRY_COUNT);
 }
 
 interface CountrySalaryChartProps {
