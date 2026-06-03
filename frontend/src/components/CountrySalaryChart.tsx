@@ -13,8 +13,8 @@ import {
 import type { CountrySalaryInsight } from "../api/types";
 import { topCountriesByAverageSalary } from "../utils/chartCountries";
 import { formatSalaryAxisTick, formatSalaryValue } from "../utils/formatSalary";
+import { createSelectableBarShape } from "./SelectableBarShape";
 
-const BAR_TOP_RADIUS = 6;
 const CHART_LEFT_MARGIN = 72;
 
 function toChartValue(salary: string): number {
@@ -23,9 +23,10 @@ function toChartValue(salary: string): number {
 
 interface CountrySalaryChartProps {
   insights: CountrySalaryInsight[];
+  onCountrySelect?: (country: string) => void;
 }
 
-export function CountrySalaryChart({ insights }: CountrySalaryChartProps) {
+export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryChartProps) {
   const theme = useTheme();
   const chartData = useMemo(
     () =>
@@ -41,6 +42,8 @@ export function CountrySalaryChart({ insights }: CountrySalaryChartProps) {
   if (chartData.length === 0) {
     return null;
   }
+
+  const barShape = createSelectableBarShape(onCountrySelect);
 
   return (
     <figure aria-label="Average salary by country">
@@ -62,19 +65,19 @@ export function CountrySalaryChart({ insights }: CountrySalaryChartProps) {
             dataKey="min"
             name="Min salary"
             fill={theme.palette.primary.light}
-            radius={[BAR_TOP_RADIUS, BAR_TOP_RADIUS, 0, 0]}
+            shape={barShape}
           />
           <Bar
             dataKey="avg"
             name="Avg salary"
             fill={theme.palette.primary.main}
-            radius={[BAR_TOP_RADIUS, BAR_TOP_RADIUS, 0, 0]}
+            shape={barShape}
           />
           <Bar
             dataKey="max"
             name="Max salary"
             fill={theme.palette.primary.dark}
-            radius={[BAR_TOP_RADIUS, BAR_TOP_RADIUS, 0, 0]}
+            shape={barShape}
           />
         </BarChart>
       </ResponsiveContainer>

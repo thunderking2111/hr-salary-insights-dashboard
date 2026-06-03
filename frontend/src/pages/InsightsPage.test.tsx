@@ -1,4 +1,4 @@
-import { fireEvent, screen, within } from "@testing-library/react";
+import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
   country02JobTitleInsights,
@@ -63,15 +63,20 @@ describe("InsightsPage", () => {
     const figure = await screen.findByRole("figure", { name: /average salary by country/i });
     await screen.findByRole("table", { name: /salary by job in country01/i });
 
-    const bars = figure.querySelectorAll(".recharts-bar-rectangle");
-    const country02AvgBarIndex = 4;
-    fireEvent.click(bars.item(country02AvgBarIndex)!);
+    const country02Bar = await waitFor(() => {
+      const bar = figure.querySelector('[data-country="Country02"]');
+      if (!bar) {
+        throw new Error("Country02 chart bar not ready");
+      }
+      return bar;
+    });
+    fireEvent.click(country02Bar);
 
     const table = await screen.findByRole("table", {
       name: /salary by job in country02/i,
     });
     expect(
-      within(table).getByRole("cell", {
+      await within(table).findByRole("cell", {
         name: country02JobTitleInsights[0]!.job_title,
       }),
     ).toBeInTheDocument();

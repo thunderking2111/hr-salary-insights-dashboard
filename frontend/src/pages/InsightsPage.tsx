@@ -26,8 +26,11 @@ export function InsightsPage() {
 
   useEffect(() => {
     if (!chartCountry) {
+      setChartJobTitles([]);
       return;
     }
+
+    setChartJobTitles([]);
 
     void fetchSalaryByJobTitle(chartCountry)
       .then((data) => setChartJobTitles(data))
@@ -58,7 +61,7 @@ export function InsightsPage() {
     <div>
       <h1>Salary Insights</h1>
       {error && <p role="alert">{error}</p>}
-      <CountrySalaryChart insights={insights} />
+      <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
       {chartCountry && (
         <ChartJobTitlesTable country={chartCountry} jobTitles={chartJobTitles} />
       )}
