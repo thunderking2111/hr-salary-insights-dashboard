@@ -15,7 +15,8 @@ import {
   stubNineCountrySalaryInsights,
   topEightChartCountries,
 } from "../test/nineCountryInsights";
-import { renderInsightsPage } from "../test/render";
+import { stubTenJobTitlesForCountry01 } from "../test/elevenJobTitlesForCountry01";
+import { renderInsightsApp, renderInsightsPage } from "../test/render";
 
 describe("InsightsPage", () => {
   it("renders salary by country rows from the API", async () => {
@@ -122,5 +123,33 @@ describe("InsightsPage", () => {
       expect(within(figure).getByText(country)).toBeInTheDocument();
     }
     expect(within(figure).queryByText(excludedNinthChartCountry)).not.toBeInTheDocument();
+  });
+
+  it("navigates to paginated countries list when chart View all is clicked", async () => {
+    stubNineCountrySalaryInsights();
+    stubTenJobTitlesForCountry01();
+    renderInsightsApp("/insights");
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    fireEvent.click(screen.getByRole("button", { name: /^view all$/i }));
+
+    expect(await screen.findByRole("heading", { name: /salary by country/i })).toBeInTheDocument();
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    expect(table.className).toMatch(/MuiTable-root/);
+
+    for (const country of topEightChartCountries) {
+      expect(within(table).getByRole("cell", { name: country })).toBeInTheDocument();
+    }
+    expect(
+      within(table).queryByRole("cell", { name: excludedNinthChartCountry }),
+    ).not.toBeInTheDocument();
+
+    expect(screen.queryByRole("figure", { name: /average salary by country/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("table", { name: /salary by job in country01/i }),
+    ).not.toBeInTheDocument();
   });
 });
