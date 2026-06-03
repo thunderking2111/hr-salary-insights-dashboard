@@ -19,9 +19,11 @@ import {
 import { DeleteEmployeeDialog } from "../components/DeleteEmployeeDialog";
 import { DialogTitleBar } from "../components/DialogTitleBar";
 import { EmployeesTable } from "../components/EmployeesTable";
+import { ToastSnackbar } from "../components/ToastSnackbar";
 import { dialogContentSx, dialogPaperSlotProps } from "../components/dialogLayout";
 import { EmployeeForm } from "../components/EmployeeForm";
 import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
+import { useSnackbarToast } from "../hooks/useSnackbarToast";
 import { runMutation } from "../utils/runMutation";
 
 export function EmployeesPage() {
@@ -34,6 +36,7 @@ export function EmployeesPage() {
     loadEmployees,
     reloadCurrentPage,
   } = useEmployeeList();
+  const { toast, showSuccess, closeToast } = useSnackbarToast();
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addFieldErrors, setAddFieldErrors] = useState<EmployeeFieldErrors>({});
   const openAddDialog = () => {
@@ -78,6 +81,7 @@ export function EmployeesPage() {
       .then(() => {
         closeAddDialog();
         reloadCurrentPage();
+        showSuccess("Employee added");
       })
       .catch((err: unknown) => {
         if (err instanceof ApiValidationError) {
@@ -98,6 +102,7 @@ export function EmployeesPage() {
       () => {
         setDeletingEmployee(null);
         reloadCurrentPage();
+        showSuccess("Employee deleted");
       },
       setError,
       "Failed to delete employee",
@@ -122,6 +127,7 @@ export function EmployeesPage() {
       .then(() => {
         closeEditDialog();
         reloadCurrentPage();
+        showSuccess("Employee updated");
       })
       .catch((err: unknown) => {
         if (err instanceof ApiValidationError) {
@@ -218,6 +224,12 @@ export function EmployeesPage() {
         employee={deletingEmployee}
         onClose={closeDeleteDialog}
         onConfirm={handleConfirmDelete}
+      />
+      <ToastSnackbar
+        open={toast !== null}
+        message={toast?.message ?? ""}
+        severity={toast?.severity ?? "success"}
+        onClose={closeToast}
       />
     </div>
   );
