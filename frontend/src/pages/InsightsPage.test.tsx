@@ -1,10 +1,10 @@
-import { fireEvent, render, screen, within } from "@testing-library/react";
+import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { InsightsPage } from "./InsightsPage";
+import { renderInsightsPage } from "../test/render";
 
 describe("InsightsPage", () => {
   it("renders salary by country rows from the API", async () => {
-    render(<InsightsPage />);
+    renderInsightsPage();
 
     const table = await screen.findByRole("table", { name: /salary by country/i });
     expect(within(table).getByRole("cell", { name: "India" })).toBeInTheDocument();
@@ -14,7 +14,7 @@ describe("InsightsPage", () => {
   });
 
   it("shows job title salaries when a country is selected", async () => {
-    render(<InsightsPage />);
+    renderInsightsPage();
 
     fireEvent.click(await screen.findByRole("button", { name: /view job titles for india/i }));
 
@@ -24,7 +24,7 @@ describe("InsightsPage", () => {
   });
 
   it("renders average salary chart by country from the API", async () => {
-    render(<InsightsPage />);
+    renderInsightsPage();
 
     expect(
       await screen.findByRole("figure", { name: /average salary by country/i }),
