@@ -2,6 +2,7 @@ import { fireEvent, screen, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import {
   stubChartCountryJobTitles,
+  stubEmptyJobTitlesForCountry01,
   stubFailingJobTitlesForCountry01,
 } from "../test/chartCountryJobTitles";
 import {
@@ -36,6 +37,21 @@ describe("InsightsCountriesPage", () => {
       await within(table).findByRole("cell", { name: excludedNinthChartCountry }),
     ).toBeInTheDocument();
     expect(within(table).queryByRole("cell", { name: nineCountrySalaryInsights[0]!.country })).not.toBeInTheDocument();
+  });
+
+  it("shows empty message in job titles dialog when country has no job titles", async () => {
+    stubNineCountrySalaryInsights();
+    stubEmptyJobTitlesForCountry01();
+    renderInsightsCountriesPage();
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    fireEvent.click(within(table).getByRole("cell", { name: "Country01" }));
+
+    const dialog = await screen.findByRole("dialog", { name: /job titles in country01/i });
+    expect(
+      await within(dialog).findByText(/no job titles found for country01/i),
+    ).toBeInTheDocument();
+    expect(within(dialog).queryByRole("table")).not.toBeInTheDocument();
   });
 
   it("shows error alert in job titles dialog when job titles fetch fails", async () => {

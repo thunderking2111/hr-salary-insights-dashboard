@@ -33,3 +33,15 @@ export function stubFailingJobTitlesForCountry01(): void {
     }),
   );
 }
+
+export function stubEmptyJobTitlesForCountry01(): void {
+  server.use(
+    http.get("/api/insights/salary-by-job-title/", ({ request }) => {
+      const country = new URL(request.url).searchParams.get("country");
+      if (country === "Country01") {
+        return HttpResponse.json([]);
+      }
+      return HttpResponse.json([]);
+    }),
+  );
+}
