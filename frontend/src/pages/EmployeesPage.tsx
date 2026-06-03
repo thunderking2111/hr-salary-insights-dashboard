@@ -5,7 +5,7 @@ import DialogContent from "@mui/material/DialogContent";
 import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
-import { type FormEvent, useState } from "react";
+import { type FormEvent, useRef, useState } from "react";
 import { ApiValidationError } from "../api/employeeFieldErrors";
 import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
 import { employeeToFormValues } from "../api/employeeFormValues";
@@ -24,7 +24,7 @@ import { dialogContentSx, dialogPaperSlotProps } from "../components/dialogLayou
 import { EmployeeForm } from "../components/EmployeeForm";
 import { EMPLOYEE_LIST_PAGE_SIZE, useEmployeeList } from "../hooks/useEmployeeList";
 import { useSnackbarToast } from "../hooks/useSnackbarToast";
-import { runMutation } from "../utils/runMutation";
+import { createDialogMutationTracker } from "../utils/dialogMutationTracker";
 
 export function EmployeesPage() {
   const {
@@ -36,17 +36,26 @@ export function EmployeesPage() {
     loadEmployees,
     reloadCurrentPage,
   } = useEmployeeList();
-  const { toast, showSuccess, closeToast } = useSnackbarToast();
+  const { toast, showSuccess, showError, closeToast } = useSnackbarToast();
+  const addMutation = useRef(createDialogMutationTracker());
+  const editMutation = useRef(createDialogMutationTracker());
+  const deleteMutation = useRef(createDialogMutationTracker());
+
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const [addFieldErrors, setAddFieldErrors] = useState<EmployeeFieldErrors>({});
   const openAddDialog = () => {
     setAddFieldErrors({});
     setAddDialogOpen(true);
   };
-  const closeAddDialog = () => {
+  const dismissAddDialog = () => {
     setAddDialogOpen(false);
     setAddFieldErrors({});
   };
+  const closeAddDialog = () => {
+    addMutation.current.notifyDialogClosed();
+    dismissAddDialog();
+  };
+
   const [editingEmployee, setEditingEmployee] = useState<Employee | null>(null);
   const [editFieldErrors, setEditFieldErrors] = useState<EmployeeFieldErrors>({});
   const openEditDialog = (employee: Employee) => {
@@ -54,17 +63,38 @@ export function EmployeesPage() {
     setEditFieldErrors({});
     setEditingEmployee(employee);
   };
-  const closeEditDialog = () => {
+  const dismissEditDialog = () => {
     setEditingEmployee(null);
     setEditFieldErrors({});
   };
+  const closeEditDialog = () => {
+    editMutation.current.notifyDialogClosed();
+    dismissEditDialog();
+  };
+
   const [deletingEmployee, setDeletingEmployee] = useState<Employee | null>(null);
-  const closeDeleteDialog = () => setDeletingEmployee(null);
+  const closeDeleteDialog = () => {
+    deleteMutation.current.notifyDialogClosed();
+    setDeletingEmployee(null);
+  };
 
   const openDeleteDialog = (employee: Employee) => {
     setAddDialogOpen(false);
     setEditingEmployee(null);
     setDeletingEmployee(employee);
+  };
+
+  const handleMutationError = (
+    err: unknown,
+    tracker: ReturnType<typeof createDialogMutationTracker>,
+    fallbackMessage: string,
+    toastMessage: string,
+  ) => {
+    if (tracker.wasClosedBeforeResult()) {
+      showError(toastMessage);
+      return;
+    }
+    setError(err instanceof Error ? err.message : fallbackMessage);
   };
 
   const handleAddSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -77,9 +107,10 @@ export function EmployeesPage() {
     }
 
     setAddFieldErrors({});
+    addMutation.current.start();
     void createEmployee(payloadFromForm(form))
       .then(() => {
-        closeAddDialog();
+        dismissAddDialog();
         reloadCurrentPage();
         showSuccess("Employee added");
       })
@@ -88,7 +119,10 @@ export function EmployeesPage() {
           setAddFieldErrors(err.fieldErrors);
           return;
         }
-        setError(err instanceof Error ? err.message : "Failed to add employee");
+        handleMutationError(err, addMutation.current, "Failed to add employee", "Could not add employee");
+      })
+      .finally(() => {
+        addMutation.current.finish();
       });
   };
 
@@ -97,16 +131,24 @@ export function EmployeesPage() {
       return;
     }
     const employeeId = deletingEmployee.id;
-    runMutation(
-      deleteEmployee(employeeId),
-      () => {
+    deleteMutation.current.start();
+    void deleteEmployee(employeeId)
+      .then(() => {
         setDeletingEmployee(null);
         reloadCurrentPage();
         showSuccess("Employee deleted");
-      },
-      setError,
-      "Failed to delete employee",
-    );
+      })
+      .catch((err: unknown) => {
+        handleMutationError(
+          err,
+          deleteMutation.current,
+          "Failed to delete employee",
+          "Could not delete employee",
+        );
+      })
+      .finally(() => {
+        deleteMutation.current.finish();
+      });
   };
 
   const handleEditSubmit = (event: FormEvent<HTMLFormElement>) => {
@@ -123,9 +165,10 @@ export function EmployeesPage() {
 
     const employeeId = editingEmployee.id;
     setEditFieldErrors({});
+    editMutation.current.start();
     void updateEmployee(employeeId, payloadFromForm(form))
       .then(() => {
-        closeEditDialog();
+        dismissEditDialog();
         reloadCurrentPage();
         showSuccess("Employee updated");
       })
@@ -134,7 +177,15 @@ export function EmployeesPage() {
           setEditFieldErrors(err.fieldErrors);
           return;
         }
-        setError(err instanceof Error ? err.message : "Failed to update employee");
+        handleMutationError(
+          err,
+          editMutation.current,
+          "Failed to update employee",
+          "Could not update employee",
+        );
+      })
+      .finally(() => {
+        editMutation.current.finish();
       });
   };
 
