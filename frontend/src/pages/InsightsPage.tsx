@@ -17,6 +17,7 @@ export function InsightsPage() {
   const [chartCountry, setChartCountry] = useState<string | null>(null);
   const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
   const [chartJobTitlesDialogOpen, setChartJobTitlesDialogOpen] = useState(false);
+  const [chartJobTitlesLoading, setChartJobTitlesLoading] = useState(false);
 
   useEffect(() => {
     void fetchSalaryByCountry()
@@ -32,17 +33,20 @@ export function InsightsPage() {
   useEffect(() => {
     if (!chartCountry) {
       setChartJobTitles([]);
+      setChartJobTitlesLoading(false);
       return;
     }
 
     setChartJobTitles([]);
     setChartJobTitlesDialogOpen(false);
+    setChartJobTitlesLoading(true);
 
     void fetchSalaryByJobTitle(chartCountry)
       .then((data) => setChartJobTitles(data))
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load job title insights");
-      });
+      })
+      .finally(() => setChartJobTitlesLoading(false));
   }, [chartCountry]);
 
   return (
@@ -78,6 +82,7 @@ export function InsightsPage() {
         country={chartCountry}
         jobTitles={chartJobTitles}
         open={chartJobTitlesDialogOpen}
+        loading={chartJobTitlesLoading}
         onClose={() => setChartJobTitlesDialogOpen(false)}
       />
     </div>

@@ -1,3 +1,5 @@
+import Box from "@mui/material/Box";
+import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import Table from "@mui/material/Table";
@@ -20,10 +22,17 @@ interface JobTitlesDialogProps {
   country: string | null;
   jobTitles: JobTitleSalaryInsight[];
   open: boolean;
+  loading?: boolean;
   onClose: () => void;
 }
 
-export function JobTitlesDialog({ country, jobTitles, open, onClose }: JobTitlesDialogProps) {
+export function JobTitlesDialog({
+  country,
+  jobTitles,
+  open,
+  loading = false,
+  onClose,
+}: JobTitlesDialogProps) {
   if (!country) {
     return null;
   }
@@ -43,28 +52,34 @@ export function JobTitlesDialog({ country, jobTitles, open, onClose }: JobTitles
     >
       <DialogTitleBar id={titleId} title={`Job titles in ${country}`} onClose={onClose} />
       <DialogContent sx={dialogContentSx}>
-        <TableContainer>
-          <Table aria-label={`Job titles in ${country}`} size="small">
-            <TableHead>
-              <TableRow>
-                <TableCell component="th" scope="col">
-                  Job title
-                </TableCell>
-                <TableCell component="th" scope="col" align="right">
-                  Avg salary
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {sortedJobTitles.map((row) => (
-                <TableRow key={row.job_title} hover>
-                  <TableCell>{row.job_title}</TableCell>
-                  <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
+        {loading ? (
+          <Box sx={{ display: "flex", justifyContent: "center", py: 3 }}>
+            <CircularProgress aria-label="Loading job titles" />
+          </Box>
+        ) : (
+          <TableContainer>
+            <Table aria-label={`Job titles in ${country}`} size="small">
+              <TableHead>
+                <TableRow>
+                  <TableCell component="th" scope="col">
+                    Job title
+                  </TableCell>
+                  <TableCell component="th" scope="col" align="right">
+                    Avg salary
+                  </TableCell>
                 </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
+              </TableHead>
+              <TableBody>
+                {sortedJobTitles.map((row) => (
+                  <TableRow key={row.job_title} hover>
+                    <TableCell>{row.job_title}</TableCell>
+                    <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        )}
       </DialogContent>
     </Dialog>
   );
