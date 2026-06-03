@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
+import { CountrySalaryChart } from "../components/CountrySalaryChart";
 
 export function InsightsPage() {
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
@@ -38,17 +39,7 @@ export function InsightsPage() {
     <div>
       <h1>Salary Insights</h1>
       {error && <p role="alert">{error}</p>}
-      <figure aria-label="Average salary by country">
-        <ul role="list">
-          {insights.map((row) => (
-            <li
-              key={row.country}
-              role="listitem"
-              aria-label={`${row.country}, average salary ${row.avg_salary}`}
-            />
-          ))}
-        </ul>
-      </figure>
+      <CountrySalaryChart insights={insights} />
       <table aria-label="Salary by country">
         <thead>
           <tr>
