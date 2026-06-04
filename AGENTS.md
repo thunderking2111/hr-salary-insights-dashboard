@@ -117,6 +117,8 @@ acceptable only when they describe a single inseparable behavior.
 When introducing a new tool, add it to `requirements-dev.txt` (backend) or
 `package.json` (frontend), pin the version, and update the relevant doc.
 
+- Frontend tests: from `frontend/`, run `npm test`.
+
 ## 8. Scope discipline
 
 - Treat `README.md`'s goals section as a contract. New scope items require

@@ -25,7 +25,15 @@
 
 - Python: `pytest` + `pytest-django`.
 - Linting: `ruff` (run via `pre-commit` and in CI).
-- Frontend (later): `vitest` + `@testing-library/react`.
+- Frontend: `vitest` + `@testing-library/react` + MSW for API stubs.
+
+### Frontend test runs
+
+From `frontend/`:
+
+```bash
+npm test
+```
 
 ## What we do not test (intentionally)
 
