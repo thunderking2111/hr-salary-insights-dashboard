@@ -55,10 +55,14 @@ export async function fetchSalaryByCountry(): Promise<CountrySalaryInsight[]> {
   return request<CountrySalaryInsight[]>("/api/insights/salary-by-country/");
 }
 
-export async function fetchSalaryByJobTitle(country: string): Promise<JobTitleSalaryInsight[]> {
+export async function fetchSalaryByJobTitle(
+  country: string,
+  init?: Pick<RequestInit, "signal">,
+): Promise<JobTitleSalaryInsight[]> {
   const params = new URLSearchParams({ country });
   return request<JobTitleSalaryInsight[]>(
     `/api/insights/salary-by-job-title/?${params.toString()}`,
+    init,
   );
 }
 
