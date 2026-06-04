@@ -1,9 +1,10 @@
-import { useTheme } from "@mui/material/styles";
+import { alpha, useTheme } from "@mui/material/styles";
 import { useMemo } from "react";
 import {
   Bar,
   BarChart,
   CartesianGrid,
+  Customized,
   Legend,
   ResponsiveContainer,
   Tooltip,
@@ -13,6 +14,7 @@ import {
 import type { CountrySalaryInsight } from "../api/types";
 import { topCountriesByAverageSalary } from "../utils/chartCountries";
 import { formatSalaryAxisTick, formatSalaryValue } from "../utils/formatSalary";
+import { ChartColumnHitAreas } from "./ChartColumnHitAreas";
 import { createSelectableBarShape } from "./SelectableBarShape";
 
 const CHART_LEFT_MARGIN = 72;
@@ -39,11 +41,18 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
     [insights],
   );
 
+  const barShape = useMemo(
+    () => createSelectableBarShape(onCountrySelect),
+    [onCountrySelect],
+  );
+  const tooltipCursorFill = useMemo(
+    () => alpha(theme.palette.primary.main, 0.08),
+    [theme],
+  );
+
   if (chartData.length === 0) {
     return null;
   }
-
-  const barShape = createSelectableBarShape(onCountrySelect);
 
   return (
     <figure aria-label="Average salary by country">
@@ -59,7 +68,10 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="country" />
           <YAxis tickFormatter={formatSalaryAxisTick} width={CHART_LEFT_MARGIN} />
-          <Tooltip formatter={(value: number) => formatSalaryValue(value)} />
+          <Tooltip
+            formatter={(value: number) => formatSalaryValue(value)}
+            cursor={{ fill: tooltipCursorFill, stroke: "none" }}
+          />
           <Legend />
           <Bar
             dataKey="min"
@@ -78,6 +90,9 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
             name="Max salary"
             fill={theme.palette.primary.dark}
             shape={barShape}
+          />
+          <Customized
+            component={<ChartColumnHitAreas onCountrySelect={onCountrySelect} />}
           />
         </BarChart>
       </ResponsiveContainer>
