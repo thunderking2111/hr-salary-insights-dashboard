@@ -14,7 +14,7 @@ import {
 import type { CountrySalaryInsight } from "../api/types";
 import { topCountriesByAverageSalary } from "../utils/chartCountries";
 import { formatSalaryAxisTick, formatSalaryValue } from "../utils/formatSalary";
-import { ChartColumnHitAreas } from "./ChartColumnHitAreas";
+import { ChartColumnHitAreas, type ChartColumnHitAreasProps } from "./ChartColumnHitAreas";
 import { createSelectableBarShape } from "./SelectableBarShape";
 
 const CHART_LEFT_MARGIN = 72;
@@ -49,6 +49,17 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
     () => alpha(theme.palette.primary.main, 0.08),
     [theme],
   );
+  const chartColumnHitAreas = useMemo(() => {
+    function ChartColumnHitAreasLayer(props: Record<string, unknown>) {
+      return (
+        <ChartColumnHitAreas
+          {...(props as ChartColumnHitAreasProps)}
+          onCountrySelect={onCountrySelect}
+        />
+      );
+    }
+    return ChartColumnHitAreasLayer;
+  }, [onCountrySelect]);
 
   if (chartData.length === 0) {
     return null;
@@ -77,23 +88,24 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
             dataKey="min"
             name="Min salary"
             fill={theme.palette.primary.light}
+            isAnimationActive={false}
             shape={barShape}
           />
           <Bar
             dataKey="avg"
             name="Avg salary"
             fill={theme.palette.primary.main}
+            isAnimationActive={false}
             shape={barShape}
           />
           <Bar
             dataKey="max"
             name="Max salary"
             fill={theme.palette.primary.dark}
+            isAnimationActive={false}
             shape={barShape}
           />
-          <Customized
-            component={<ChartColumnHitAreas onCountrySelect={onCountrySelect} />}
-          />
+          <Customized component={chartColumnHitAreas} />
         </BarChart>
       </ResponsiveContainer>
     </figure>

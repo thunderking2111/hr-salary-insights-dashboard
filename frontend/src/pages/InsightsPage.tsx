@@ -2,7 +2,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
@@ -16,6 +16,7 @@ export function InsightsPage() {
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [chartCountry, setChartCountry] = useState<string | null>(null);
+  const [tableCountry, setTableCountry] = useState<string | null>(null);
   const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
   const [chartJobTitlesDialogOpen, setChartJobTitlesDialogOpen] = useState(false);
   const [chartJobTitlesLoading, setChartJobTitlesLoading] = useState(false);
@@ -32,21 +33,28 @@ export function InsightsPage() {
       });
   }, []);
 
+  const handleChartCountrySelect = useCallback((country: string) => {
+    setChartCountry((current) => (current === country ? current : country));
+  }, []);
+
   useEffect(() => {
     if (!chartCountry) {
+      setTableCountry(null);
       setChartJobTitles([]);
       setChartJobTitlesLoading(false);
       setChartJobTitlesError(null);
       return;
     }
 
-    setChartJobTitles([]);
     setChartJobTitlesDialogOpen(false);
     setChartJobTitlesLoading(true);
     setChartJobTitlesError(null);
 
     void fetchSalaryByJobTitle(chartCountry)
-      .then((data) => setChartJobTitles(data))
+      .then((data) => {
+        setChartJobTitles(data);
+        setTableCountry(chartCountry);
+      })
       .catch(() => setChartJobTitlesError("Failed to load job titles"))
       .finally(() => setChartJobTitlesLoading(false));
   }, [chartCountry]);
@@ -71,16 +79,16 @@ export function InsightsPage() {
             View all
           </Button>
         </Box>
-        <CountrySalaryChart insights={insights} onCountrySelect={setChartCountry} />
+        <CountrySalaryChart insights={insights} onCountrySelect={handleChartCountrySelect} />
       </Box>
       {chartCountry && chartJobTitlesError && (
         <Alert severity="error" role="alert" sx={{ mt: 3 }}>
           {chartJobTitlesError}
         </Alert>
       )}
-      {chartCountry && !chartJobTitlesError && (
+      {tableCountry && !chartJobTitlesError && chartJobTitles.length > 0 && (
         <ChartJobTitlesTable
-          country={chartCountry}
+          country={tableCountry}
           jobTitles={chartJobTitles}
           onViewAllJobTitles={() => setChartJobTitlesDialogOpen(true)}
         />

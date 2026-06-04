@@ -29,7 +29,8 @@ export function createSelectableBarShape(onCountrySelect?: (country: string) => 
         ry={BAR_TOP_RADIUS}
         data-country={country}
         style={{ cursor: country ? "pointer" : undefined }}
-        onClick={() => {
+        onClick={(event) => {
+          event.stopPropagation();
           if (country) {
             onCountrySelect?.(country);
           }

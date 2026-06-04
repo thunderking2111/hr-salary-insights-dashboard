@@ -55,7 +55,10 @@ export function ChartColumnHitAreas({
             fill="transparent"
             data-chart-column={row.country}
             style={{ cursor: "pointer" }}
-            onClick={() => onCountrySelect(row.country)}
+            onClick={(event) => {
+              event.stopPropagation();
+              onCountrySelect(row.country);
+            }}
           />
         );
       })}
