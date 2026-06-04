@@ -19,7 +19,17 @@ export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalary
 
   return (
     <TableContainer>
-      <Table aria-label="Salary by country" size="small">
+      <Table
+        aria-label="Salary by country"
+        size="small"
+        sx={{
+          tableLayout: "fixed",
+          "& .MuiTableCell-root:nth-of-type(n+3)": {
+            minWidth: 112,
+            whiteSpace: "nowrap",
+          },
+        }}
+      >
         <TableHead>
           <TableRow>
             <TableCell component="th" scope="col">
@@ -33,6 +43,9 @@ export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalary
             </TableCell>
             <TableCell component="th" scope="col" align="right">
               Max salary
+            </TableCell>
+            <TableCell component="th" scope="col" align="right">
+              Median salary
             </TableCell>
             <TableCell component="th" scope="col" align="right">
               Avg salary
@@ -51,6 +64,7 @@ export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalary
               <TableCell align="right">{row.employee_count}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.min_salary))}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.max_salary))}</TableCell>
+              <TableCell align="right">{formatSalaryValue(Number(row.median_salary))}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
             </TableRow>
           ))}

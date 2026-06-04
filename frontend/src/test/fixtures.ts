@@ -35,10 +35,16 @@ export const countrySalaryInsights: CountrySalaryInsight[] = [
     min_salary: "1000000.00",
     max_salary: "3000000.00",
     avg_salary: "2000000.00",
+    median_salary: "2000000.00",
     employee_count: 1,
   },
 ];
 
 export const indiaJobTitleSalaryInsights: JobTitleSalaryInsight[] = [
-  { job_title: "Software Engineer", avg_salary: "2000000.00", employee_count: 1 },
+  {
+    job_title: "Software Engineer",
+    avg_salary: "2000000.00",
+    median_salary: "2000000.00",
+    employee_count: 1,
+  },
 ];

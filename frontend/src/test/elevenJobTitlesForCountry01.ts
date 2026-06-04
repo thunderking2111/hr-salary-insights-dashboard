@@ -5,21 +5,29 @@ import { server } from "./server";
 /** Ten jobs by descending avg salary; below-chart table shows the full set. */
 export const tenJobTitlesForCountry01: JobTitleSalaryInsight[] = Array.from(
   { length: 10 },
-  (_, index) => ({
-    job_title: `Job${String(index + 1).padStart(2, "0")}`,
-    avg_salary: String((10 - index) * 100_000),
-    employee_count: 1,
-  }),
+  (_, index) => {
+    const avg_salary = String((10 - index) * 100_000);
+    return {
+      job_title: `Job${String(index + 1).padStart(2, "0")}`,
+      avg_salary,
+      median_salary: avg_salary,
+      employee_count: 1,
+    };
+  },
 );
 
 /** Eleven jobs by descending avg salary; below-chart table shows top ten only. */
 export const elevenJobTitlesForCountry01: JobTitleSalaryInsight[] = Array.from(
   { length: 11 },
-  (_, index) => ({
-    job_title: `Job${String(index + 1).padStart(2, "0")}`,
-    avg_salary: String((11 - index) * 100_000),
-    employee_count: 1,
-  }),
+  (_, index) => {
+    const avg_salary = String((11 - index) * 100_000);
+    return {
+      job_title: `Job${String(index + 1).padStart(2, "0")}`,
+      avg_salary,
+      median_salary: avg_salary,
+      employee_count: 1,
+    };
+  },
 );
 
 export const topTenJobTitlesForCountry01 = elevenJobTitlesForCountry01

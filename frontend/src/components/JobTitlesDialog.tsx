@@ -68,7 +68,17 @@ export function JobTitlesDialog({
           <Typography>No job titles found for {country}</Typography>
         ) : (
           <TableContainer>
-            <Table aria-label={`Job titles in ${country}`} size="small">
+            <Table
+              aria-label={`Job titles in ${country}`}
+              size="small"
+              sx={{
+                tableLayout: "fixed",
+                "& .MuiTableCell-root:nth-of-type(n+3)": {
+                  minWidth: 112,
+                  whiteSpace: "nowrap",
+                },
+              }}
+            >
               <TableHead>
                 <TableRow>
                   <TableCell component="th" scope="col">
@@ -76,6 +86,9 @@ export function JobTitlesDialog({
                   </TableCell>
                   <TableCell component="th" scope="col" align="right">
                     Employees
+                  </TableCell>
+                  <TableCell component="th" scope="col" align="right">
+                    Median salary
                   </TableCell>
                   <TableCell component="th" scope="col" align="right">
                     Avg salary
@@ -87,6 +100,7 @@ export function JobTitlesDialog({
                   <TableRow key={row.job_title} hover>
                     <TableCell>{row.job_title}</TableCell>
                     <TableCell align="right">{row.employee_count}</TableCell>
+                    <TableCell align="right">{formatSalaryValue(Number(row.median_salary))}</TableCell>
                     <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
                   </TableRow>
                 ))}

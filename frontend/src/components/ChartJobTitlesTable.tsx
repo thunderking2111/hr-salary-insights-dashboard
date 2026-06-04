@@ -11,7 +11,7 @@ import type { JobTitleSalaryInsight } from "../api/types";
 import { formatSalaryValue } from "../utils/formatSalary";
 import { TOP_JOB_TITLE_COUNT, topJobTitlesByAverageSalary } from "../utils/jobTitleInsights";
 
-const TABLE_MAX_WIDTH = 560;
+const TABLE_MAX_WIDTH = 720;
 
 interface ChartJobTitlesTableProps {
   country: string;
@@ -51,10 +51,15 @@ export function ChartJobTitlesTable({
           aria-label={tableLabel}
           size="small"
           sx={{
+            tableLayout: "fixed",
             "& .MuiTableCell-root": {
               borderBottom: "1px solid",
               borderColor: "divider",
               py: 1.25,
+            },
+            "& .MuiTableCell-root:nth-of-type(n+3)": {
+              minWidth: 112,
+              whiteSpace: "nowrap",
             },
             "& .MuiTableRow-root:last-child .MuiTableCell-root": {
               borderBottom: 0,
@@ -70,6 +75,9 @@ export function ChartJobTitlesTable({
                 Employees
               </TableCell>
               <TableCell component="th" scope="col" align="right">
+                Median salary
+              </TableCell>
+              <TableCell component="th" scope="col" align="right">
                 Avg salary
               </TableCell>
             </TableRow>
@@ -79,6 +87,7 @@ export function ChartJobTitlesTable({
               <TableRow key={row.job_title} hover>
                 <TableCell>{row.job_title}</TableCell>
                 <TableCell align="right">{row.employee_count}</TableCell>
+                <TableCell align="right">{formatSalaryValue(Number(row.median_salary))}</TableCell>
                 <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
               </TableRow>
             ))}

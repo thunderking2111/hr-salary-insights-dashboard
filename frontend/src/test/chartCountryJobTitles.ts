@@ -4,7 +4,12 @@ import { elevenJobTitlesForCountry01 } from "./elevenJobTitlesForCountry01";
 import { server } from "./server";
 
 export const country02JobTitleInsights: JobTitleSalaryInsight[] = [
-  { job_title: "Product Manager", avg_salary: "500000.00", employee_count: 1 },
+  {
+    job_title: "Product Manager",
+    avg_salary: "500000.00",
+    median_salary: "500000.00",
+    employee_count: 1,
+  },
 ];
 
 export function stubDelayedJobTitlesForCountry02(delayMs = 200): void {
