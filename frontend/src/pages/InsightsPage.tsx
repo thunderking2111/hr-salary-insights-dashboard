@@ -53,7 +53,9 @@ export function InsightsPage() {
 
   return (
     <div>
-      <h1>Salary Insights</h1>
+      <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
+        Salary Insights
+      </Typography>
       {error && <p role="alert">{error}</p>}
       <Box component="section">
         <Box
