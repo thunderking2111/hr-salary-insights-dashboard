@@ -48,6 +48,7 @@ describe("fetchSalaryByCountry", () => {
     expect(data[0]?.min_salary).toBe("1000000.00");
     expect(data[0]?.max_salary).toBe("3000000.00");
     expect(data[0]?.avg_salary).toBe("2000000.00");
+    expect(data[0]?.employee_count).toBe(1);
   });
 });
 
@@ -57,5 +58,6 @@ describe("fetchSalaryByJobTitle", () => {
 
     expect(data[0]?.job_title).toBe("Software Engineer");
     expect(data[0]?.avg_salary).toBe("2000000.00");
+    expect(data[0]?.employee_count).toBe(1);
   });
 });
