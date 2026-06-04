@@ -79,6 +79,16 @@ more code buys a clean TDD history and an honest refactor commit at the end.
 | Insights | Server-side pagination on `salary-by-country` | API returns full list; client pagination sufficient at ~10k employees scale for country count |
 | Insights | Multi-country job table (compare several countries at once) | UX flows specify **single selected country** only |
 
+### Insights chart job-title fetch ordering (2026-06-04)
+
+- **Risk**: Rapid country changes on the chart could let a slow, stale
+  `salary-by-job-title` response overwrite rows for the newly selected country.
+- **Mitigation**: Abort the in-flight request when `chartCountry` changes;
+  ignore `AbortError` in the effect. Job table header/data update together only
+  after the latest request succeeds.
+- **Why not a client cache**: Country count is small; explicit abort keeps MVP
+  logic obvious and matches existing `useEffect` fetch style.
+
 Approved MVP scope is documented in
 [`docs/frontend/visual-spec.md`](frontend/visual-spec.md),
 [`wireframes.md`](frontend/wireframes.md), and [`ux-flows.md`](frontend/ux-flows.md).
