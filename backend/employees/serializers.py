@@ -32,8 +32,10 @@ class CountrySalaryInsightSerializer(serializers.Serializer):
     min_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
     max_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
     avg_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
+    employee_count = serializers.IntegerField()
 
 
 class JobTitleSalaryInsightSerializer(serializers.Serializer):
     job_title = serializers.CharField()
     avg_salary = serializers.DecimalField(max_digits=12, decimal_places=2)
+    employee_count = serializers.IntegerField()
