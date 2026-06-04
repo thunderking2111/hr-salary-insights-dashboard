@@ -5,6 +5,10 @@ import {
   stubChartCountryJobTitles,
   stubFailingJobTitlesForCountry01,
 } from "../test/chartCountryJobTitles";
+import {
+  releaseStaleCountry01JobTitles,
+  stubOutOfOrderJobTitleFetches,
+} from "../test/chartOutOfOrderJobTitles";
 import { stubChartWithLowSalaryCountry } from "../test/chartWithLowSalaryCountry";
 import {
   excludedEleventhJobTitleForCountry01,
@@ -76,6 +80,43 @@ describe("InsightsPage", () => {
 
     const table = await screen.findByRole("table", { name: /salary by job in asd/i });
     expect(within(table).getByRole("cell", { name: "Intern" })).toBeInTheDocument();
+  });
+
+  it("ignores stale job title responses when chart country changes quickly", async () => {
+    stubNineCountrySalaryInsights();
+    stubOutOfOrderJobTitleFetches();
+    renderInsightsPage();
+
+    const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+    const country02Bar = await waitFor(() => {
+      const bar = figure.querySelector('[data-country="Country02"]');
+      if (!bar) {
+        throw new Error("Country02 chart bar not ready");
+      }
+      return bar;
+    });
+    fireEvent.click(country02Bar);
+
+    const table = await screen.findByRole("table", {
+      name: /salary by job in country02/i,
+    });
+    expect(
+      within(table).getByRole("cell", {
+        name: country02JobTitleInsights[0]!.job_title,
+      }),
+    ).toBeInTheDocument();
+
+    releaseStaleCountry01JobTitles();
+
+    await waitFor(() => {
+      expect(
+        screen.getByRole("table", { name: /salary by job in country02/i }),
+      ).toBeInTheDocument();
+      expect(within(table).getByRole("cell", { name: country02JobTitleInsights[0]!.job_title }))
+        .toBeInTheDocument();
+      expect(within(table).queryByRole("cell", { name: topTenJobTitlesForCountry01[0] })).not
+        .toBeInTheDocument();
+    });
   });
 
   it("updates below-chart job table when a chart bar is clicked", async () => {
