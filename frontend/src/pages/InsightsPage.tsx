@@ -6,6 +6,11 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchSalaryByCountry } from "../api/client";
 import type { CountrySalaryInsight } from "../api/types";
+import {
+  CenteredLoadingSpinner,
+  ListLoadingCenter,
+  ListLoadingIndicator,
+} from "../components/CenteredLoadingSpinner";
 import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
 import { CountrySalaryChart } from "../components/CountrySalaryChart";
 import { JobTitlesDialog } from "../components/JobTitlesDialog";
@@ -15,6 +20,7 @@ import { firstChartCountry } from "../utils/chartCountries";
 export function InsightsPage() {
   const navigate = useNavigate();
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
+  const [insightsLoading, setInsightsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const {
     chartCountry,
@@ -28,8 +34,10 @@ export function InsightsPage() {
     openJobTitlesDialog,
     closeJobTitlesDialog,
   } = useChartCountryJobTitles();
-
   useEffect(() => {
+    setInsightsLoading(true);
+    setError(null);
+
     void fetchSalaryByCountry()
       .then((data) => {
         setInsights(data);
@@ -37,6 +45,9 @@ export function InsightsPage() {
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load salary insights");
+      })
+      .finally(() => {
+        setInsightsLoading(false);
       });
   }, [setChartCountry]);
 
@@ -60,19 +71,39 @@ export function InsightsPage() {
             View all
           </Button>
         </Box>
-        <CountrySalaryChart insights={insights} onCountrySelect={selectChartCountry} />
+        {insightsLoading && insights.length === 0 ? (
+          <ListLoadingCenter label="Loading salary insights" minHeight={400} />
+        ) : (
+          <CountrySalaryChart insights={insights} onCountrySelect={selectChartCountry} />
+        )}
       </Box>
       {chartCountry && chartJobTitlesError && (
         <Alert severity="error" role="alert" sx={{ mt: 3 }}>
           {chartJobTitlesError}
         </Alert>
       )}
+      {chartCountry && loading && !tableCountry && (
+        <Box
+          sx={{
+            mt: 3,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            minHeight: 240,
+          }}
+        >
+          <CenteredLoadingSpinner label="Loading job titles" />
+        </Box>
+      )}
       {tableCountry && !chartJobTitlesError && chartJobTitles.length > 0 && (
-        <ChartJobTitlesTable
-          country={tableCountry}
-          jobTitles={chartJobTitles}
-          onViewAllJobTitles={openJobTitlesDialog}
-        />
+        <Box sx={{ position: "relative", mt: 3, minHeight: loading ? 240 : undefined }}>
+          <ChartJobTitlesTable
+            country={tableCountry}
+            jobTitles={chartJobTitles}
+            onViewAllJobTitles={openJobTitlesDialog}
+          />
+          {loading && <ListLoadingIndicator label="Loading job titles" minHeight={240} />}
+        </Box>
       )}
       <JobTitlesDialog
         country={chartCountry}

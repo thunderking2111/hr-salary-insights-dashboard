@@ -3,12 +3,9 @@ import { describe, expect, it } from "vitest";
 import {
   country02JobTitleInsights,
   stubChartCountryJobTitles,
+  stubDelayedJobTitlesForCountry02,
   stubFailingJobTitlesForCountry01,
 } from "../test/chartCountryJobTitles";
-import {
-  releaseStaleCountry01JobTitles,
-  stubOutOfOrderJobTitleFetches,
-} from "../test/chartOutOfOrderJobTitles";
 import { stubChartWithLowSalaryCountry } from "../test/chartWithLowSalaryCountry";
 import {
   excludedEleventhJobTitleForCountry01,
@@ -82,12 +79,15 @@ describe("InsightsPage", () => {
     expect(within(table).getByRole("cell", { name: "Intern" })).toBeInTheDocument();
   });
 
-  it("ignores stale job title responses when chart country changes quickly", async () => {
+  it("shows centered loading spinner over job table while country changes", async () => {
     stubNineCountrySalaryInsights();
-    stubOutOfOrderJobTitleFetches();
+    stubChartCountryJobTitles();
     renderInsightsPage();
 
     const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+    await screen.findByRole("table", { name: /salary by job in country01/i });
+
+    stubDelayedJobTitlesForCountry02();
     const country02Bar = await waitFor(() => {
       const bar = figure.querySelector('[data-country="Country02"]');
       if (!bar) {
@@ -97,25 +97,16 @@ describe("InsightsPage", () => {
     });
     fireEvent.click(country02Bar);
 
-    const table = await screen.findByRole("table", {
-      name: /salary by job in country02/i,
-    });
+    const spinner = screen.getByRole("progressbar", { name: /loading job titles/i });
+    expect(spinner).toBeInTheDocument();
+    expect(screen.getByRole("table", { name: /salary by job in country01/i })).toBeInTheDocument();
+
+    const table = await screen.findByRole("table", { name: /salary by job in country02/i });
     expect(
-      within(table).getByRole("cell", {
-        name: country02JobTitleInsights[0]!.job_title,
-      }),
+      within(table).getByRole("cell", { name: country02JobTitleInsights[0]!.job_title }),
     ).toBeInTheDocument();
-
-    releaseStaleCountry01JobTitles();
-
     await waitFor(() => {
-      expect(
-        screen.getByRole("table", { name: /salary by job in country02/i }),
-      ).toBeInTheDocument();
-      expect(within(table).getByRole("cell", { name: country02JobTitleInsights[0]!.job_title }))
-        .toBeInTheDocument();
-      expect(within(table).queryByRole("cell", { name: topTenJobTitlesForCountry01[0] })).not
-        .toBeInTheDocument();
+      expect(screen.queryByRole("progressbar", { name: /loading job titles/i })).not.toBeInTheDocument();
     });
   });
 
