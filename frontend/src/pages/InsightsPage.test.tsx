@@ -60,6 +60,28 @@ describe("InsightsPage", () => {
     expect(within(table).queryByText(excludedEleventhJobTitleForCountry01)).not.toBeInTheDocument();
   });
 
+  it("renders median and average salary cells when a country is selected", async () => {
+    stubChartWithLowSalaryCountry();
+    renderInsightsPage();
+
+    const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+
+    const germanyColumn = await waitFor(() => {
+      const column = figure.querySelector('[data-chart-column="Germany"]');
+      if (!column) {
+        throw new Error("Germany chart column hit area not ready");
+      }
+      return column;
+    });
+    fireEvent.click(germanyColumn);
+
+    const table = await screen.findByRole("table", { name: /salary by job in germany/i });
+    const row = within(table).getByRole("row", { name: /engineer/i });
+
+    expect(within(row).getByRole("cell", { name: "₹25,00,000" })).toBeInTheDocument();
+    expect(within(row).getByRole("cell", { name: "₹30,00,000" })).toBeInTheDocument();
+  });
+
   it("updates below-chart job table when a low-salary country column is clicked", async () => {
     stubChartWithLowSalaryCountry();
     renderInsightsPage();
