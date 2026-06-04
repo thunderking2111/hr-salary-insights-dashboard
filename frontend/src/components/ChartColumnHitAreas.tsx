@@ -19,6 +19,17 @@ export interface ChartColumnHitAreasProps {
 }
 
 /** Full category-band click targets (same width as the tooltip hover band). */
+export function createChartColumnHitAreas(onCountrySelect?: (country: string) => void) {
+  return function ChartColumnHitAreasLayer(props: unknown) {
+    return (
+      <ChartColumnHitAreas
+        {...(props as ChartColumnHitAreasProps)}
+        onCountrySelect={onCountrySelect}
+      />
+    );
+  };
+}
+
 export function ChartColumnHitAreas({
   offset,
   tooltipTicks,

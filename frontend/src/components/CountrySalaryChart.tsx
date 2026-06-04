@@ -14,7 +14,7 @@ import {
 import type { CountrySalaryInsight } from "../api/types";
 import { topCountriesByAverageSalary } from "../utils/chartCountries";
 import { formatSalaryAxisTick, formatSalaryValue } from "../utils/formatSalary";
-import { ChartColumnHitAreas, type ChartColumnHitAreasProps } from "./ChartColumnHitAreas";
+import { createChartColumnHitAreas } from "./ChartColumnHitAreas";
 import { createSelectableBarShape } from "./SelectableBarShape";
 
 const CHART_LEFT_MARGIN = 72;
@@ -49,17 +49,10 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
     () => alpha(theme.palette.primary.main, 0.08),
     [theme],
   );
-  const chartColumnHitAreas = useMemo(() => {
-    function ChartColumnHitAreasLayer(props: Record<string, unknown>) {
-      return (
-        <ChartColumnHitAreas
-          {...(props as ChartColumnHitAreasProps)}
-          onCountrySelect={onCountrySelect}
-        />
-      );
-    }
-    return ChartColumnHitAreasLayer;
-  }, [onCountrySelect]);
+  const chartColumnHitAreas = useMemo(
+    () => createChartColumnHitAreas(onCountrySelect),
+    [onCountrySelect],
+  );
 
   if (chartData.length === 0) {
     return null;
