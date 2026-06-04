@@ -27,11 +27,13 @@ export interface CountrySalaryInsight {
   min_salary: string;
   max_salary: string;
   avg_salary: string;
+  employee_count: number;
 }
 
 export interface JobTitleSalaryInsight {
   job_title: string;
   avg_salary: string;
+  employee_count: number;
 }
 
 export interface CreateEmployeePayload {

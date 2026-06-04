@@ -3,17 +3,17 @@ import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
 import { server } from "./server";
 
 export const lowSalaryCountryInsights: CountrySalaryInsight[] = [
-  { country: "Germany", min_salary: "1000000.00", max_salary: "5000000.00", avg_salary: "3000000.00" },
-  { country: "India", min_salary: "800000.00", max_salary: "4000000.00", avg_salary: "2500000.00" },
-  { country: "asd", min_salary: "123.00", max_salary: "123.00", avg_salary: "123.00" },
+  { country: "Germany", min_salary: "1000000.00", max_salary: "5000000.00", avg_salary: "3000000.00", employee_count: 1 },
+  { country: "India", min_salary: "800000.00", max_salary: "4000000.00", avg_salary: "2500000.00", employee_count: 1 },
+  { country: "asd", min_salary: "123.00", max_salary: "123.00", avg_salary: "123.00", employee_count: 1 },
 ];
 
 export const germanyJobTitleInsights: JobTitleSalaryInsight[] = [
-  { job_title: "Engineer", avg_salary: "3000000.00" },
+  { job_title: "Engineer", avg_salary: "3000000.00", employee_count: 1 },
 ];
 
 export const asdJobTitleInsights: JobTitleSalaryInsight[] = [
-  { job_title: "Intern", avg_salary: "123.00" },
+  { job_title: "Intern", avg_salary: "123.00", employee_count: 1 },
 ];
 
 export function stubChartWithLowSalaryCountry(): void {

@@ -26,6 +26,9 @@ export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalary
               Country
             </TableCell>
             <TableCell component="th" scope="col" align="right">
+              Employees
+            </TableCell>
+            <TableCell component="th" scope="col" align="right">
               Min salary
             </TableCell>
             <TableCell component="th" scope="col" align="right">
@@ -45,6 +48,7 @@ export function CountrySalaryTable({ countries, onCountrySelect }: CountrySalary
               sx={onCountrySelect ? { cursor: "pointer" } : undefined}
             >
               <TableCell>{row.country}</TableCell>
+              <TableCell align="right">{row.employee_count}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.min_salary))}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.max_salary))}</TableCell>
               <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>

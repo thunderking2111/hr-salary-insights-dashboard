@@ -8,6 +8,7 @@ export const tenJobTitlesForCountry01: JobTitleSalaryInsight[] = Array.from(
   (_, index) => ({
     job_title: `Job${String(index + 1).padStart(2, "0")}`,
     avg_salary: String((10 - index) * 100_000),
+    employee_count: 1,
   }),
 );
 
@@ -17,6 +18,7 @@ export const elevenJobTitlesForCountry01: JobTitleSalaryInsight[] = Array.from(
   (_, index) => ({
     job_title: `Job${String(index + 1).padStart(2, "0")}`,
     avg_salary: String((11 - index) * 100_000),
+    employee_count: 1,
   }),
 );
 

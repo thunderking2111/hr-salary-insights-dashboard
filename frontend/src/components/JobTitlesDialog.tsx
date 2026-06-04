@@ -75,6 +75,9 @@ export function JobTitlesDialog({
                     Job title
                   </TableCell>
                   <TableCell component="th" scope="col" align="right">
+                    Employees
+                  </TableCell>
+                  <TableCell component="th" scope="col" align="right">
                     Avg salary
                   </TableCell>
                 </TableRow>
@@ -83,6 +86,7 @@ export function JobTitlesDialog({
                 {sortedJobTitles.map((row) => (
                   <TableRow key={row.job_title} hover>
                     <TableCell>{row.job_title}</TableCell>
+                    <TableCell align="right">{row.employee_count}</TableCell>
                     <TableCell align="right">{formatSalaryValue(Number(row.avg_salary))}</TableCell>
                   </TableRow>
                 ))}
