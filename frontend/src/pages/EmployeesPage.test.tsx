@@ -5,7 +5,8 @@ import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeVal
 import { stubSlowFailingCreateEmployee } from "../test/stubSlowFailingCreateEmployee";
 import { stubSlowFailingDeleteEmployee } from "../test/stubSlowFailingDeleteEmployee";
 import { stubSlowFailingUpdateEmployee } from "../test/stubSlowFailingUpdateEmployee";
-import { stubTwoPageEmployeesList } from "../test/twoPageEmployees";
+import { stubDelayedEmployeesList } from "../test/delayedEmployeesList";
+import { stubDelayedPageTwoEmployees, stubTwoPageEmployeesList } from "../test/twoPageEmployees";
 
 async function expectSuccessToast(message: string) {
   await waitFor(() => {
@@ -20,6 +21,36 @@ async function expectErrorToast(message: string) {
 }
 
 describe("EmployeesPage", () => {
+  it("shows centered loading spinner in the list region on initial fetch", async () => {
+    stubDelayedEmployeesList();
+    renderEmployeesPage();
+
+    expect(screen.getByRole("progressbar", { name: /loading employees/i })).toBeInTheDocument();
+    expect(screen.queryByRole("table", { name: /employees/i })).not.toBeInTheDocument();
+
+    expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar", { name: /loading employees/i })).not.toBeInTheDocument();
+    });
+  });
+
+  it("shows centered loading spinner over the table while paginating", async () => {
+    stubDelayedPageTwoEmployees();
+    renderEmployeesPage();
+
+    await screen.findByText("Ada Lovelace");
+
+    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
+
+    expect(screen.getByRole("progressbar", { name: /loading employees/i })).toBeInTheDocument();
+    expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+
+    expect(await screen.findByText("Grace Hopper")).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByRole("progressbar", { name: /loading employees/i })).not.toBeInTheDocument();
+    });
+  });
+
   it("renders employee rows from the API", async () => {
     renderEmployeesPage();
 

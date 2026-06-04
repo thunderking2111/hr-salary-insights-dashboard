@@ -1,3 +1,4 @@
+import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
@@ -18,6 +19,10 @@ import {
 } from "../api/validateEmployeePayload";
 import { DeleteEmployeeDialog } from "../components/DeleteEmployeeDialog";
 import { DialogTitleBar } from "../components/DialogTitleBar";
+import {
+  ListLoadingCenter,
+  ListLoadingIndicator,
+} from "../components/CenteredLoadingSpinner";
 import { EmployeesTable } from "../components/EmployeesTable";
 import { ToastSnackbar } from "../components/ToastSnackbar";
 import { dialogContentSx, dialogPaperSlotProps } from "../components/dialogLayout";
@@ -31,6 +36,7 @@ export function EmployeesPage() {
     employees,
     error,
     setError,
+    loading,
     page,
     totalCount,
     loadEmployees,
@@ -190,10 +196,10 @@ export function EmployeesPage() {
   };
 
   return (
-    <div>
+    <Box sx={{ display: "flex", flexDirection: "column", minHeight: "calc(100vh - 96px)" }}>
       <Stack
         direction="row"
-        sx={{ mb: 3, alignItems: "center", justifyContent: "space-between" }}
+        sx={{ mb: 3, alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}
       >
         <Typography component="h1" variant="h4">
           Employees
@@ -256,21 +262,32 @@ export function EmployeesPage() {
           </Button>
         </DialogActions>
       </Dialog>
-      <EmployeesTable
-        employees={employees}
-        onEdit={openEditDialog}
-        onDelete={openDeleteDialog}
-      />
-      <TablePagination
-        component="div"
-        role="navigation"
-        aria-label="Employees pagination"
-        count={totalCount}
-        page={Math.max(0, page - 1)}
-        onPageChange={(_event, newPage) => loadEmployees(newPage + 1)}
-        rowsPerPage={EMPLOYEE_LIST_PAGE_SIZE}
-        rowsPerPageOptions={[]}
-      />
+      <Box sx={{ flex: 1, display: "flex", flexDirection: "column", minHeight: 0 }}>
+        {loading && employees.length === 0 ? (
+          <ListLoadingCenter label="Loading employees" />
+        ) : (
+          <>
+            <Box sx={{ position: "relative", flex: 1, minHeight: loading ? "min(60vh, 520px)" : 0 }}>
+              <EmployeesTable
+                employees={employees}
+                onEdit={openEditDialog}
+                onDelete={openDeleteDialog}
+              />
+              {loading && <ListLoadingIndicator label="Loading employees" />}
+            </Box>
+            <TablePagination
+              component="div"
+              role="navigation"
+              aria-label="Employees pagination"
+              count={totalCount}
+              page={Math.max(0, page - 1)}
+              onPageChange={(_event, newPage) => loadEmployees(newPage + 1)}
+              rowsPerPage={EMPLOYEE_LIST_PAGE_SIZE}
+              rowsPerPageOptions={[]}
+            />
+          </>
+        )}
+      </Box>
       <DeleteEmployeeDialog
         employee={deletingEmployee}
         onClose={closeDeleteDialog}
@@ -282,6 +299,6 @@ export function EmployeesPage() {
         severity={toast?.severity ?? "success"}
         onClose={closeToast}
       />
-    </div>
+    </Box>
   );
 }

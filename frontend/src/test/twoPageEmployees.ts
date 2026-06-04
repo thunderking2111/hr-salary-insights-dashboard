@@ -1,4 +1,4 @@
-import { http, HttpResponse } from "msw";
+import { delay, http, HttpResponse } from "msw";
 import type { Employee } from "../api/types";
 import { sampleEmployee } from "./fixtures";
 import { server } from "./server";
@@ -32,6 +32,29 @@ function buildFullFirstPage(lead: Employee): Employee[] {
     email: `filler${index + 1}@example.com`,
   }));
   return [lead, ...fillers];
+}
+
+export function stubDelayedPageTwoEmployees(delayMs = 200): void {
+  server.use(
+    http.get("/api/employees/", async ({ request }) => {
+      const page = new URL(request.url).searchParams.get("page") ?? "1";
+      if (page === "2") {
+        await delay(delayMs);
+        return HttpResponse.json({
+          count: PAGINATED_TOTAL,
+          next: null,
+          previous: "/api/employees/?page=1",
+          results: [pageTwoEmployee],
+        });
+      }
+      return HttpResponse.json({
+        count: PAGINATED_TOTAL,
+        next: "/api/employees/?page=2",
+        previous: null,
+        results: buildFullFirstPage(sampleEmployee),
+      });
+    }),
+  );
 }
 
 export function stubTwoPageEmployeesList(
