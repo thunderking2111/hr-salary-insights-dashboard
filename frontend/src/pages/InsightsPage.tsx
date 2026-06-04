@@ -2,25 +2,32 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
-import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
+import { fetchSalaryByCountry } from "../api/client";
+import type { CountrySalaryInsight } from "../api/types";
 import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
 import { CountrySalaryChart } from "../components/CountrySalaryChart";
 import { JobTitlesDialog } from "../components/JobTitlesDialog";
+import { useChartCountryJobTitles } from "../hooks/useChartCountryJobTitles";
 import { firstChartCountry } from "../utils/chartCountries";
 
 export function InsightsPage() {
   const navigate = useNavigate();
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [chartCountry, setChartCountry] = useState<string | null>(null);
-  const [tableCountry, setTableCountry] = useState<string | null>(null);
-  const [chartJobTitles, setChartJobTitles] = useState<JobTitleSalaryInsight[]>([]);
-  const [chartJobTitlesDialogOpen, setChartJobTitlesDialogOpen] = useState(false);
-  const [chartJobTitlesLoading, setChartJobTitlesLoading] = useState(false);
-  const [chartJobTitlesError, setChartJobTitlesError] = useState<string | null>(null);
+  const {
+    chartCountry,
+    setChartCountry,
+    tableCountry,
+    chartJobTitles,
+    dialogOpen,
+    loading,
+    error: chartJobTitlesError,
+    selectChartCountry,
+    openJobTitlesDialog,
+    closeJobTitlesDialog,
+  } = useChartCountryJobTitles();
 
   useEffect(() => {
     void fetchSalaryByCountry()
@@ -31,33 +38,7 @@ export function InsightsPage() {
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load salary insights");
       });
-  }, []);
-
-  const handleChartCountrySelect = useCallback((country: string) => {
-    setChartCountry((current) => (current === country ? current : country));
-  }, []);
-
-  useEffect(() => {
-    if (!chartCountry) {
-      setTableCountry(null);
-      setChartJobTitles([]);
-      setChartJobTitlesLoading(false);
-      setChartJobTitlesError(null);
-      return;
-    }
-
-    setChartJobTitlesDialogOpen(false);
-    setChartJobTitlesLoading(true);
-    setChartJobTitlesError(null);
-
-    void fetchSalaryByJobTitle(chartCountry)
-      .then((data) => {
-        setChartJobTitles(data);
-        setTableCountry(chartCountry);
-      })
-      .catch(() => setChartJobTitlesError("Failed to load job titles"))
-      .finally(() => setChartJobTitlesLoading(false));
-  }, [chartCountry]);
+  }, [setChartCountry]);
 
   return (
     <div>
@@ -79,7 +60,7 @@ export function InsightsPage() {
             View all
           </Button>
         </Box>
-        <CountrySalaryChart insights={insights} onCountrySelect={handleChartCountrySelect} />
+        <CountrySalaryChart insights={insights} onCountrySelect={selectChartCountry} />
       </Box>
       {chartCountry && chartJobTitlesError && (
         <Alert severity="error" role="alert" sx={{ mt: 3 }}>
@@ -90,19 +71,16 @@ export function InsightsPage() {
         <ChartJobTitlesTable
           country={tableCountry}
           jobTitles={chartJobTitles}
-          onViewAllJobTitles={() => setChartJobTitlesDialogOpen(true)}
+          onViewAllJobTitles={openJobTitlesDialog}
         />
       )}
       <JobTitlesDialog
         country={chartCountry}
         jobTitles={chartJobTitles}
-        open={chartJobTitlesDialogOpen}
-        loading={chartJobTitlesLoading}
+        open={dialogOpen}
+        loading={loading}
         error={chartJobTitlesError}
-        onClose={() => {
-          setChartJobTitlesDialogOpen(false);
-          setChartJobTitlesError(null);
-        }}
+        onClose={closeJobTitlesDialog}
       />
     </div>
   );
