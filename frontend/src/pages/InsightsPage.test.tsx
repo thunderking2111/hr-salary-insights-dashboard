@@ -5,6 +5,7 @@ import {
   stubChartCountryJobTitles,
   stubFailingJobTitlesForCountry01,
 } from "../test/chartCountryJobTitles";
+import { stubChartWithLowSalaryCountry } from "../test/chartWithLowSalaryCountry";
 import {
   excludedEleventhJobTitleForCountry01,
   stubElevenJobTitlesForCountry01,
@@ -56,6 +57,25 @@ describe("InsightsPage", () => {
       expect(within(table).getByRole("cell", { name: jobTitle })).toBeInTheDocument();
     }
     expect(within(table).queryByText(excludedEleventhJobTitleForCountry01)).not.toBeInTheDocument();
+  });
+
+  it("updates below-chart job table when a low-salary country column is clicked", async () => {
+    stubChartWithLowSalaryCountry();
+    renderInsightsPage();
+
+    const figure = await screen.findByRole("figure", { name: /average salary by country/i });
+
+    const asdColumn = await waitFor(() => {
+      const column = figure.querySelector('[data-chart-column="asd"]');
+      if (!column) {
+        throw new Error("asd chart column hit area not ready");
+      }
+      return column;
+    });
+    fireEvent.click(asdColumn);
+
+    const table = await screen.findByRole("table", { name: /salary by job in asd/i });
+    expect(within(table).getByRole("cell", { name: "Intern" })).toBeInTheDocument();
   });
 
   it("updates below-chart job table when a chart bar is clicked", async () => {
