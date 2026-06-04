@@ -4,7 +4,9 @@ A minimal yet production-quality salary management tool for an organization of
 ~10,000 employees. Built for an HR Manager persona to manage the workforce and
 derive salary insights.
 
-> Status: **in-progress** — backend-first build using strict TDD.
+> Status: **MVP in progress** — backend APIs and seeding are in place; the
+> React frontend implements employees CRUD and salary insights (chart, job
+> tables, country list) with strict TDD.
 
 ## High-level goals
 
@@ -20,14 +22,14 @@ derive salary insights.
 ```text
 hr-salary-insights-dashboard/
   backend/                 # Django + DRF API (added incrementally)
-  frontend/                # React + Vite UI (added after backend is complete)
+  frontend/                # React + Vite + MUI + Recharts UI
   docs/                    # Living documentation (architecture, ADRs, etc.)
   AGENTS.md                # Operational rules for any AI agent on this repo
   README.md                # You are here
 ```
 
-> The repository is built **backend-first**: backend APIs, tests, seeding, and
-> backend CI are completed before the frontend begins.
+> Build order was **backend-first** (APIs, tests, seeding, CI), then frontend
+> features slice-by-slice with Vitest + Testing Library.
 
 ## Engineering approach
 
@@ -99,9 +101,7 @@ pytest -v                     # run the test suite
 
 ### Frontend setup
 
-Requires Node.js 20+. The **chore scaffold** is tooling only (Vite, TypeScript,
-ESLint, Vitest wiring) — no app UI and no `*.test.tsx` files yet. Features follow
-strict TDD from the first red commit onward.
+Requires Node.js 20+.
 
 ```bash
 cd frontend
@@ -109,9 +109,12 @@ npm ci                        # install dependencies (use npm install if no lock
 npm run lint                  # ESLint
 npm run lint:fix              # ESLint with auto-fix
 npm run build                 # typecheck + production bundle
-npm run dev                   # Vite dev server (blank page until first feature)
-npm test                      # Vitest (after the first test file is added)
+npm run dev                   # Vite dev server (proxies /api to Django)
+npm test                      # Vitest
 ```
+
+Seed the backend (`python manage.py seed_employees` from `backend/`) and run
+`runserver` before using insights or the employee directory in the browser.
 
 The Vite dev server proxies `/api` to `http://127.0.0.1:8000` when you run the
 Django backend separately.

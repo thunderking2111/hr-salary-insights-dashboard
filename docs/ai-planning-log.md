@@ -78,4 +78,16 @@
 - **Rationale**: A short, explicit rulebook for AI agents reduces ambiguity
   far more reliably than rehearsing the same rules in each new conversation.
 
+## Checkpoint 8 — Frontend MVP polish and design pack sign-off
+
+- **When**: After chart abort/refactor stack was pushed.
+- **Decisions**:
+  - Drop flaky MSW “out of order” integration test; keep abort contract in
+    `useChartCountryJobTitles.test.tsx`.
+  - Show in-region loading spinner on `/insights` while job titles fetch (keeps
+    prior table visible per ux-flows).
+  - Document frontend `npm test` in testing-strategy and AGENTS.md.
+  - Mark visual-spec sign-off checklist complete for MVP scope; deferred UI
+    remains in tradeoffs.md.
+
 <!-- Future planning checkpoints will be appended here. -->

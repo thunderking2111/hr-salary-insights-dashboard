@@ -49,20 +49,20 @@ Captured in [../tradeoffs.md](../tradeoffs.md#deferred-frontend-ui). Summary:
 - Notifications, profile menu, global search in header
 - Server-side pagination for country insights (client slice until API grows)
 
-## Current implementation gap
+## Implementation status (MVP)
 
-The running UI is still **unstyled HTML** from early TDD slices. This spec is
-the target for upcoming **MUI + Recharts** red/green commits. Behavior already
-in code (employees CRUD, basic insights table/dialog) will be **restyled and
-re-wired** to match wireframes without changing API contracts.
+The running UI matches the wireframe scope: MUI shell, employees CRUD,
+insights chart with bar/column selection, below-chart job table, country list
+route, and job-title modals. Chart interactions use full-band column hit
+areas, abortable job-title fetches, and no bar re-animation on selection.
 
-| Area | Today | Target (MVP spec) |
-|------|--------|-------------------|
-| Shell | Top text nav | Sidebar + main layout |
-| Insights chart | Empty list bullets in `figure` | Grouped Recharts bar chart |
-| Insights tables | Country table + per-row button | Below-chart top-10 jobs + View all modal |
-| Country list | Not routed | `/insights/countries` paginated table |
-| Chart selection | Button per country | Bar click → single-country job table |
+| Area | Status |
+|------|--------|
+| Shell | Sidebar + main layout (`AppShell`) |
+| Insights chart | Grouped Recharts bar chart (top 8) |
+| Below-chart jobs | Top 10 for selected country; loading spinner in region |
+| Country list | `/insights/countries` with client pagination |
+| Chart selection | Bar/column click → single-country job table |
 
 ## Accessibility (MVP bar)
 
@@ -73,7 +73,10 @@ re-wired** to match wireframes without changing API contracts.
 
 ## Sign-off checklist (before closing design pack)
 
-- [ ] design-system.md tokens reflected in `frontend/src/theme/`
-- [ ] wireframes.md routes and flows covered by tests
-- [ ] ux-flows.md sequences implemented or explicitly deferred with issue link
-- [ ] Deferred items listed in tradeoffs.md
+- [x] design-system.md tokens reflected in `frontend/src/theme/` (key palette
+  covered by `theme.test.ts`)
+- [x] wireframes.md routes and flows covered by tests (employees, insights
+  chart, countries list, dialogs)
+- [x] ux-flows.md sequences implemented for MVP scope; deferred items in
+  tradeoffs.md
+- [x] Deferred items listed in tradeoffs.md
