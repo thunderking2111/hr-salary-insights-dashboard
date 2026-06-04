@@ -32,4 +32,13 @@ export const appTheme = createTheme({
   shape: {
     borderRadius: 8,
   },
+  components: {
+    MuiCard: {
+      styleOverrides: {
+        root: {
+          borderRadius: 12,
+        },
+      },
+    },
+  },
 });
