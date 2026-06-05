@@ -47,4 +47,10 @@ describe("AppShell", () => {
       "page",
     );
   });
+
+  it("renders backend status indicator in the sidebar", () => {
+    renderWithProviders(<AppShell />, { route: "/employees" });
+
+    expect(screen.getByRole("status")).toBeInTheDocument();
+  });
 });
