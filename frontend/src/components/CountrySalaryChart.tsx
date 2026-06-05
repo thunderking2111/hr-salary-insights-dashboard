@@ -70,7 +70,13 @@ export function CountrySalaryChart({ insights, onCountrySelect }: CountrySalaryC
           margin={{ top: 8, right: 16, bottom: 8, left: CHART_LEFT_MARGIN }}
         >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="country" />
+          <XAxis
+            dataKey="country"
+            interval={0}
+            angle={-25}
+            textAnchor="end"
+            height={72}
+          />
           <YAxis tickFormatter={formatSalaryAxisTick} width={CHART_LEFT_MARGIN} />
           <Tooltip
             formatter={(value: number) => formatSalaryValue(value)}
