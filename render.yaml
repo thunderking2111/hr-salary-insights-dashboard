@@ -1,0 +1,27 @@
+# Render Blueprint — backend Web Service (SQLite, ephemeral disk).
+# Connect this repo and set CORS_ALLOWED_ORIGINS + DJANGO_ALLOWED_HOSTS
+# in the dashboard after you know your Render and Vercel URLs.
+
+services:
+  - type: web
+    name: hr-salary-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: >-
+      python manage.py migrate --noinput &&
+      python manage.py shell -c "from django.core.management import call_command; from employees.models import Employee; call_command('seed_employees', count=10000, seed=42) if Employee.objects.count() == 0 else None" &&
+      gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+    healthCheckPath: /health/
+    envVars:
+      - key: PYTHON_VERSION
+        value: "3.12"
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DJANGO_DEBUG
+        value: "False"
+      - key: DJANGO_ALLOWED_HOSTS
+        sync: false
+      - key: CORS_ALLOWED_ORIGINS
+        sync: false
