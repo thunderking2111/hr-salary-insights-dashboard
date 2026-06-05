@@ -185,6 +185,20 @@ No trailing slash. See [`frontend/.env.example`](frontend/.env.example).
 [`frontend/vercel.json`](frontend/vercel.json) rewrites all routes to
 `index.html` so React Router paths work on refresh.
 
+#### Vercel CLI (monorepo workaround)
+
+If the dashboard import detects a multi-service project, deploy from
+`frontend/` with the CLI:
+
+```bash
+cd frontend
+npm ci
+npx vercel login
+npx vercel link          # create/link project; cwd is already frontend/
+npx vercel env add VITE_API_BASE production   # Render backend URL
+npm run vercel:deploy
+```
+
 ### 3. Deploy order
 
 1. Push `production` branch and deploy **Render** backend → note the URL.

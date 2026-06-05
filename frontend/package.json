@@ -10,7 +10,9 @@
     "lint:fix": "eslint . --fix",
     "preview": "vite preview",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "vercel:link": "vercel link",
+    "vercel:deploy": "vercel --prod"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -37,6 +39,7 @@
     "msw": "^2.7.3",
     "typescript": "~5.8.2",
     "typescript-eslint": "^8.26.1",
+    "vercel": "^54.9.1",
     "vite": "^6.2.2",
     "vitest": "^3.0.9"
   }

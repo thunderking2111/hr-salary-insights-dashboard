@@ -45,6 +45,7 @@ node_modules/
 dist/
 build/
 .vite/
+.vercel/
 coverage/
 *.log
 
