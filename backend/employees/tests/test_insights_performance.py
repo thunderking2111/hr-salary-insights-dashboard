@@ -1,4 +1,5 @@
 import pytest
+from django.core.management import call_command
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
 
@@ -52,5 +53,15 @@ def test_salary_stats_by_job_title_uses_single_database_query():
 
     with CaptureQueriesContext(connection) as context:
         salary_stats_by_job_title(country="India")
+
+    assert len(context.captured_queries) == 1
+
+
+@pytest.mark.django_db
+def test_salary_stats_by_country_with_10k_rows_uses_single_database_query():
+    call_command("seed_employees", count=10000, seed=42, clear=True)
+
+    with CaptureQueriesContext(connection) as context:
+        salary_stats_by_country()
 
     assert len(context.captured_queries) == 1
