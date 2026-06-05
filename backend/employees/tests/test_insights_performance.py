@@ -1,3 +1,5 @@
+from decimal import Decimal
+
 import pytest
 from django.core.management import call_command
 from django.db import connection
@@ -10,13 +12,31 @@ from employees.tests.conftest import employee_create_kwargs
 SALARY_BY_COUNTRY_URL = "/api/insights/salary-by-country/"
 
 
-@pytest.fixture(autouse=True)
-def clear_insights_cache():
-    from django.core.cache import cache
+@pytest.mark.django_db
+def test_salary_stats_by_country_reflects_new_employees_after_cache_warm():
+    Employee.objects.create(**employee_create_kwargs(country="India", salary="1000000.00"))
+    Employee.objects.create(
+        **employee_create_kwargs(
+            email="grace.hopper@example.com",
+            country="India",
+            salary="2000000.00",
+        )
+    )
+    salary_stats_by_country()
 
-    cache.clear()
-    yield
-    cache.clear()
+    Employee.objects.create(
+        **employee_create_kwargs(
+            email="alan.turing@example.com",
+            country="India",
+            salary="10000000.00",
+        )
+    )
+
+    india = next(row for row in salary_stats_by_country() if row.country == "India")
+
+    assert india.employee_count == 3
+    assert india.avg_salary == Decimal("4333333.33333333")
+    assert india.median_salary == Decimal("2000000.00")
 
 
 @pytest.mark.django_db

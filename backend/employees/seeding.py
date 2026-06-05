@@ -6,6 +6,7 @@ from pathlib import Path
 from django.db import transaction
 
 from employees.models import Employee
+from employees.services.insights_cache import invalidate_insights_cache
 
 DATA_DIR = Path(__file__).resolve().parent / "data"
 DEFAULT_BATCH_SIZE = 1000
@@ -80,4 +81,6 @@ def seed_employees_in_transaction(*, count: int, seed: int, clear: bool = False)
     with transaction.atomic():
         if clear:
             Employee.objects.all().delete()
-        return seed_employees(count=count, seed=seed)
+        created = seed_employees(count=count, seed=seed)
+    invalidate_insights_cache()
+    return created
