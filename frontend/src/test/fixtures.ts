@@ -4,6 +4,10 @@ import type {
   JobTitleSalaryInsight,
   PaginatedEmployees,
 } from "../api/types";
+import {
+  seededCountrySalaryInsights,
+  seededIndiaJobTitleSalaryInsights,
+} from "./seededInsightsDataset";
 
 export const sampleEmployee: Employee = {
   id: 1,
@@ -29,22 +33,7 @@ export const paginatedEmployees: PaginatedEmployees = {
   results: [sampleEmployee],
 };
 
-export const countrySalaryInsights: CountrySalaryInsight[] = [
-  {
-    country: "India",
-    min_salary: "1000000.00",
-    max_salary: "3000000.00",
-    avg_salary: "2000000.00",
-    median_salary: "2000000.00",
-    employee_count: 1,
-  },
-];
+export const countrySalaryInsights: CountrySalaryInsight[] = seededCountrySalaryInsights;
 
-export const indiaJobTitleSalaryInsights: JobTitleSalaryInsight[] = [
-  {
-    job_title: "Software Engineer",
-    avg_salary: "2000000.00",
-    median_salary: "2000000.00",
-    employee_count: 1,
-  },
-];
+export const indiaJobTitleSalaryInsights: JobTitleSalaryInsight[] =
+  seededIndiaJobTitleSalaryInsights;

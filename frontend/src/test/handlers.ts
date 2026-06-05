@@ -6,6 +6,7 @@ import {
   paginatedEmployees,
   sampleEmployee,
 } from "./fixtures";
+import { seededJobTitleSalaryInsightsForCountry } from "./seededInsightsDataset";
 
 let employees: Employee[] = [...paginatedEmployees.results];
 
@@ -20,10 +21,13 @@ export const handlers = [
   http.get("/api/insights/salary-by-country/", () => HttpResponse.json(countrySalaryInsights)),
   http.get("/api/insights/salary-by-job-title/", ({ request }) => {
     const country = new URL(request.url).searchParams.get("country");
+    if (!country) {
+      return HttpResponse.json([]);
+    }
     if (country === "India") {
       return HttpResponse.json(indiaJobTitleSalaryInsights);
     }
-    return HttpResponse.json([]);
+    return HttpResponse.json(seededJobTitleSalaryInsightsForCountry(country));
   }),
   http.get("/api/employees/", () =>
     HttpResponse.json({

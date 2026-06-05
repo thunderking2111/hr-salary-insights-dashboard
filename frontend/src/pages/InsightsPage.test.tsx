@@ -19,27 +19,39 @@ import {
   topEightChartCountries,
 } from "../test/nineCountryInsights";
 import { renderInsightsApp, renderInsightsPage } from "../test/render";
+import {
+  seededExcludedEleventhIndiaJobTitle,
+  seededFirstChartCountry,
+  seededTopEightChartCountries,
+} from "../test/seededInsightsDataset";
 
 describe("InsightsPage", () => {
   it("shows View all actions with default seeded insight dataset", async () => {
     renderInsightsApp("/insights");
 
     await screen.findByRole("figure", { name: /average salary by country/i });
-    await screen.findByRole("table", { name: /salary by job in switzerland/i });
+    await screen.findByRole("table", {
+      name: new RegExp(`salary by job in ${seededFirstChartCountry}`, "i"),
+    });
 
     expect(screen.getByRole("button", { name: /^view all$/i })).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /view all job titles/i })).toBeInTheDocument();
   });
 
-  it("navigates to paginated countries list from default seeded dataset", async () => {
-    renderInsightsApp("/insights");
+  it("opens full job title list from default seeded dataset", async () => {
+    renderInsightsPage();
 
-    await screen.findByRole("figure", { name: /average salary by country/i });
-    fireEvent.click(screen.getByRole("button", { name: /^view all$/i }));
+    await screen.findByRole("table", {
+      name: new RegExp(`salary by job in ${seededFirstChartCountry}`, "i"),
+    });
+    fireEvent.click(screen.getByRole("button", { name: /view all job titles/i }));
 
-    const table = await screen.findByRole("table", { name: /salary by country/i });
-    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
-    expect(await within(table).findByRole("cell", { name: "Australia" })).toBeInTheDocument();
+    const dialog = await screen.findByRole("dialog", {
+      name: new RegExp(`job titles in ${seededFirstChartCountry}`, "i"),
+    });
+    expect(
+      within(dialog).getByRole("cell", { name: seededExcludedEleventhIndiaJobTitle }),
+    ).toBeInTheDocument();
   });
 
   it("does not render the legacy salary-by-country table on the chart view", async () => {
@@ -247,5 +259,20 @@ describe("InsightsPage", () => {
     expect(
       screen.queryByRole("table", { name: /salary by job in country01/i }),
     ).not.toBeInTheDocument();
+  });
+
+  it("navigates to paginated countries list from default seeded dataset", async () => {
+    renderInsightsApp("/insights");
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+    fireEvent.click(screen.getByRole("button", { name: /^view all$/i }));
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    for (const country of seededTopEightChartCountries) {
+      expect(within(table).getByRole("cell", { name: country })).toBeInTheDocument();
+    }
+
+    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
+    expect(await within(table).findByRole("cell", { name: "Australia" })).toBeInTheDocument();
   });
 });

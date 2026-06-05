@@ -3,6 +3,12 @@ import { ApiValidationError } from "./employeeFieldErrors";
 import { createEmployee, fetchEmployees, fetchSalaryByCountry, fetchSalaryByJobTitle } from "./client";
 import type { CreateEmployeePayload } from "./types";
 import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeValidationError";
+import {
+  MIN_COUNTRIES_FOR_VIEW_ALL_PAGINATION,
+  MIN_JOB_TITLES_FOR_VIEW_ALL_DIALOG,
+  seededCountrySalaryInsights,
+  seededIndiaJobTitleSalaryInsights,
+} from "../test/seededInsightsDataset";
 
 const validPayload: CreateEmployeePayload = {
   first_name: "Grace",
@@ -41,18 +47,30 @@ describe("createEmployee", () => {
 });
 
 describe("fetchSalaryByCountry", () => {
-  it("returns enough countries for insights view-all pagination", async () => {
+  it("returns salary stats per country", async () => {
     const data = await fetchSalaryByCountry();
+    const topCountry = seededCountrySalaryInsights[0]!;
 
-    expect(data.length).toBeGreaterThanOrEqual(9);
+    expect(data.length).toBeGreaterThanOrEqual(MIN_COUNTRIES_FOR_VIEW_ALL_PAGINATION);
+    expect(data[0]?.country).toBe(topCountry.country);
+    expect(data[0]?.min_salary).toBe(topCountry.min_salary);
+    expect(data[0]?.max_salary).toBe(topCountry.max_salary);
+    expect(data[0]?.avg_salary).toBe(topCountry.avg_salary);
+    expect(data[0]?.median_salary).toBe(topCountry.median_salary);
+    expect(data[0]?.employee_count).toBe(topCountry.employee_count);
     expect(Number(data[0]?.max_salary)).toBeGreaterThan(Number(data[0]?.min_salary));
   });
 });
 
 describe("fetchSalaryByJobTitle", () => {
-  it("returns enough job titles for view-all dialog", async () => {
+  it("returns salary stats per job title for a country", async () => {
     const data = await fetchSalaryByJobTitle("India");
+    const topJobTitle = seededIndiaJobTitleSalaryInsights[0]!;
 
-    expect(data.length).toBeGreaterThanOrEqual(11);
+    expect(data.length).toBeGreaterThanOrEqual(MIN_JOB_TITLES_FOR_VIEW_ALL_DIALOG);
+    expect(data[0]?.job_title).toBe(topJobTitle.job_title);
+    expect(data[0]?.avg_salary).toBe(topJobTitle.avg_salary);
+    expect(data[0]?.median_salary).toBe(topJobTitle.median_salary);
+    expect(data[0]?.employee_count).toBe(topJobTitle.employee_count);
   });
 });
