@@ -1,9 +1,12 @@
+import time
 from decimal import Decimal
 
 import pytest
 from django.core.management import call_command
 from django.db import connection
 from django.test.utils import CaptureQueriesContext
+from rest_framework import status
+from rest_framework.test import APIClient
 
 from employees.models import Employee
 from employees.services.insights import salary_stats_by_country, salary_stats_by_job_title
@@ -127,3 +130,17 @@ def test_salary_stats_by_country_with_10k_rows_uses_single_database_query():
         salary_stats_by_country()
 
     assert len(context.captured_queries) == 1
+
+
+@pytest.mark.django_db
+def test_salary_by_country_api_with_10k_seed_completes_within_performance_budget():
+    call_command("seed_employees", count=10000, seed=42, clear=True)
+    client = APIClient()
+
+    start = time.monotonic()
+    response = client.get(SALARY_BY_COUNTRY_URL)
+    elapsed = time.monotonic() - start
+
+    assert response.status_code == status.HTTP_200_OK
+    assert len(response.json()) > 0
+    assert elapsed < 1.0
