@@ -1,10 +1,11 @@
-from collections import defaultdict
 from dataclasses import dataclass
 from decimal import Decimal
 
-from django.db.models import Avg, Count, Max, Min
+from django.db import connection
 
 from employees.models import Employee
+
+ALLOWED_GROUP_FIELDS = frozenset({"country", "job_title"})
 
 
 @dataclass(frozen=True)
@@ -33,55 +34,96 @@ def _median_salary(values: list[Decimal]) -> Decimal:
     return (ordered[midpoint - 1] + ordered[midpoint]) / Decimal(2)
 
 
-def _median_salaries_by_group(*, field: str, country: str | None = None) -> dict[str, Decimal]:
-    grouped: dict[str, list[Decimal]] = defaultdict(list)
-    queryset = Employee.objects.all()
+def _as_decimal(value: Decimal | str | float | int) -> Decimal:
+    if isinstance(value, Decimal):
+        return value
+    return Decimal(str(value))
+
+
+def _as_avg_decimal(value: Decimal | str | float | int) -> Decimal:
+    return _as_decimal(value).quantize(Decimal("0.00000001"))
+
+
+def _fetch_grouped_salary_stats(*, group_field: str, country: str | None = None) -> list[dict]:
+    if group_field not in ALLOWED_GROUP_FIELDS:
+        raise ValueError(f"Unsupported group field: {group_field}")
+
+    table = Employee._meta.db_table
+    params: list[str] = []
+    where_clause = ""
     if country is not None:
-        queryset = queryset.filter(country=country)
-    for group_value, salary in queryset.values_list(field, "salary"):
-        grouped[group_value].append(salary)
-    return {key: _median_salary(salaries) for key, salaries in grouped.items()}
+        where_clause = "WHERE country = %s"
+        params.append(country)
+
+    sql = f"""
+        WITH filtered AS (
+            SELECT {group_field} AS group_key, salary
+            FROM {table}
+            {where_clause}
+        ),
+        ranked AS (
+            SELECT
+                group_key,
+                salary,
+                ROW_NUMBER() OVER (PARTITION BY group_key ORDER BY salary) AS rn,
+                COUNT(*) OVER (PARTITION BY group_key) AS cnt
+            FROM filtered
+        ),
+        medians AS (
+            SELECT group_key, AVG(salary) AS median_salary
+            FROM ranked
+            WHERE rn IN ((cnt + 1) / 2, (cnt + 2) / 2)
+            GROUP BY group_key
+        ),
+        aggregates AS (
+            SELECT
+                group_key,
+                MIN(salary) AS min_salary,
+                MAX(salary) AS max_salary,
+                AVG(salary) AS avg_salary,
+                COUNT(*) AS employee_count
+            FROM filtered
+            GROUP BY group_key
+        )
+        SELECT
+            a.group_key,
+            a.min_salary,
+            a.max_salary,
+            a.avg_salary,
+            m.median_salary,
+            a.employee_count
+        FROM aggregates AS a
+        INNER JOIN medians AS m ON a.group_key = m.group_key
+        ORDER BY a.group_key
+    """
+
+    with connection.cursor() as cursor:
+        cursor.execute(sql, params)
+        columns = [column[0] for column in cursor.description]
+        return [dict(zip(columns, row, strict=True)) for row in cursor.fetchall()]
 
 
 def salary_stats_by_country() -> list[CountrySalaryStats]:
-    medians = _median_salaries_by_group(field="country")
-    rows = (
-        Employee.objects.values("country")
-        .annotate(
-            min_salary=Min("salary"),
-            max_salary=Max("salary"),
-            avg_salary=Avg("salary"),
-            employee_count=Count("pk"),
-        )
-        .order_by("country")
-    )
     return [
         CountrySalaryStats(
-            country=row["country"],
-            min_salary=row["min_salary"],
-            max_salary=row["max_salary"],
-            avg_salary=row["avg_salary"],
-            median_salary=medians[row["country"]],
+            country=row["group_key"],
+            min_salary=_as_decimal(row["min_salary"]),
+            max_salary=_as_decimal(row["max_salary"]),
+            avg_salary=_as_avg_decimal(row["avg_salary"]),
+            median_salary=_as_decimal(row["median_salary"]),
             employee_count=row["employee_count"],
         )
-        for row in rows
+        for row in _fetch_grouped_salary_stats(group_field="country")
     ]
 
 
 def salary_stats_by_job_title(*, country: str) -> list[JobTitleSalaryStats]:
-    medians = _median_salaries_by_group(field="job_title", country=country)
-    rows = (
-        Employee.objects.filter(country=country)
-        .values("job_title")
-        .annotate(avg_salary=Avg("salary"), employee_count=Count("pk"))
-        .order_by("job_title")
-    )
     return [
         JobTitleSalaryStats(
-            job_title=row["job_title"],
-            avg_salary=row["avg_salary"],
-            median_salary=medians[row["job_title"]],
+            job_title=row["group_key"],
+            avg_salary=_as_avg_decimal(row["avg_salary"]),
+            median_salary=_as_decimal(row["median_salary"]),
             employee_count=row["employee_count"],
         )
-        for row in rows
+        for row in _fetch_grouped_salary_stats(group_field="job_title", country=country)
     ]
