@@ -1,6 +1,17 @@
 from datetime import date
 from decimal import Decimal
 
+import pytest
+
+
+@pytest.fixture(autouse=True)
+def clear_insights_cache_between_tests():
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()
+
 
 def employee_create_kwargs(**overrides):
     """Baseline kwargs for Employee.objects.create() in model tests."""

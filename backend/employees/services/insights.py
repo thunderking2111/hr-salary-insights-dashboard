@@ -1,9 +1,11 @@
 from dataclasses import dataclass
 from decimal import Decimal
 
+from django.core.cache import cache
 from django.db import connection
 
 from employees.models import Employee
+from employees.services.insights_cache import INSIGHTS_CACHE_TIMEOUT, insights_cache_key
 
 ALLOWED_GROUP_FIELDS = frozenset({"country", "job_title"})
 
@@ -104,7 +106,12 @@ def _fetch_grouped_salary_stats(*, group_field: str, country: str | None = None)
 
 
 def salary_stats_by_country() -> list[CountrySalaryStats]:
-    return [
+    cache_key = insights_cache_key("salary_by_country")
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    result = [
         CountrySalaryStats(
             country=row["group_key"],
             min_salary=_as_decimal(row["min_salary"]),
@@ -115,10 +122,17 @@ def salary_stats_by_country() -> list[CountrySalaryStats]:
         )
         for row in _fetch_grouped_salary_stats(group_field="country")
     ]
+    cache.set(cache_key, result, timeout=INSIGHTS_CACHE_TIMEOUT)
+    return result
 
 
 def salary_stats_by_job_title(*, country: str) -> list[JobTitleSalaryStats]:
-    return [
+    cache_key = insights_cache_key(f"salary_by_job_title:{country}")
+    cached = cache.get(cache_key)
+    if cached is not None:
+        return cached
+
+    result = [
         JobTitleSalaryStats(
             job_title=row["group_key"],
             avg_salary=_as_avg_decimal(row["avg_salary"]),
@@ -127,3 +141,5 @@ def salary_stats_by_job_title(*, country: str) -> list[JobTitleSalaryStats]:
         )
         for row in _fetch_grouped_salary_stats(group_field="job_title", country=country)
     ]
+    cache.set(cache_key, result, timeout=INSIGHTS_CACHE_TIMEOUT)
+    return result
