@@ -80,6 +80,26 @@ def test_salary_stats_by_country_is_served_from_cache_without_queries():
 
 
 @pytest.mark.django_db
+def test_salary_stats_by_country_cache_invalidates_on_employee_create():
+    Employee.objects.create(**employee_create_kwargs(country="India", salary="1000000.00"))
+    before = salary_stats_by_country()
+    india_before = next(row for row in before if row.country == "India")
+    assert india_before.employee_count == 1
+
+    Employee.objects.create(
+        **employee_create_kwargs(
+            email="grace.hopper@example.com",
+            country="India",
+            salary="3000000.00",
+        )
+    )
+
+    after = salary_stats_by_country()
+    india_after = next(row for row in after if row.country == "India")
+    assert india_after.employee_count == 2
+
+
+@pytest.mark.django_db
 def test_salary_stats_by_country_with_10k_rows_uses_single_database_query():
     call_command("seed_employees", count=10000, seed=42, clear=True)
 
