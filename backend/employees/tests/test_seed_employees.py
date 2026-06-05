@@ -1,4 +1,5 @@
 import time
+from decimal import Decimal
 
 import pytest
 from django.core.management import call_command
@@ -108,3 +109,18 @@ def test_seeded_dataset_includes_all_configured_countries_and_job_titles():
         .count()
         >= MIN_JOB_TITLES_FOR_VIEW_ALL_DIALOG
     )
+
+
+@pytest.mark.django_db
+def test_seeded_insights_rank_high_cost_countries_above_low_cost_markets():
+    call_command(
+        "seed_employees",
+        count=SEED_DATASET_COUNT,
+        seed=SEED_DATASET_SEED,
+        clear=True,
+    )
+
+    stats = {row.country: row for row in salary_stats_by_country()}
+
+    assert stats["United States"].avg_salary > stats["India"].avg_salary * Decimal("1.20")
+    assert stats["Switzerland"].avg_salary > stats["Poland"].avg_salary * Decimal("1.20")
