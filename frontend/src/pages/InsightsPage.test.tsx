@@ -21,6 +21,27 @@ import {
 import { renderInsightsApp, renderInsightsPage } from "../test/render";
 
 describe("InsightsPage", () => {
+  it("shows View all actions with default seeded insight dataset", async () => {
+    renderInsightsApp("/insights");
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+    await screen.findByRole("table", { name: /salary by job in switzerland/i });
+
+    expect(screen.getByRole("button", { name: /^view all$/i })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /view all job titles/i })).toBeInTheDocument();
+  });
+
+  it("navigates to paginated countries list from default seeded dataset", async () => {
+    renderInsightsApp("/insights");
+
+    await screen.findByRole("figure", { name: /average salary by country/i });
+    fireEvent.click(screen.getByRole("button", { name: /^view all$/i }));
+
+    const table = await screen.findByRole("table", { name: /salary by country/i });
+    fireEvent.click(screen.getByRole("button", { name: /go to next page/i }));
+    expect(await within(table).findByRole("cell", { name: "Australia" })).toBeInTheDocument();
+  });
+
   it("does not render the legacy salary-by-country table on the chart view", async () => {
     renderInsightsPage();
 
