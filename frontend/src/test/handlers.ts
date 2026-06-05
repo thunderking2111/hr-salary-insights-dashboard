@@ -15,7 +15,7 @@ export function resetEmployeeHandlers(): void {
 }
 
 export const handlers = [
-  http.get("/health/", () =>
+  http.get("/api/health/", () =>
     HttpResponse.json({ status: "ok", checks: { database: "ok" } }),
   ),
   http.get("/api/insights/salary-by-country/", () => HttpResponse.json(countrySalaryInsights)),

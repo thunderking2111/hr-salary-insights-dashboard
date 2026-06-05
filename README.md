@@ -115,19 +115,19 @@ npm test                      # Vitest
 Seed the backend (`python manage.py seed_employees` from `backend/`) and run
 `runserver` before using insights or the employee directory in the browser.
 
-The Vite dev server proxies `/api` and `/health` to `http://127.0.0.1:8000` when
-you run the Django backend separately.
+The Vite dev server proxies `/api` to `http://127.0.0.1:8000` when you run the
+Django backend separately.
 
 ### Backend health and UI status
 
-The backend exposes `GET /health/` (readiness check with a database ping). The
+The backend exposes `GET /api/health/` (readiness check with a database ping). The
 frontend sidebar shows a status indicator:
 
-- **Starting server…** (amber) — polling `/health/`; common on first load after a
+- **Starting server…** (amber) — polling `/api/health/`; common on first load after a
   Render free-tier cold start (may take up to a minute).
 - **API online** (green) — backend is ready for requests.
 
-When deploying to Render, set the service **Health Check Path** to `/health/`.
+When deploying to Render, set the service **Health Check Path** to `/api/health/`.
 
 ## Deployment (Render + Vercel)
 
@@ -142,7 +142,7 @@ config lives on `master`; secrets and URLs are set in each platform's dashboard.
 | Runtime | Python 3.12 |
 | Build Command | `pip install -r requirements.txt` |
 | Start Command | See [`render.yaml`](render.yaml) or below |
-| Health Check Path | `/health/` |
+| Health Check Path | `/api/health/` |
 
 Start command (SQLite is ephemeral — migrate and seed on each cold start):
 

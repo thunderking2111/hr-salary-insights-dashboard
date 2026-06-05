@@ -13,7 +13,7 @@ services:
       python manage.py migrate --noinput &&
       python manage.py shell -c "from django.core.management import call_command; from employees.models import Employee; call_command('seed_employees', count=10000, seed=42) if Employee.objects.count() == 0 else None" &&
       gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
-    healthCheckPath: /health/
+    healthCheckPath: /api/health/
     envVars:
       - key: PYTHON_VERSION
         value: "3.12"

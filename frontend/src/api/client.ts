@@ -9,7 +9,7 @@ import type {
 } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
-const HEALTH_TIMEOUT_MS = 5000;
+const HEALTH_TIMEOUT_MS = 15000;
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -90,9 +90,15 @@ export async function deleteEmployee(id: number): Promise<void> {
 }
 
 export async function fetchHealth(): Promise<HealthResponse> {
-  return request<HealthResponse>("/health/", {
+  const response = await fetch(`${API_BASE}/api/health/`, {
     signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
   });
+
+  if (!response.ok) {
+    throw new Error(`Health check failed: ${response.status}`);
+  }
+
+  return response.json() as Promise<HealthResponse>;
 }
 
 export type {
