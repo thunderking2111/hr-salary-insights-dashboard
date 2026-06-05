@@ -4,9 +4,8 @@ A minimal yet production-quality salary management tool for an organization of
 ~10,000 employees. Built for an HR Manager persona to manage the workforce and
 derive salary insights.
 
-> Status: **MVP in progress** — backend APIs and seeding are in place; the
-> React frontend implements employees CRUD and salary insights (chart, job
-> tables, country list) with strict TDD.
+> Status: **MVP complete** — backend APIs, seeding, health check, and React UI
+> (employees CRUD + salary insights) are in place with strict TDD and CI.
 
 ## High-level goals
 
@@ -129,6 +128,73 @@ frontend sidebar shows a status indicator:
 - **API online** (green) — backend is ready for requests.
 
 When deploying to Render, set the service **Health Check Path** to `/health/`.
+
+## Deployment (Render + Vercel)
+
+Deploy from a **`production`** branch that tracks `master`. Application deploy
+config lives on `master`; secrets and URLs are set in each platform's dashboard.
+
+### 1. Render (backend)
+
+| Setting | Value |
+|---------|--------|
+| Root Directory | `backend` |
+| Runtime | Python 3.12 |
+| Build Command | `pip install -r requirements.txt` |
+| Start Command | See [`render.yaml`](render.yaml) or below |
+| Health Check Path | `/health/` |
+
+Start command (SQLite is ephemeral — migrate and seed on each cold start):
+
+```bash
+python manage.py migrate --noinput && \
+python manage.py shell -c "from django.core.management import call_command; from employees.models import Employee; call_command('seed_employees', count=10000, seed=42) if Employee.objects.count() == 0 else None" && \
+gunicorn config.wsgi:application --bind 0.0.0.0:$PORT
+```
+
+Environment variables (set in Render dashboard):
+
+| Variable | Example |
+|----------|---------|
+| `DJANGO_SECRET_KEY` | Generate a long random string |
+| `DJANGO_DEBUG` | `False` |
+| `DJANGO_ALLOWED_HOSTS` | `your-app.onrender.com` |
+| `CORS_ALLOWED_ORIGINS` | `https://your-app.vercel.app` |
+
+Alternatively, use the committed [`render.yaml`](render.yaml) Blueprint and fill
+in `DJANGO_ALLOWED_HOSTS` and `CORS_ALLOWED_ORIGINS` after the first deploy.
+
+### 2. Vercel (frontend)
+
+| Setting | Value |
+|---------|--------|
+| Root Directory | `frontend` |
+| Framework | Vite |
+| Build Command | `npm run build` |
+| Output Directory | `dist` |
+| Node.js Version | 20 |
+
+Environment variable (Production):
+
+```bash
+VITE_API_BASE=https://your-app.onrender.com
+```
+
+No trailing slash. See [`frontend/.env.example`](frontend/.env.example).
+
+[`frontend/vercel.json`](frontend/vercel.json) rewrites all routes to
+`index.html` so React Router paths work on refresh.
+
+### 3. Deploy order
+
+1. Push `production` branch and deploy **Render** backend → note the URL.
+2. Set **`VITE_API_BASE`** on Vercel to that URL → deploy **frontend**.
+3. Set **`CORS_ALLOWED_ORIGINS`** on Render to your Vercel URL → redeploy backend.
+4. Smoke test: sidebar shows **API online** → employees list → insights chart.
+
+**Note:** Render free tier spins down after 15 minutes idle; first request may
+take up to a minute. The sidebar status indicator shows **Starting server…**
+during cold starts.
 
 ### Quality gates
 
