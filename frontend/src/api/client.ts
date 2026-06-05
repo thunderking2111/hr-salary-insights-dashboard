@@ -3,11 +3,13 @@ import type {
   CountrySalaryInsight,
   CreateEmployeePayload,
   Employee,
+  HealthResponse,
   JobTitleSalaryInsight,
   PaginatedEmployees,
 } from "./types";
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? "";
+const HEALTH_TIMEOUT_MS = 5000;
 
 async function request<T>(path: string, init?: RequestInit): Promise<T> {
   const response = await fetch(`${API_BASE}${path}`, {
@@ -87,10 +89,17 @@ export async function deleteEmployee(id: number): Promise<void> {
   return requestNoContent(`/api/employees/${id}/`, { method: "DELETE" });
 }
 
+export async function fetchHealth(): Promise<HealthResponse> {
+  return request<HealthResponse>("/health/", {
+    signal: AbortSignal.timeout(HEALTH_TIMEOUT_MS),
+  });
+}
+
 export type {
   CountrySalaryInsight,
   CreateEmployeePayload,
   Employee,
+  HealthResponse,
   JobTitleSalaryInsight,
   PaginatedEmployees,
 };

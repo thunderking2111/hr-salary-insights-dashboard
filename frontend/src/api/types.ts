@@ -50,3 +50,10 @@ export interface CreateEmployeePayload {
   currency: string;
   date_of_joining: string;
 }
+
+export interface HealthResponse {
+  status: "ok" | "unavailable";
+  checks: {
+    database: "ok" | "error";
+  };
+}

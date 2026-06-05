@@ -6,6 +6,7 @@ import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
 import { alpha, type Theme } from "@mui/material/styles";
 import { NavLink, Outlet } from "react-router-dom";
+import { BackendStatusIndicator } from "./BackendStatusIndicator";
 
 const drawerWidth = 240;
 
@@ -118,6 +119,7 @@ export function AppShell() {
             <SidebarNavItem to="/employees" label="Employees" end />
             <SidebarNavItem to="/insights" label="Salary Insights" />
           </List>
+          <BackendStatusIndicator />
         </Drawer>
       </Box>
       <Box
