@@ -61,6 +61,17 @@ more code buys a clean TDD history and an honest refactor commit at the end.
 - **Why safe**: Insight API tests were not edited; URLs and JSON shapes are
   unchanged and the full suite stayed green. Views only serialize and respond.
 
+### Insights performance: SQL medians, indexes, and cache (2026-06-05)
+
+- **What changed**: Median salary is computed in SQLite via window functions in
+  a single query per insight (no Python full-table scan). Indexes on `country`
+  and `(country, job_title)` support group-by filters. Insight results are
+  cached in LocMem with version-bump invalidation on employee create/update/delete
+  and after seeding.
+- **Why safe**: Existing insight correctness tests unchanged; new tests pin
+  query count (1 DB query per uncached call), cache hits (0 queries), cache
+  invalidation, indexes on the model, and a 10k-seed API latency budget.
+
 ## Deferred frontend UI
 
 > Items visible in the OrgPulse mockups ([design pack](frontend/visual-spec.md))
