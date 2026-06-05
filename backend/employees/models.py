@@ -15,6 +15,15 @@ class Employee(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
+    class Meta:
+        indexes = [  # noqa: RUF012
+            models.Index(fields=["country"], name="employee_country_idx"),
+            models.Index(
+                fields=["country", "job_title"],
+                name="employee_country_job_title_idx",
+            ),
+        ]
+
     def __str__(self) -> str:
         return self.full_name
 
