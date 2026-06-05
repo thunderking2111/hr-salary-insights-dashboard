@@ -7,6 +7,17 @@ from employees.models import Employee
 from employees.services.insights import salary_stats_by_country, salary_stats_by_job_title
 from employees.tests.conftest import employee_create_kwargs
 
+SALARY_BY_COUNTRY_URL = "/api/insights/salary-by-country/"
+
+
+@pytest.fixture(autouse=True)
+def clear_insights_cache():
+    from django.core.cache import cache
+
+    cache.clear()
+    yield
+    cache.clear()
+
 
 @pytest.mark.django_db
 def test_employee_model_has_insights_indexes():
@@ -55,6 +66,17 @@ def test_salary_stats_by_job_title_uses_single_database_query():
         salary_stats_by_job_title(country="India")
 
     assert len(context.captured_queries) == 1
+
+
+@pytest.mark.django_db
+def test_salary_stats_by_country_is_served_from_cache_without_queries():
+    Employee.objects.create(**employee_create_kwargs(country="India", salary="1000000.00"))
+    salary_stats_by_country()
+
+    with CaptureQueriesContext(connection) as context:
+        salary_stats_by_country()
+
+    assert len(context.captured_queries) == 0
 
 
 @pytest.mark.django_db
