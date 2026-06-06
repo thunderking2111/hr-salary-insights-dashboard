@@ -49,8 +49,13 @@ async function requestNoContent(path: string, init?: RequestInit): Promise<void>
   }
 }
 
-export async function fetchEmployees(page = 1): Promise<PaginatedEmployees> {
-  return request<PaginatedEmployees>(`/api/employees/?page=${page}`);
+export async function fetchEmployees(page = 1, search = ""): Promise<PaginatedEmployees> {
+  const params = new URLSearchParams({ page: String(page) });
+  const trimmedSearch = search.trim();
+  if (trimmedSearch) {
+    params.set("search", trimmedSearch);
+  }
+  return request<PaginatedEmployees>(`/api/employees/?${params.toString()}`);
 }
 
 export async function fetchSalaryByCountry(): Promise<CountrySalaryInsight[]> {

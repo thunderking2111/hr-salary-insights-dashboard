@@ -3,9 +3,12 @@ import Button from "@mui/material/Button";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
+import InputAdornment from "@mui/material/InputAdornment";
 import Stack from "@mui/material/Stack";
 import TablePagination from "@mui/material/TablePagination";
+import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
+import SearchIcon from "@mui/icons-material/Search";
 import { type FormEvent, useRef, useState } from "react";
 import { ApiValidationError } from "../api/employeeFieldErrors";
 import type { EmployeeFieldErrors } from "../api/employeeFieldErrors";
@@ -39,6 +42,8 @@ export function EmployeesPage() {
     loading,
     page,
     totalCount,
+    search,
+    setSearch,
     loadEmployees,
     reloadCurrentPage,
   } = useEmployeeList();
@@ -199,12 +204,30 @@ export function EmployeesPage() {
     <Box sx={{ display: "flex", flexDirection: "column", minHeight: "calc(100vh - 96px)" }}>
       <Stack
         direction="row"
-        sx={{ mb: 3, alignItems: "center", justifyContent: "space-between", flexShrink: 0 }}
+        sx={{ mb: 3, alignItems: "center", justifyContent: "space-between", flexShrink: 0, gap: 2 }}
       >
-        <Typography component="h1" variant="h4">
+        <Typography component="h1" variant="h4" sx={{ flexShrink: 0 }}>
           Employees
         </Typography>
-        <Button variant="contained" color="primary" onClick={openAddDialog}>
+        <TextField
+          size="small"
+          type="search"
+          placeholder="Search employees"
+          value={search}
+          onChange={(event) => setSearch(event.target.value)}
+          slotProps={{
+            input: {
+              "aria-label": "Search employees",
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon fontSize="small" aria-hidden />
+                </InputAdornment>
+              ),
+            },
+          }}
+          sx={{ maxWidth: 320, flex: 1 }}
+        />
+        <Button variant="contained" color="primary" onClick={openAddDialog} sx={{ flexShrink: 0 }}>
           Add Employee
         </Button>
       </Stack>

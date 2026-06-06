@@ -1,5 +1,6 @@
 import { http, HttpResponse } from "msw";
 import type { CreateEmployeePayload, Employee } from "../api/types";
+import { employeeMatchesSearch } from "./employeeSearch";
 import {
   countrySalaryInsights,
   indiaJobTitleSalaryInsights,
@@ -29,14 +30,18 @@ export const handlers = [
     }
     return HttpResponse.json(seededJobTitleSalaryInsightsForCountry(country));
   }),
-  http.get("/api/employees/", () =>
-    HttpResponse.json({
-      count: employees.length,
+  http.get("/api/employees/", ({ request }) => {
+    const url = new URL(request.url);
+    const search = url.searchParams.get("search") ?? "";
+    const filtered = employees.filter((employee) => employeeMatchesSearch(employee, search));
+
+    return HttpResponse.json({
+      count: filtered.length,
       next: null,
       previous: null,
-      results: [...employees],
-    }),
-  ),
+      results: filtered,
+    });
+  }),
   http.post("/api/employees/", async ({ request }) => {
     const body = (await request.json()) as CreateEmployeePayload;
     const employee: Employee = {
