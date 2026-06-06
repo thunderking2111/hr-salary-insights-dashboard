@@ -1,7 +1,10 @@
+import { http, HttpResponse } from "msw";
 import { describe, expect, it } from "vitest";
 import { ApiValidationError } from "./employeeFieldErrors";
 import { createEmployee, fetchEmployees, fetchSalaryByCountry, fetchSalaryByJobTitle } from "./client";
 import type { CreateEmployeePayload } from "./types";
+import { paginatedEmployees } from "../test/fixtures";
+import { server } from "../test/server";
 import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeValidationError";
 import {
   MIN_COUNTRIES_FOR_VIEW_ALL_PAGINATION,
@@ -29,6 +32,21 @@ describe("fetchEmployees", () => {
 
     expect(data.count).toBe(1);
     expect(data.results[0]?.full_name).toBe("Ada Lovelace");
+  });
+
+  it("passes search query to the employees endpoint", async () => {
+    const requestedUrls: string[] = [];
+    server.use(
+      http.get("/api/employees/", ({ request }) => {
+        requestedUrls.push(request.url);
+        return HttpResponse.json(paginatedEmployees);
+      }),
+    );
+
+    await fetchEmployees(1, "Ada");
+
+    expect(requestedUrls).toHaveLength(1);
+    expect(requestedUrls[0]).toContain("search=Ada");
   });
 });
 

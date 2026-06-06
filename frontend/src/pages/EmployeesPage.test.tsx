@@ -8,6 +8,10 @@ import { stubSlowFailingDeleteEmployee } from "../test/stubSlowFailingDeleteEmpl
 import { stubSlowFailingUpdateEmployee } from "../test/stubSlowFailingUpdateEmployee";
 import { stubDelayedEmployeesList } from "../test/delayedEmployeesList";
 import { stubDelayedPageTwoEmployees, stubTwoPageEmployeesList } from "../test/twoPageEmployees";
+import { stubSearchableEmployeesList } from "../test/stubSearchableEmployeesList";
+
+/** Matches debounce in useEmployeeList once search is implemented. */
+const SEARCH_DEBOUNCE_MS = 300;
 
 async function expectSuccessToast(message: string) {
   await waitFor(() => {
@@ -123,6 +127,26 @@ describe("EmployeesPage", () => {
     const addButton = screen.getByRole("button", { name: /add employee/i });
     expect(addButton.className).toMatch(/MuiButton-contained/);
     expect(addButton.className).toMatch(/MuiButton-colorPrimary/);
+  });
+
+  it("filters employees when a search query is entered", async () => {
+    stubSearchableEmployeesList();
+    renderEmployeesPage();
+
+    expect(await screen.findByText("Ada Lovelace")).toBeInTheDocument();
+    expect(screen.getByText("Grace Hopper")).toBeInTheDocument();
+
+    fireEvent.change(screen.getByRole("searchbox", { name: /search employees/i }), {
+      target: { value: "Grace" },
+    });
+
+    await waitFor(
+      () => {
+        expect(screen.getByText("Grace Hopper")).toBeInTheDocument();
+        expect(screen.queryByText("Ada Lovelace")).not.toBeInTheDocument();
+      },
+      { timeout: SEARCH_DEBOUNCE_MS + 500 },
+    );
   });
 
   it("opens add employee dialog when Add Employee is clicked", async () => {
