@@ -32,6 +32,61 @@ def test_create_employee_returns_201_with_profile():
 
 
 @pytest.mark.django_db
+def test_list_employees_orders_by_first_name_last_name_then_id():
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Zara",
+            last_name="Alpha",
+            email="zara.alpha@example.com",
+        )
+    )
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Ada",
+            last_name="Beta",
+            email="ada.beta@example.com",
+        )
+    )
+    ada_alpha_first = Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Ada",
+            last_name="Alpha",
+            email="ada.alpha.first@example.com",
+        )
+    )
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Ada",
+            last_name="Alpha",
+            email="ada.alpha.second@example.com",
+        )
+    )
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Bob",
+            last_name="Alpha",
+            email="bob.alpha@example.com",
+        )
+    )
+    client = APIClient()
+
+    response = client.get(EMPLOYEES_URL)
+
+    assert response.status_code == status.HTTP_200_OK
+    results = response.json()["results"]
+    assert [row["full_name"] for row in results] == [
+        "Ada Alpha",
+        "Ada Alpha",
+        "Ada Beta",
+        "Bob Alpha",
+        "Zara Alpha",
+    ]
+    ada_alpha_ids = [row["id"] for row in results if row["full_name"] == "Ada Alpha"]
+    assert ada_alpha_ids == sorted(ada_alpha_ids)
+    assert ada_alpha_ids[0] == ada_alpha_first.pk
+
+
+@pytest.mark.django_db
 def test_list_employees_returns_200_with_paginated_results():
     Employee.objects.create(**employee_create_kwargs())
     client = APIClient()
