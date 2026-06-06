@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { fetchSalaryByJobTitle } from "../api/client";
 import type { JobTitleSalaryInsight } from "../api/types";
 import { isAbortError } from "../utils/isAbortError";
+import { useRetryPageLoadOnBackendOnline } from "./useRetryPageLoadOnBackendOnline";
 
 export function useChartCountryJobTitles() {
   const [chartCountry, setChartCountry] = useState<string | null>(null);
@@ -10,6 +11,7 @@ export function useChartCountryJobTitles() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [reloadToken, setReloadToken] = useState(0);
 
   const selectChartCountry = useCallback((country: string) => {
     setChartCountry((current) => (current === country ? current : country));
@@ -22,6 +24,10 @@ export function useChartCountryJobTitles() {
   const closeJobTitlesDialog = useCallback(() => {
     setDialogOpen(false);
     setError(null);
+  }, []);
+
+  const reloadJobTitles = useCallback(() => {
+    setReloadToken((token) => token + 1);
   }, []);
 
   useEffect(() => {
@@ -57,7 +63,14 @@ export function useChartCountryJobTitles() {
       });
 
     return () => controller.abort();
-  }, [chartCountry]);
+  }, [chartCountry, reloadToken]);
+
+  useRetryPageLoadOnBackendOnline({
+    loading,
+    error,
+    reload: reloadJobTitles,
+    enabled: chartCountry !== null,
+  });
 
   return {
     chartCountry,

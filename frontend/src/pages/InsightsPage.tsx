@@ -2,7 +2,7 @@ import Alert from "@mui/material/Alert";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchSalaryByCountry } from "../api/client";
 import type { CountrySalaryInsight } from "../api/types";
@@ -15,6 +15,7 @@ import { ChartJobTitlesTable } from "../components/ChartJobTitlesTable";
 import { CountrySalaryChart } from "../components/CountrySalaryChart";
 import { JobTitlesDialog } from "../components/JobTitlesDialog";
 import { useChartCountryJobTitles } from "../hooks/useChartCountryJobTitles";
+import { useRetryPageLoadOnBackendOnline } from "../hooks/useRetryPageLoadOnBackendOnline";
 import { firstChartCountry } from "../utils/chartCountries";
 
 export function InsightsPage() {
@@ -34,7 +35,7 @@ export function InsightsPage() {
     openJobTitlesDialog,
     closeJobTitlesDialog,
   } = useChartCountryJobTitles();
-  useEffect(() => {
+  const loadInsights = useCallback(() => {
     setInsightsLoading(true);
     setError(null);
 
@@ -50,6 +51,16 @@ export function InsightsPage() {
         setInsightsLoading(false);
       });
   }, [setChartCountry]);
+
+  useEffect(() => {
+    loadInsights();
+  }, [loadInsights]);
+
+  useRetryPageLoadOnBackendOnline({
+    loading: insightsLoading,
+    error,
+    reload: loadInsights,
+  });
 
   return (
     <div>

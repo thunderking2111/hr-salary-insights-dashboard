@@ -1,6 +1,11 @@
 import { act, renderHook, waitFor } from "@testing-library/react";
+import type { ReactNode } from "react";
 import { describe, expect, it, vi } from "vitest";
 import * as client from "../api/client";
+import {
+  BackendHealthProvider,
+  TEST_BACKEND_HEALTH_POLL_MS,
+} from "../context/BackendHealthProvider";
 import type { JobTitleSalaryInsight } from "../api/types";
 import { country02JobTitleInsights } from "../test/chartCountryJobTitles";
 import { elevenJobTitlesForCountry01 } from "../test/elevenJobTitlesForCountry01";
@@ -40,10 +45,18 @@ vi.mock("../api/client", async (importOriginal) => {
   };
 });
 
+function createWrapper() {
+  return function Wrapper({ children }: { children: ReactNode }) {
+    return (
+      <BackendHealthProvider pollMs={TEST_BACKEND_HEALTH_POLL_MS}>{children}</BackendHealthProvider>
+    );
+  };
+}
+
 describe("useChartCountryJobTitles", () => {
   it("ignores stale job title responses when chart country changes quickly", async () => {
     const fetchJobTitles = vi.mocked(client.fetchSalaryByJobTitle);
-    const { result } = renderHook(() => useChartCountryJobTitles());
+    const { result } = renderHook(() => useChartCountryJobTitles(), { wrapper: createWrapper() });
 
     await act(async () => {
       result.current.setChartCountry("Country01");

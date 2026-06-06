@@ -2,12 +2,13 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import TablePagination from "@mui/material/TablePagination";
 import Typography from "@mui/material/Typography";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { fetchSalaryByCountry, fetchSalaryByJobTitle } from "../api/client";
 import type { CountrySalaryInsight, JobTitleSalaryInsight } from "../api/types";
 import { CountrySalaryTable } from "../components/CountrySalaryTable";
 import { JobTitlesDialog } from "../components/JobTitlesDialog";
+import { useRetryPageLoadOnBackendOnline } from "../hooks/useRetryPageLoadOnBackendOnline";
 import {
   COUNTRIES_LIST_PAGE_SIZE,
   paginatedCountryInsights,
@@ -16,6 +17,7 @@ import {
 export function InsightsCountriesPage() {
   const navigate = useNavigate();
   const [insights, setInsights] = useState<CountrySalaryInsight[]>([]);
+  const [insightsLoading, setInsightsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [selectedCountry, setSelectedCountry] = useState<string | null>(null);
@@ -23,7 +25,10 @@ export function InsightsCountriesPage() {
   const [jobTitlesLoading, setJobTitlesLoading] = useState(false);
   const [jobTitlesError, setJobTitlesError] = useState<string | null>(null);
 
-  useEffect(() => {
+  const loadInsights = useCallback(() => {
+    setInsightsLoading(true);
+    setError(null);
+
     void fetchSalaryByCountry()
       .then((data) => {
         setInsights(data);
@@ -31,8 +36,21 @@ export function InsightsCountriesPage() {
       })
       .catch((err: unknown) => {
         setError(err instanceof Error ? err.message : "Failed to load salary insights");
+      })
+      .finally(() => {
+        setInsightsLoading(false);
       });
   }, []);
+
+  useEffect(() => {
+    loadInsights();
+  }, [loadInsights]);
+
+  useRetryPageLoadOnBackendOnline({
+    loading: insightsLoading,
+    error,
+    reload: loadInsights,
+  });
 
   const pageCountries = paginatedCountryInsights(insights, page);
 
