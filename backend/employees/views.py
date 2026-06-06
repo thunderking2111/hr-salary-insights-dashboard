@@ -12,7 +12,7 @@ from employees.services.insights import salary_stats_by_country, salary_stats_by
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
-    queryset = Employee.objects.order_by("id")
+    queryset = Employee.objects.order_by("first_name", "last_name", "id")
     serializer_class = EmployeeSerializer
 
 
