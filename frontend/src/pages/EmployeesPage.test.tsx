@@ -1,6 +1,7 @@
 import { fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
 import { renderEmployeesPage } from "../test/render";
+import { stubDelayedEmployeesFailThenOk, stubHealthFailThenOk } from "../test/stubOfflineRecovery";
 import { stubCreateEmployeeValidationError } from "../test/stubCreateEmployeeValidationError";
 import { stubSlowFailingCreateEmployee } from "../test/stubSlowFailingCreateEmployee";
 import { stubSlowFailingDeleteEmployee } from "../test/stubSlowFailingDeleteEmployee";
@@ -21,6 +22,36 @@ async function expectErrorToast(message: string) {
 }
 
 describe("EmployeesPage", () => {
+  describe("backend offline recovery", () => {
+    it("loads employees after the backend comes online following an initial failure", async () => {
+      stubHealthFailThenOk(1);
+      stubDelayedEmployeesFailThenOk(0, 1);
+      renderEmployeesPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      });
+    });
+
+    it("retries once when a pending employee request fails after the backend comes online", async () => {
+      stubHealthFailThenOk(1);
+      stubDelayedEmployeesFailThenOk(150, 1);
+      renderEmployeesPage();
+
+      await waitFor(
+        () => {
+          expect(screen.getByText("Ada Lovelace")).toBeInTheDocument();
+        },
+        { timeout: 3000 },
+      );
+    });
+  });
+
   it("shows centered loading spinner in the list region on initial fetch", async () => {
     stubDelayedEmployeesList();
     renderEmployeesPage();
