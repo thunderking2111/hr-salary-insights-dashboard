@@ -50,6 +50,7 @@ code that introduces them.
 - [Architecture (high-level)](docs/architecture.md)
 - [Architectural Decision Records (ADRs)](docs/adr/)
 - [AI planning log](docs/ai-planning-log.md)
+- [AI prompt catalog](docs/ai-prompts.md)
 - [Testing strategy](docs/testing-strategy.md)
 - [Trade-offs and decisions](docs/tradeoffs.md)
 - [AGENTS.md](AGENTS.md) — operational rules for AI agents in this repo

@@ -1,16 +1,14 @@
 # AI Planning Log
 
 > Chronological record of AI-assisted planning checkpoints and decisions.
-> Code-level prompts are intentionally kept out of git history during the build
-> and will be promoted at the end of the project (final docs phase).
+> Major prompts are catalogued in [`docs/ai-prompts.md`](ai-prompts.md).
 
 ## Checkpoint 1 — Project framing
 
 - **When**: Day 1, pre-implementation.
 - **Decision**: Build backend first, then frontend.
 - **Rationale**:
-  - The assessment's core complexity is data and insights — they belong on the
-    server.
+  - The core complexity is data and insights — they belong on the server.
   - Locking the API contract first makes the frontend trivially testable.
   - Strict TDD is easier to demonstrate on a single language at a time.
 
@@ -89,5 +87,14 @@
   - Document frontend `npm test` in testing-strategy and AGENTS.md.
   - Mark visual-spec sign-off checklist complete for MVP scope; deferred UI
     remains in tradeoffs.md.
+
+## Checkpoint 9 — AI prompt catalog
+
+- **When**: Project close-out.
+- **Decision**: Add a curated [`docs/ai-prompts.md`](ai-prompts.md) covering
+  representative prompts that shaped major decisions.
+- **Rationale**:
+  - Documents how AI was used intentionally alongside TDD and living docs.
+  - A structured sample is more useful than a raw chat export.
 
 <!-- Future planning checkpoints will be appended here. -->
