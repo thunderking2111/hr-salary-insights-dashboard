@@ -19,6 +19,7 @@ import {
   topEightChartCountries,
 } from "../test/nineCountryInsights";
 import { renderInsightsApp, renderInsightsPage } from "../test/render";
+import { stubHealthFailThenOk, stubSalaryByCountryFailThenOk } from "../test/stubOfflineRecovery";
 import {
   seededExcludedEleventhIndiaJobTitle,
   seededFirstChartCountry,
@@ -26,6 +27,23 @@ import {
 } from "../test/seededInsightsDataset";
 
 describe("InsightsPage", () => {
+  describe("backend offline recovery", () => {
+    it("loads salary insights after the backend comes online following an initial failure", async () => {
+      stubHealthFailThenOk(1);
+      stubSalaryByCountryFailThenOk(1);
+      renderInsightsPage();
+
+      await waitFor(() => {
+        expect(screen.getByRole("alert")).toBeInTheDocument();
+      });
+
+      await waitFor(() => {
+        expect(screen.getByRole("figure", { name: /average salary by country/i })).toBeInTheDocument();
+        expect(screen.queryByRole("alert")).not.toBeInTheDocument();
+      });
+    });
+  });
+
   it("shows View all actions with default seeded insight dataset", async () => {
     renderInsightsApp("/insights");
 

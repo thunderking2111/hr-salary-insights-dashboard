@@ -1,5 +1,5 @@
 import { delay, http, HttpResponse } from "msw";
-import { paginatedEmployees } from "./fixtures";
+import { countrySalaryInsights, paginatedEmployees } from "./fixtures";
 import { server } from "./server";
 
 const healthOkBody = { status: "ok", checks: { database: "ok" } };
@@ -26,6 +26,19 @@ export function stubEmployeesFailThenOk(failCount = 1): void {
         return HttpResponse.error();
       }
       return HttpResponse.json(paginatedEmployees);
+    }),
+  );
+}
+
+export function stubSalaryByCountryFailThenOk(failCount = 1): void {
+  let calls = 0;
+  server.use(
+    http.get("/api/insights/salary-by-country/", () => {
+      calls += 1;
+      if (calls <= failCount) {
+        return HttpResponse.error();
+      }
+      return HttpResponse.json(countrySalaryInsights);
     }),
   );
 }
