@@ -87,6 +87,65 @@ def test_list_employees_orders_by_first_name_last_name_then_id():
 
 
 @pytest.mark.django_db
+@pytest.mark.parametrize(
+    ("search_term", "expected_email"),
+    [
+        ("Ada", "ada.lovelace@example.com"),
+        ("Lovelace", "ada.lovelace@example.com"),
+        ("Ada Lovelace", "ada.lovelace@example.com"),
+        ("ada.lovelace", "ada.lovelace@example.com"),
+        ("Grace", "grace.hopper@example.com"),
+    ],
+)
+def test_list_employees_search_filters_by_identity_fields(search_term, expected_email):
+    Employee.objects.create(**employee_create_kwargs())
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Grace",
+            last_name="Hopper",
+            email="grace.hopper@example.com",
+            job_title="Principal Engineer",
+            department="Research",
+            country="Germany",
+        )
+    )
+    client = APIClient()
+
+    response = client.get(EMPLOYEES_URL, {"search": search_term})
+
+    assert response.status_code == status.HTTP_200_OK
+    data = response.json()
+    assert data["count"] == 1
+    assert len(data["results"]) == 1
+    assert data["results"][0]["email"] == expected_email
+
+
+@pytest.mark.django_db
+@pytest.mark.parametrize(
+    "search_term",
+    ["Software Engineer", "Engineering", "India", "Germany"],
+)
+def test_list_employees_search_ignores_organisation_fields(search_term):
+    Employee.objects.create(**employee_create_kwargs())
+    Employee.objects.create(
+        **employee_create_kwargs(
+            first_name="Grace",
+            last_name="Hopper",
+            email="grace.hopper@example.com",
+            job_title="Principal Engineer",
+            department="Research",
+            country="Germany",
+        )
+    )
+    client = APIClient()
+
+    response = client.get(EMPLOYEES_URL, {"search": search_term})
+
+    assert response.status_code == status.HTTP_200_OK
+    assert response.json()["count"] == 0
+
+
+@pytest.mark.django_db
 def test_list_employees_returns_200_with_paginated_results():
     Employee.objects.create(**employee_create_kwargs())
     client = APIClient()
