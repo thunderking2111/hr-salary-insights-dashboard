@@ -7,6 +7,20 @@ derive salary insights.
 > Status: **MVP complete** — backend APIs, seeding, health check, and React UI
 > (employees CRUD + salary insights) are in place with strict TDD and CI.
 
+## Demo
+
+[![Watch the 1-minute HR Pulse demo](https://img.youtube.com/vi/3bhDjbqi3hg/hqdefault.jpg)](https://youtu.be/3bhDjbqi3hg)
+
+**[Watch full demo (1 min) →](https://youtu.be/3bhDjbqi3hg)** ·
+**[Try the live app →](https://hr-salary-dashboard.vercel.app/)**
+
+Covers employee directory (search, sort, CRUD), salary insights, and the
+engineering stack. Narration script: [docs/demo-script.md](docs/demo-script.md).
+
+> On first load of a deployed instance, the sidebar may show **Starting server…**
+> while the backend wakes up (common on Render free tier); it turns **API online**
+> when ready.
+
 ## High-level goals
 
 - Manage employees (create, read, update, delete) via a clean UI.
