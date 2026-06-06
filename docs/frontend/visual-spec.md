@@ -1,6 +1,6 @@
 # Frontend visual spec (MVP vs mockups)
 
-> What we ship in v1 versus what the OrgPulse mockups show. Layout and flows
+> What we ship in v1 versus what the HR Pulse mockups show. Layout and flows
 > are in [wireframes.md](wireframes.md) and [ux-flows.md](ux-flows.md); tokens
 > in [design-system.md](design-system.md).
 
@@ -34,7 +34,7 @@
 | Insights page density (KPI row + many widgets) | **Chart + one job table + list route** only |
 | Country breakdown table on chart page | Replaced by **salary-by-job** table tied to chart selection (not a duplicate country table) |
 | Sidebar section labels (WORKFORCE / ANALYTICS) | Omitted; flat two-item nav |
-| Logo / product name “OrgPulse” | Text or simple wordmark in sidebar header (no marketing site chrome) |
+| Logo / product name “HR Pulse” | Text or simple wordmark in sidebar header (no marketing site chrome) |
 
 ## Deferred (mockup only — not v1)
 

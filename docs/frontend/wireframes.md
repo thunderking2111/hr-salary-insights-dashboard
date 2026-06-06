@@ -11,7 +11,7 @@ column on `background.default`.
 
 ```
 +------------------+----------------------------------------------------------+
-| [Logo] OrgPulse  |                                                          |
+| [Logo] HR Pulse  |                                                          |
 |                  |  <main> — page-specific content                          |
 |  Employees    *  |                                                          |
 |  Salary Insights |                                                          |

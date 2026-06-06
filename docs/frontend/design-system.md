@@ -1,6 +1,6 @@
 # Frontend design system (MVP)
 
-> Tokens and component mapping for the OrgPulse-style mockups. Scope is
+> Tokens and component mapping for the HR Pulse-style mockups. Scope is
 > narrowed to what we ship in v1; deferred UI is listed in
 > [visual-spec.md](visual-spec.md) and [../tradeoffs.md](../tradeoffs.md).
 

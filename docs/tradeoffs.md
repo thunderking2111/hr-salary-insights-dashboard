@@ -74,7 +74,7 @@ more code buys a clean TDD history and an honest refactor commit at the end.
 
 ## Deferred frontend UI
 
-> Items visible in the OrgPulse mockups ([design pack](frontend/visual-spec.md))
+> Items visible in the HR Pulse mockups ([design pack](frontend/visual-spec.md))
 > but **out of MVP scope**. Revisit after chart + country list + MUI shell slices
 > are green.
 
