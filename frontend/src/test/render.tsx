@@ -5,6 +5,10 @@ import { AppShell } from "../components/AppShell";
 import { EmployeesPage } from "../pages/EmployeesPage";
 import { InsightsCountriesPage } from "../pages/InsightsCountriesPage";
 import { InsightsPage } from "../pages/InsightsPage";
+import {
+  BackendHealthProvider,
+  TEST_BACKEND_HEALTH_POLL_MS,
+} from "../context/BackendHealthProvider";
 import { AppThemeProvider } from "../theme/AppThemeProvider";
 
 interface Options extends Omit<RenderOptions, "wrapper"> {
@@ -15,7 +19,9 @@ export function renderWithProviders(ui: ReactElement, { route = "/", ...options 
   function Wrapper({ children }: { children: ReactNode }) {
     return (
       <AppThemeProvider>
-        <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+        <BackendHealthProvider pollMs={TEST_BACKEND_HEALTH_POLL_MS}>
+          <MemoryRouter initialEntries={[route]}>{children}</MemoryRouter>
+        </BackendHealthProvider>
       </AppThemeProvider>
     );
   }

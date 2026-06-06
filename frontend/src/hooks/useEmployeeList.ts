@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { fetchEmployees } from "../api/client";
 import type { Employee } from "../api/types";
+import { useRetryPageLoadOnBackendOnline } from "./useRetryPageLoadOnBackendOnline";
 
 /** Matches Django REST framework PAGE_SIZE in backend config. */
 export const EMPLOYEE_LIST_PAGE_SIZE = 50;
@@ -37,6 +38,12 @@ export function useEmployeeList() {
   const reloadCurrentPage = useCallback(() => {
     loadEmployees(page);
   }, [loadEmployees, page]);
+
+  useRetryPageLoadOnBackendOnline({
+    loading,
+    error,
+    reload: reloadCurrentPage,
+  });
 
   return {
     employees,

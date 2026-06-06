@@ -1,6 +1,6 @@
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
-import { useBackendHealth, type BackendHealthStatus } from "../hooks/useBackendHealth";
+import { useBackendHealth, type BackendHealthStatus } from "../context/BackendHealthProvider";
 
 const DOT_COLORS: Record<BackendHealthStatus, string> = {
   checking: "warning.main",

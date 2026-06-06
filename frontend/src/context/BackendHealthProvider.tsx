@@ -1,12 +1,18 @@
-import { useEffect, useRef, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState, type ReactNode } from "react";
 import { fetchHealth } from "../api/client";
 
 export type BackendHealthStatus = "checking" | "online" | "offline";
 
-const POLL_MS: Record<BackendHealthStatus, number> = {
+const DEFAULT_POLL_MS: Record<BackendHealthStatus, number> = {
   checking: 3000,
   online: 60_000,
-  offline: 10000,
+  offline: 10_000,
+};
+
+export const TEST_BACKEND_HEALTH_POLL_MS: Record<BackendHealthStatus, number> = {
+  checking: 50,
+  online: 60_000,
+  offline: 50,
 };
 
 const STATUS_LABELS: Record<BackendHealthStatus, string> = {
@@ -15,10 +21,24 @@ const STATUS_LABELS: Record<BackendHealthStatus, string> = {
   offline: "API unavailable",
 };
 
-export function useBackendHealth() {
+type BackendHealthContextValue = {
+  status: BackendHealthStatus;
+  label: string;
+};
+
+const BackendHealthContext = createContext<BackendHealthContextValue | null>(null);
+
+type BackendHealthProviderProps = {
+  children: ReactNode;
+  pollMs?: Partial<Record<BackendHealthStatus, number>>;
+};
+
+export function BackendHealthProvider({ children, pollMs }: BackendHealthProviderProps) {
   const [status, setStatus] = useState<BackendHealthStatus>("checking");
   const statusRef = useRef(status);
   statusRef.current = status;
+  const pollMsRef = useRef({ ...DEFAULT_POLL_MS, ...pollMs });
+  pollMsRef.current = { ...DEFAULT_POLL_MS, ...pollMs };
 
   useEffect(() => {
     let cancelled = false;
@@ -47,7 +67,7 @@ export function useBackendHealth() {
       statusRef.current = nextStatus;
       timeoutId = setTimeout(() => {
         void check();
-      }, POLL_MS[nextStatus]);
+      }, pollMsRef.current[nextStatus]);
     };
 
     void check();
@@ -60,5 +80,17 @@ export function useBackendHealth() {
     };
   }, []);
 
-  return { status, label: STATUS_LABELS[status] };
+  return (
+    <BackendHealthContext.Provider value={{ status, label: STATUS_LABELS[status] }}>
+      {children}
+    </BackendHealthContext.Provider>
+  );
+}
+
+export function useBackendHealth(): BackendHealthContextValue {
+  const context = useContext(BackendHealthContext);
+  if (!context) {
+    throw new Error("useBackendHealth must be used within BackendHealthProvider");
+  }
+  return context;
 }
